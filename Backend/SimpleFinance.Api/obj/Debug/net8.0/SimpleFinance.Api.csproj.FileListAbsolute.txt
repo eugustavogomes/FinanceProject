@@ -1,0 +1,8 @@
+/Users/gustavogomes/ProjetosPessoais/SimpleFinanceProject/Backend/SimpleFinance.Api/obj/Debug/net8.0/SimpleFinance.Api.csproj.AssemblyReference.cache
+/Users/gustavogomes/ProjetosPessoais/SimpleFinanceProject/Backend/SimpleFinance.Api/obj/Debug/net8.0/SimpleFinance.Api.GeneratedMSBuildEditorConfig.editorconfig
+/Users/gustavogomes/ProjetosPessoais/SimpleFinanceProject/Backend/SimpleFinance.Api/obj/Debug/net8.0/SimpleFinance.Api.AssemblyInfoInputs.cache
+/Users/gustavogomes/ProjetosPessoais/SimpleFinanceProject/Backend/SimpleFinance.Api/obj/Debug/net8.0/SimpleFinance.Api.AssemblyInfo.cs
+/Users/gustavogomes/ProjetosPessoais/SimpleFinanceProject/Backend/SimpleFinance.Api/obj/Debug/net8.0/SimpleFinance.Api.csproj.CoreCompileInputs.cache
+/Users/gustavogomes/ProjetosPessoais/SimpleFinanceProject/Backend/SimpleFinance.Api/obj/Debug/net8.0/SimpleFinance.Api.MvcApplicationPartsAssemblyInfo.cs
+/Users/gustavogomes/ProjetosPessoais/SimpleFinanceProject/Backend/SimpleFinance.Api/obj/Debug/net8.0/SimpleFinance.Api.MvcApplicationPartsAssemblyInfo.cache
+/Users/gustavogomes/ProjetosPessoais/SimpleFinanceProject/Backend/SimpleFinance.Api/obj/Debug/net8.0/SimpleFinance.Api.sourcelink.json
