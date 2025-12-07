@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
+    const { login } = useAuth();
 
-    function handleSubmit(e: React.FormEvent) {
+    function handleSubmit(e: FormEvent) {
         e.preventDefault();
-        console.log('login', { email, password });
+        login('demo-token')
+        navigate('/dashboard');
     }
 
     return (
