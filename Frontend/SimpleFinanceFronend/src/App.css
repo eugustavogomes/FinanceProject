@@ -1,0 +1,34 @@
+.login-page-bg {
+  background: linear-gradient(110deg, #e3f0ff 60%, #1e3a8a 100%);
+}
+.card {
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.07);
+}
+.input {
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  font-size: 1rem;
+}
+input:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0 2.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  height: 48px;
+  transition: background .2s;
+}
+.btn-primary:hover {
+  background: #1e40af;
+}
+.alert-danger {
+  border-left: 4px solid #dc2626;
+}
