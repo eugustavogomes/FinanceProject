@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import LightRays from '../components/LightRays';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -27,19 +28,30 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="login-page-bg min-h-screen flex items-center justify-center">
-      <div className="card w-full max-w-[400px] mx-auto rounded-xl shadow-lg bg-white">
+    <main className="login-page-bg min-h-screen flex items-center justify-center relative bg-gray-950">
+      <div className="absolute inset-0 z-0">
+        <LightRays
+          raysOrigin="top-center"
+          raysColor="#22c55e"
+          raysSpeed={1}
+          lightSpread={1.2}
+          rayLength={2.5}
+          pulsating={true}
+          fadeDistance={1.0}
+          followMouse={true}
+          mouseInfluence={0.15}
+        />
+      </div>
+      <div className="card w-full max-w-[400px] mx-auto rounded-xl shadow-lg border border-gray-700 py-6 relative z-10 bg-transparent">
         <form
-          className="card-body flex flex-col gap-7 p-8"
+          className="card-body flex flex-col gap-7 p-4"
           onSubmit={handleSubmit}
           noValidate
         >
           <div className="flex justify-center mb-4">
-            <img
-              src="/logo-light.svg"
-              alt="Logo Light"
-              className="h-8 w-auto mb-3 mx-auto block"
-            />
+            <h2 className="text-2xl font-bold text-green-700">
+              Finance Dashboard Login
+            </h2>
           </div>
 
           {error && (
@@ -82,7 +94,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="btn btn-primary h-12 text-base font-semibold flex justify-center bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            className="btn btn-primary p-2 font-semibold flex justify-center bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow-md"
           >
             Entrar
           </button>

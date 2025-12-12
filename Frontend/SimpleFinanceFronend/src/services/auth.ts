@@ -1,4 +1,3 @@
-// Deprecated: use `useAuth` from `src/contexts/AuthContext` instead.
 export function isAuthenticated(): boolean {
   console.warn('services/auth is deprecated. Use useAuth() from contexts/AuthContext instead.')
   return false
