@@ -18,7 +18,7 @@ export default function LoginPage() {
         e.preventDefault();
 
         if (!email || !password) {
-            setError("Preencha ambos os campos");
+            setError("Please fill in both fields");
             return;
         }
 
@@ -26,7 +26,7 @@ export default function LoginPage() {
             login("demo-token");
             navigate("/dashboard");
         } catch {
-            setError("Credenciais inválidas");
+            setError("Invalid credentials");
         }
     }
 
@@ -56,7 +56,7 @@ export default function LoginPage() {
                         <h2 className="text-2xl font-bold text-white">
                             Finance Dashboard Login
                         </h2>
-                        <p className="text-white text-xs">Dashboard financeiro para controle de suas finanças pessoais.</p>
+                        <p className="text-white text-xs">Financial dashboard for managing your personal finances.</p>
                     </div>
 
                     {error && (
@@ -80,7 +80,7 @@ export default function LoginPage() {
                             <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" />
                             <input
                                 type={showPassword ? "text" : "password"}
-                                placeholder="Senha"
+                                placeholder="Password"
                                 className="w-full bg-transparent text-white placeholder-white pl-10 py-2 border-0 border-b-2 border-b-gray-400 focus:border-b-blue-400 focus:ring-0 transition outline-none"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -98,10 +98,10 @@ export default function LoginPage() {
                                 />
                                 <FaCheck className="pointer-events-none absolute inset-0 m-auto w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition" />
                             </span>
-                            <span className="text-white">Lembrar-me</span>
+                            <span className="text-white">Remember me</span>
                         </label>
                         <a href="#" className="text-blue-200 hover:underline">
-                            Esqueceu a senha?
+                            Forgot password?
                         </a>
                     </div>
 
@@ -109,10 +109,10 @@ export default function LoginPage() {
                         type="submit"
                         className="btn btn-primary p-2 font-semibold flex justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow-md"
                     >
-                        Entrar
+                        Login
                     </button>
                 </form>
-                <p className="text-white text-center mt-1 text-xs">Não possui uma conta? <a href="#" className="text-blue-200 hover:underline">Cadastre-se</a></p>
+                <p className="text-white text-center mt-1 text-xs">Don't have an account? <a href="#" className="text-blue-200 hover:underline">Sign up</a></p>
             </div>
         </main>
     );
