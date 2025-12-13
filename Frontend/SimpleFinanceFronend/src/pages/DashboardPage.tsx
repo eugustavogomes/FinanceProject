@@ -3,7 +3,6 @@ import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { SummaryCard } from "../components/SummaryCard";
 import { LatestTransactions } from "./TransactionsPage";
-import { Chart } from "../components/Chart";
 import Header from "../components/Header";
 
 type Transaction = {
@@ -54,7 +53,6 @@ export default function DashboardPage() {
         <SummaryCard label="Despesas" value={summary.despesa} type="despesa" />
       </div>
       <div className="flex gap-8 p-4">
-        <Chart receita={summary.receita} despesa={summary.despesa} />
         <LatestTransactions transactions={transactions} />
       </div>
     </div>
