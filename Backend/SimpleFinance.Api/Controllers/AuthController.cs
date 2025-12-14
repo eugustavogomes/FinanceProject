@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using SimpleFinance.Api.Data;
 using SimpleFinance.Api.Models;
@@ -21,6 +22,7 @@ namespace SimpleFinance.Api.Controllers
             _config = config;
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
         {
@@ -31,7 +33,7 @@ namespace SimpleFinance.Api.Controllers
             {
                 Email = dto.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                // outros campos
+
             };
 
             _db.Users.Add(user);
@@ -39,6 +41,7 @@ namespace SimpleFinance.Api.Controllers
             return Ok();
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
         {

@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage from '../pages/LoginPage'
+import RegisterPage from '../pages/RegisterPage'
 import DashboardPage from '../pages/DashboardPage'
 import TransactionsPage from '../pages/TransactionsPage'
 import CategoriesPage from '../pages/CategoriesPage'
@@ -8,6 +9,7 @@ import ProfilePage from '../pages/ProfilePage'
 import InvestmentsPage from '../pages/InvestmentsPage'
 import { useAuth } from '../contexts/AuthContext'
 import type { ReactNode } from 'react'
+import ForgotPasswordPage from '../pages/ForgotPasswordPage'
 
 type AppRoute = {
     path: string
@@ -17,6 +19,8 @@ type AppRoute = {
 
 const appRoutes: AppRoute[] = [
     { path: '/login', element: <LoginPage /> },
+    { path: '/register', element: <RegisterPage /> },
+    { path: '/forgot-password', element: <ForgotPasswordPage /> },
     { path: '/dashboard', element: <DashboardPage />, protected: true },
     { path: '/transactions', element: <TransactionsPage />, protected: true },
     { path: '/categories', element: <CategoriesPage />, protected: true },

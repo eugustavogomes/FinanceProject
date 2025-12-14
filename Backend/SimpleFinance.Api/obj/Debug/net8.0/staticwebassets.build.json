@@ -1,1 +1,11 @@
-{"Version":1,"Hash":"qPObKD2E6aPOgLvZEXhFbFHpJXjUmJEMQr9kCa/nhbc=","Source":"SimpleFinance.Api","BasePath":"_content/SimpleFinance.Api","Mode":"Default","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
+{
+  "Version": 1,
+  "Hash": "Wyul6Q4myAqmL9hrQ8w4yr/aeUG7EGpXFV1wiGmwOO8=",
+  "Source": "SimpleFinance.Api",
+  "BasePath": "_content/SimpleFinance.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

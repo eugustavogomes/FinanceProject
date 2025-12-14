@@ -1,4 +1,6 @@
 import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const pages = [
   { name: 'Dashboard', path: '/dashboard' },
@@ -10,6 +12,13 @@ const pages = [
 ];
 
 export default function Header() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate('/login');
+  }
 
   return (
     <header className="bg-gradient-to-r from-green-900 via-green-600 to-green-800 py-4 shadow-lg mb-0 px-8">
@@ -21,8 +30,7 @@ export default function Header() {
               key={page.path}
               to={page.path}
               className={({ isActive }) =>
-                `text-white text-sm p-1 border-b-2 transition ${
-                  isActive ? 'border-gray-200 font-semibold' : 'border-transparent hover:border-white/60'
+                `text-white text-sm p-1 border-b-2 transition ${isActive ? 'border-gray-200 font-semibold' : 'border-transparent hover:border-white/60'
                 }`
               }
             >
@@ -31,7 +39,7 @@ export default function Header() {
           ))}
         </nav>
         <button
-          onClick={undefined}
+          onClick={handleLogout}
           className="text-white px-3 py-2 rounded hover:bg-white/10 transition font-semibold text-xs"
         >
           Logout

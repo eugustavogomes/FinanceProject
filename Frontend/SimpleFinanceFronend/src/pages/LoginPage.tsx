@@ -1,20 +1,21 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import LightRays from '../components/LightRays';
 import { MdEmail } from "react-icons/md";
 import { FaLock } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
+import axios from "axios";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const { login } = useAuth();
 
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 
         if (!email || !password) {
@@ -23,10 +24,16 @@ export default function LoginPage() {
         }
 
         try {
-            login("demo-token");
+            setError("");
+            const res = await axios.post("http://localhost:5000/api/auth/login", {
+                email,
+                password
+            });
+            const token = res.data.token;
+            login(token);
             navigate("/dashboard");
-        } catch {
-            setError("Invalid credentials");
+        } catch (err: any) {
+            setError(err?.response?.data || "Login failed");
         }
     }
 
@@ -100,9 +107,9 @@ export default function LoginPage() {
                             </span>
                             <span className="text-white">Remember me</span>
                         </label>
-                        <a href="#" className="text-blue-200 hover:underline">
+                        <Link to="/forgot-password" className="text-blue-200 hover:underline">
                             Forgot password?
-                        </a>
+                        </Link>
                     </div>
 
                     <button
@@ -112,7 +119,7 @@ export default function LoginPage() {
                         Login
                     </button>
                 </form>
-                <p className="text-white text-center mt-1 text-xs">Don't have an account? <a href="#" className="text-blue-200 hover:underline">Sign up</a></p>
+                <p className="text-white text-center mt-1 text-xs">Don't have an account? <Link to="/register" className="text-blue-200 hover:underline">Sign up</Link></p>
             </div>
         </main>
     );
