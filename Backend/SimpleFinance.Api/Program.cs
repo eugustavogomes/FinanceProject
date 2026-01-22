@@ -1,10 +1,20 @@
+
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SimpleFinance.Api.Data;
 using System.Text;
 
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy.WithOrigins("http://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+});
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -38,6 +48,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 var app = builder.Build();
+app.UseCors("AllowFrontend");
 
 if (app.Environment.IsDevelopment())
 {
