@@ -1,6 +1,0 @@
-@SimpleFinance.Api_HostAddress = http://localhost:5022
-
-GET {{SimpleFinance.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
