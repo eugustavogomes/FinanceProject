@@ -13,11 +13,18 @@ export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
   useEffect(() => {
-    setTransactions([
-      { id: 1, categoria: 'Salary', tipo: 'Income', valor: 5000, data: '01/12/2025' },
-      { id: 2, categoria: 'Rent', tipo: 'Expense', valor: 1500, data: '05/12/2025' },
-      { id: 3, categoria: 'Food', tipo: 'Expense', valor: 800, data: '10/12/2025' },
-    ])
+    fetch('http://localhost:5022/api/transactions')
+      .then(res => res.json())
+      .then(data => {
+        const mapped = data.map((tx: any) => ({
+          id: tx.id,
+          categoria: tx.category?.name || '',
+          tipo: tx.type,
+          valor: tx.value,
+          data: new Date(tx.date).toLocaleDateString('pt-BR')
+        }));
+        setTransactions(mapped);
+      });
   }, [])
 
   return (

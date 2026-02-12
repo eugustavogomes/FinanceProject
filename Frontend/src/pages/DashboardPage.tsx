@@ -18,23 +18,22 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState({ balance: 0, income: 0, expense: 0 });
 
   useEffect(() => {
-    setSummary({ balance: 1200, income: 2000, expense: 800 });
-    setTransactions([
-      {
-        id: 1,
-        categoria: "Salary",
-        tipo: "Income",
-        valor: 2000,
-        data: "01/12/2025",
-      },
-      {
-        id: 2,
-        categoria: "Food",
-        tipo: "Expense",
-        valor: 200,
-        data: "04/12/2025",
-      },
-    ]);
+    fetch('http://localhost:5022/api/dashboard/summary')
+      .then(res => res.json())
+      .then(data => setSummary(data));
+
+    fetch('http://localhost:5022/api/transactions')
+      .then(res => res.json())
+      .then(data => {
+        const mapped = data.slice(0, 5).map((tx: any) => ({
+          id: tx.id,
+          categoria: tx.category?.name || '',
+          tipo: tx.type,
+          valor: tx.value,
+          data: new Date(tx.date).toLocaleDateString('pt-BR')
+        }));
+        setTransactions(mapped);
+      });
   }, []);
 
   return (

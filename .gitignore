@@ -1,3 +1,26 @@
+# Adicional: garantir exclusão de pastas de build/debug específicas do projeto
+Backend/bin/
+Backend/obj/
+Backend/Debug/
+Backend/Release/
+Frontend/node_modules/
+coverage/
+*.coverage
+*.TestResults
+*.vscode/
+*.db
+*.sqlite
+*.opendb
+*.VC.db
+*.bak
+*.tmp
+*.swp
+*.cache
+*.log
+TestResults/
+wwwroot/
+Backend/wwwroot/
+Backend/Properties/launchSettings.json
 # Logs
 logs
 *.log
