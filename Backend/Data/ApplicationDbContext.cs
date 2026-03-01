@@ -12,9 +12,13 @@ public class ApplicationDbContext : DbContext
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<Goal> Goals { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
+ protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    base.OnModelCreating(modelBuilder);
 
-    }
+    modelBuilder.Entity<User>().ToTable("users");
+    modelBuilder.Entity<Category>().ToTable("categories");
+    modelBuilder.Entity<Transaction>().ToTable("transactions");
+    modelBuilder.Entity<Goal>().ToTable("goals");
+}
 }

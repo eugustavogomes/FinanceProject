@@ -45,14 +45,6 @@ namespace SimpleFinance.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
         {
-            // Bypass temporário: usuário fixo
-            if (dto.Email == "admin@admin.com" && dto.Password == "admin123")
-            {
-                Console.WriteLine("Bypass de autenticação ativado para admin@admin.com");
-                var fakeUser = new User { Id = Guid.NewGuid(), Email = dto.Email };
-                var token = GenerateJwtToken(fakeUser);
-                return Ok(new { token, bypass = true, message = "Bypass de autenticação ativado" });
-            }
 
             var user = _db.Users.FirstOrDefault(u => u.Email == dto.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
