@@ -4,7 +4,7 @@ import LightRays from '../components/LightRays';
 import { MdEmail } from "react-icons/md";
 import { FaLock, FaUser } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
-import axios from "axios";
+import api from '../services/api';
 
 export default function RegisterPage() {
     const [name, setName] = useState("");
@@ -37,7 +37,7 @@ export default function RegisterPage() {
         try {
             setError("");
             setSuccess("");
-            await axios.post("http://localhost:5022/api/auth/register", {
+            await api.post("/auth/register", {
                 name,
                 email,
                 password

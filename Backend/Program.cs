@@ -29,9 +29,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtKey = jwtBearer.Configuration.PrivateKey;
 if (string.IsNullOrEmpty(jwtKey))
-    throw new Exception("JWT Key está faltando no appsettings.json!");
+    throw new Exception("JWT Key está faltando na variável de ambiente PRIVATE_KEY_JWT!");
 var key = Encoding.ASCII.GetBytes(jwtKey);
 builder.Services.AddAuthentication(options =>
 {

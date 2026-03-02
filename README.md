@@ -4,7 +4,7 @@ A full-stack personal finance app with a .NET 8 Web API backend and a Vite + Rea
 
 ## Tech stack
 
-- Backend: ASP.NET Core 8, Entity Framework Core, SQL Server, JWT auth, Swagger
+- Backend: ASP.NET Core 8, Entity Framework Core, PosgreSQL, JWT auth, Swagger
 - Frontend: React, Vite, TypeScript, Tailwind CSS, Axios
 
 ## Project structure
@@ -16,7 +16,7 @@ A full-stack personal finance app with a .NET 8 Web API backend and a Vite + Rea
 
 - .NET SDK 8.x
 - Node.js 18+ (or 20+)
-- SQL Server (local or container)
+- PosgreSQL (local or container)
 
 ## Configuration
 
@@ -27,7 +27,7 @@ Backend settings live in Backend/appsettings.json:
 
 Frontend API base URL is in Frontend/src/services/api.ts:
 
-- baseURL: http://localhost:5000/api
+- baseURL: http://localhost:5022/api
 
 If you change ports, update the base URL and the CORS origin in Backend/Program.cs (AllowFrontend policy).
 

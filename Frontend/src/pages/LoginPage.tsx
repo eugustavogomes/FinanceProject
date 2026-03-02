@@ -5,7 +5,7 @@ import LightRays from '../components/LightRays';
 import { MdEmail } from "react-icons/md";
 import { FaLock } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
-import axios from "axios";
+import api from '../services/api';
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -25,7 +25,7 @@ export default function LoginPage() {
 
         try {
             setError("");
-            const res = await axios.post("http://localhost:5022/api/auth/login", {
+            const res = await api.post("/auth/login", {
                 email,
                 password
             });

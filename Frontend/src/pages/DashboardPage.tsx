@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { SummaryCard } from "../components/SummaryCard";
 import Header from "../components/Header";
 import FinanceChart from "../components/Chart";
+import api from '../services/api';
 
 type Transaction = {
   id: number;
@@ -18,14 +19,12 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState({ balance: 0, income: 0, expense: 0 });
 
   useEffect(() => {
-    fetch('http://localhost:5022/api/dashboard/summary')
-      .then(res => res.json())
-      .then(data => setSummary(data));
+    api.get('/dashboard/summary')
+      .then(res => setSummary(res.data));
 
-    fetch('http://localhost:5022/api/transactions')
-      .then(res => res.json())
-      .then(data => {
-        const mapped = data.slice(0, 5).map((tx: any) => ({
+    api.get('/transactions')
+      .then(res => {
+        const mapped = res.data.slice(0, 5).map((tx: any) => ({
           id: tx.id,
           categoria: tx.category?.name || '',
           tipo: tx.type,

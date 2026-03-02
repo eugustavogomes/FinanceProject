@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Header from '../components/Header'
+import api from '../services/api';
 
 interface Transaction {
   id: string | number;
@@ -13,10 +14,9 @@ export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
   useEffect(() => {
-    fetch('http://localhost:5022/api/transactions')
-      .then(res => res.json())
-      .then(data => {
-        const mapped = data.map((tx: any) => ({
+    api.get('/transactions')
+      .then(res => {
+        const mapped = res.data.map((tx: any) => ({
           id: tx.id,
           categoria: tx.category?.name || '',
           tipo: tx.type,

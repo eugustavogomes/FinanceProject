@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import LightRays from '../components/LightRays';
 import { MdEmail } from "react-icons/md";
-import axios from "axios";
+import api from '../services/api';
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState("");
@@ -22,7 +22,7 @@ export default function ForgotPasswordPage() {
             setError("");
             setSuccess("");
             setIsLoading(true);
-            await axios.post("http://localhost:5000/api/auth/forgot-password", {
+            await api.post("/auth/forgot-password", {
                 email
             });
             setSuccess("Password reset link sent! Check your email.");
