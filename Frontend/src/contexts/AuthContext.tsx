@@ -10,14 +10,16 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(null)
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem('auth_token'))
 
   function login(newToken: string) {
     setToken(newToken)
+    localStorage.setItem('auth_token', newToken)
   }
 
   function logout() {
     setToken(null)
+    localStorage.removeItem('auth_token')
   }
 
   function isAuthenticated() {
