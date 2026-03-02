@@ -51,4 +51,43 @@ public class TransactionsController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(transaction);
     }
+
+    [HttpPut("{id}")]
+    [Microsoft.AspNetCore.Authorization.Authorize]
+    public async Task<IActionResult> UpdateTransaction(int id, [FromBody] Transaction updated)
+    {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            return Unauthorized("Usuário não autenticado ou id inválido.");
+
+        var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+        if (transaction == null)
+            return NotFound();
+
+        transaction.Value = updated.Value;
+        transaction.Type = updated.Type;
+        transaction.CategoryId = updated.CategoryId;
+        transaction.Date = updated.Date;
+        transaction.Description = updated.Description;
+
+        await _context.SaveChangesAsync();
+        return Ok(transaction);
+    }
+
+    [HttpDelete("{id}")]
+    [Microsoft.AspNetCore.Authorization.Authorize]
+    public async Task<IActionResult> DeleteTransaction(int id)
+    {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            return Unauthorized("Usuário não autenticado ou id inválido.");
+
+        var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+        if (transaction == null)
+            return NotFound();
+
+        _context.Transactions.Remove(transaction);
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
 }
