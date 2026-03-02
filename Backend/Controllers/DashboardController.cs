@@ -19,7 +19,7 @@ public class DashboardController : ControllerBase
         [Microsoft.AspNetCore.Authorization.Authorize]
         public async Task<IActionResult> GetSummary()
         {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type.EndsWith("nameidentifier"));
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier);
             if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
             {
                 return Unauthorized("Usuário não autenticado ou id inválido.");
