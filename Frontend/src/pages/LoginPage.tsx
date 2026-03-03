@@ -5,7 +5,7 @@ import LightRays from '../components/LightRays';
 import { MdEmail } from "react-icons/md";
 import { FaLock } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
-import api from '../services/api';
+import { loginUser } from '../hooks/useLogin';
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -25,10 +25,7 @@ export default function LoginPage() {
 
         try {
             setError("");
-            const res = await api.post("/auth/login", {
-                email,
-                password
-            });
+            const res = await loginUser({ email, password });
             const token = res.data.token;
             login(token);
             navigate("/dashboard");

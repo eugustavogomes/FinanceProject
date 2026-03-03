@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
-import Header from '../components/Header'
+import { useState } from 'react';
+import Header from '../components/Header';
+import { useTransactions } from '../hooks/useTransactions';
 import api from '../services/api';
+import { TRANSACTION_URL } from '../services/endpoints';
 
 interface TransactionForm {
   value: number;
@@ -18,7 +20,7 @@ interface Transaction {
 }
 
 export default function TransactionsPage() {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const { transactions, loading, error } = useTransactions();
   const [form, setForm] = useState<TransactionForm>({
     value: 0,
     type: 'Income',
@@ -28,23 +30,6 @@ export default function TransactionsPage() {
   });
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  function fetchTransactions() {
-    api.get('/transactions')
-      .then(res => {
-        const mapped = res.data.map((tx: any) => ({
-          id: tx.id,
-          categoria: tx.categoryName || '',
-          tipo: tx.type,
-          valor: tx.value,
-          data: new Date(tx.date).toLocaleDateString('pt-BR')
-        }));
-        setTransactions(mapped);
-      });
-  }
-
-  useEffect(() => {
-    fetchTransactions();
-  }, [])
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
@@ -52,15 +37,15 @@ export default function TransactionsPage() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (editingId) {
-      api.put(`/transactions/${editingId}`, form).then(() => {
+      api.put(`${TRANSACTION_URL}/${editingId}`, form).then(() => {
         setEditingId(null);
         setForm({ value: 0, type: 'Income', categoryId: 1, date: new Date().toISOString().slice(0, 10), description: '' });
-        fetchTransactions();
+        window.location.reload();
       });
     } else {
-      api.post('/transactions', form).then(() => {
+      api.post(TRANSACTION_URL, form).then(() => {
         setForm({ value: 0, type: 'Income', categoryId: 1, date: new Date().toISOString().slice(0, 10), description: '' });
-        fetchTransactions();
+        window.location.reload();
       });
     }
   }
@@ -77,8 +62,8 @@ export default function TransactionsPage() {
   }
 
   function handleDelete(id: number | string) {
-    api.delete(`/transactions/${id}`).then(() => {
-      fetchTransactions();
+    api.delete(`${TRANSACTION_URL}/${id}`).then(() => {
+      window.location.reload();
     });
   }
 
@@ -87,6 +72,8 @@ export default function TransactionsPage() {
       <Header />
       <main className="p-6">
         <h2 className="text-2xl font-bold mb-6 text-white">Transactions</h2>
+        {loading && <div className="text-white">Carregando...</div>}
+        {error && <div className="text-red-500">Erro: {error}</div>}
         <form onSubmit={handleSubmit} className="mb-6 flex gap-4 items-end flex-wrap">
           <input
             type="text"

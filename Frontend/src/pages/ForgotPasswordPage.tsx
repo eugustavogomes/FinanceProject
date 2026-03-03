@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import LightRays from '../components/LightRays';
 import { MdEmail } from "react-icons/md";
-import api from '../services/api';
+import { forgotPassword } from '../hooks/useForgotPassword';
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState("");
@@ -22,9 +22,7 @@ export default function ForgotPasswordPage() {
             setError("");
             setSuccess("");
             setIsLoading(true);
-            await api.post("/auth/forgot-password", {
-                email
-            });
+            await forgotPassword({ email });
             setSuccess("Password reset link sent! Check your email.");
             setEmail("");
         } catch (err: any) {

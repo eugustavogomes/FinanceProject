@@ -4,7 +4,7 @@ import LightRays from '../components/LightRays';
 import { MdEmail } from "react-icons/md";
 import { FaLock, FaUser } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
-import api from '../services/api';
+import { registerUser } from '../hooks/useRegister';
 
 export default function RegisterPage() {
     const [name, setName] = useState("");
@@ -37,11 +37,7 @@ export default function RegisterPage() {
         try {
             setError("");
             setSuccess("");
-            await api.post("/auth/register", {
-                name,
-                email,
-                password
-            });
+            await registerUser({ name, email, password });
             setSuccess("Account created successfully! Redirecting to login...");
             setTimeout(() => {
                 navigate("/login");
