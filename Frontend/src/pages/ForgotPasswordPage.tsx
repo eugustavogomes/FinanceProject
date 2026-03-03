@@ -55,10 +55,10 @@ export default function ForgotPasswordPage() {
                     noValidate
                 >
                     <div className="flex flex-col items-center justify-center mb-1">
-                        <h2 className="text-2xl font-bold text-white">
+                        <h2 className="text-2xl font-bold">
                             Forgot Password
                         </h2>
-                        <p className="text-white text-xs text-center mt-2">
+                        <p className="text-xs text-center mt-2">
                             Enter your email address and we'll send you a link to reset your password.
                         </p>
                     </div>

@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { LogOut } from 'lucide-react';
+import logo from '../assets/logo3.png';
 
 const pages = [
   { name: 'Dashboard', path: '/dashboard' },
@@ -21,11 +23,13 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-gradient-to-r from-green-900 via-green-600 to-green-800 py-4 shadow-lg mb-0 px-8">
+    <header className="bg-gradient-to-r from-green-900 via-green-600 to-green-800 py-3 shadow-lg mb-0 px-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-white text-2xl font-bold">Finance Dashboard</h1>
+        <NavLink to="/dashboard" >
+          <img src={logo} alt="Simple Finance Logo" className="w-40 h-5 inline" />
+        </NavLink>
         <nav className="flex gap-4">
-          {pages.map((page) => (
+          {pages.filter(page => page.name !== 'Dashboard').map((page) => (
             <NavLink
               key={page.path}
               to={page.path}
@@ -40,9 +44,10 @@ export default function Header() {
         </nav>
         <button
           onClick={handleLogout}
-          className="text-white px-3 py-2 rounded hover:bg-white/10 transition font-semibold text-xs"
+          className="text-white py-2 rounded hover:bg-white/10 transition font-semibold text-xs flex items-center"
+          title="Logout"
         >
-          Logout
+          <LogOut size={18} />
         </button>
       </div>
     </header>

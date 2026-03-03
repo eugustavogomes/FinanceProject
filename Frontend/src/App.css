@@ -1,15 +1,24 @@
+
+h1, h2, h3, label, .label {
+  color: #111;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #d5d7d0; 
+}
 .login-page-bg {
   background: linear-gradient(110deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
 }
 .card {
   border-radius: 14px;
   background: white;
-  box-shadow: 0 12px 24px rgba(0,0,0,0.07);
+  box-shadow: 0 12px 24px rgba(87, 163, 94, 0.07);
 }
 
 
 .btn-primary {
-  background: #2563eb;
+  background: #5c9f60;
   color: white;
   border: none;
   padding: 0 2.5rem;
@@ -19,7 +28,7 @@
   transition: background .2s;
 }
 .btn-primary:hover {
-  background: #1e40af;
+  background: #4a7f4e;
 }
 .alert-danger {
   border-left: 4px solid #dc2626;

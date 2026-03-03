@@ -49,7 +49,7 @@ export default function LoginPage() {
                     mouseInfluence={0.15}
                 />
             </div>
-            <div className="card w-full max-w-[430px] mx-auto rounded-xl shadow-3xl border border-white/20 py-8 relative z-10 
+            <div className="w-full max-w-[430px] mx-auto rounded-xl shadow-3xl border border-white/20 py-8 relative z-10 
     bg-white/10 backdrop-blur-8xl px-4">
                 <form
                     className="card-body flex flex-col gap-7 p-4"
@@ -57,10 +57,8 @@ export default function LoginPage() {
                     noValidate
                 >
                     <div className="flex flex-col items-center justify-center mb-1">
-                        <h2 className="text-2xl font-bold text-white">
-                            Finance Dashboard Login
-                        </h2>
-                        <p className="text-white text-xs">Financial dashboard for managing your personal finances.</p>
+                        <h2 className="text-2xl font-bold text-white">Finance Dashboard Login</h2>
+                        <p className="text-xs text-gray-300">Financial dashboard for managing your personal finances.</p>
                     </div>
 
                     {error && (
@@ -109,12 +107,14 @@ export default function LoginPage() {
                         </Link>
                     </div>
 
-                    <button
-                        type="submit"
-                        className="btn btn-primary p-2 font-semibold flex justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow-md"
-                    >
-                        Login
-                    </button>
+                    <div className="flex justify-center items-center w-full">
+                        <button
+                            type="submit"
+                            className="btn btn-primary p-2 font-semibold flex justify-center items-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow-md w-full"
+                        >
+                            Login
+                        </button>
+                    </div>
                 </form>
                 <p className="text-white text-center mt-1 text-xs">Don't have an account? <Link to="/register" className="text-blue-200 hover:underline">Sign up</Link></p>
             </div>

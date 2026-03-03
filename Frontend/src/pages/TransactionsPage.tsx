@@ -68,11 +68,11 @@ export default function TransactionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div >
       <Header />
       <main className="p-6">
-        <h2 className="text-2xl font-bold mb-6 text-white">Transactions</h2>
-        {loading && <div className="text-white">Carregando...</div>}
+        <h2 className="text-2xl font-bold mb-6">Transactions</h2>
+        {loading && <div>Carregando...</div>}
         {error && <div className="text-red-500">Erro: {error}</div>}
         <form onSubmit={handleSubmit} className="mb-6 flex gap-4 items-end flex-wrap">
           <input
@@ -81,14 +81,14 @@ export default function TransactionsPage() {
             value={form.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             onChange={undefined}
             placeholder="Valor"
-            className="px-2 h-10 rounded bg-gray-800 text-white placeholder-gray-400 border border-gray-600"
+            className="px-2 h-10 rounded border border-gray-600"
             required
           />
           <select
             name="type"
             value={form.type}
             onChange={handleChange}
-            className="px-2 h-10 rounded bg-gray-800 text-white border border-gray-600"
+            className="px-2 h-10 rounded border border-gray-600"
           >
             <option value="Income">Income</option>
             <option value="Expense">Expense</option>
@@ -98,7 +98,7 @@ export default function TransactionsPage() {
             name="date"
             value={form.date}
             onChange={handleChange}
-            className="px-2 h-10 rounded bg-gray-800 text-white border border-gray-600"
+            className="px-2 h-10 rounded border border-gray-600"
             required
           />
           <input
@@ -107,16 +107,7 @@ export default function TransactionsPage() {
             value={form.description}
             onChange={handleChange}
             placeholder="Descrição"
-            className="px-2 h-10 rounded bg-gray-800 text-white placeholder-gray-400 border border-gray-600"
-          />
-          <input
-            type="text"
-            name="categoryId"
-            value={form.categoryId}
-            onChange={handleChange}
-            placeholder="Categoria"
-            className="px-2 h-10 rounded bg-gray-800 text-white placeholder-gray-400 border border-gray-600"
-            required
+            className="px-2 h-10 rounded border border-gray-600"
           />
           <button type="submit" className="bg-green-600 text-white px-4 h-10 rounded">{editingId ? 'Salvar' : 'Adicionar'}</button>
           {editingId && <button type="button" className="bg-gray-400 text-white px-4 h-10 rounded" onClick={() => { setEditingId(null); setForm({ value: 0, type: 'Income', categoryId: 1, date: new Date().toISOString().slice(0, 10), description: '' }); }}>Cancelar</button>}
@@ -125,11 +116,10 @@ export default function TransactionsPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/10">
-                <th className="text-left py-2 text-white">Category</th>
-                <th className="text-left py-2 text-white">Type</th>
-                <th className="text-right py-2 text-white">Amount</th>
-                <th className="text-right py-2 text-white">Date</th>
-                <th className="text-right py-2 text-white">Ações</th>
+                <th className="text-left py-2 text-gray-600">Category</th>
+                <th className="text-left py-2 text-gray-600">Type</th>
+                <th className="text-right py-2 text-gray-600">Amount</th>
+                <th className="text-right py-2 text-gray-600">Date</th>
               </tr>
             </thead>
             <tbody>

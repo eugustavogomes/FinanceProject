@@ -46,6 +46,11 @@ public class TransactionsController : ControllerBase
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
             return Unauthorized("Usuário não autenticado ou id inválido.");
 
+        if (transaction.Type != "Income" && transaction.Type != "Expense")
+            return BadRequest("O campo 'Type' deve ser 'Income' ou 'Expense'.");
+        if (transaction.Value < 0)
+            return BadRequest("O valor da transação não pode ser negativo.");
+
         transaction.UserId = userId;
         _context.Transactions.Add(transaction);
         await _context.SaveChangesAsync();
@@ -54,11 +59,16 @@ public class TransactionsController : ControllerBase
 
     [HttpPut("{id}")]
     [Microsoft.AspNetCore.Authorization.Authorize]
-    public async Task<IActionResult> UpdateTransaction(int id, [FromBody] Transaction updated)
+    public async Task<IActionResult> UpdateTransaction(Guid id, [FromBody] Transaction updated)
     {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier);
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
             return Unauthorized("Usuário não autenticado ou id inválido.");
+
+        if (updated.Type != "Income" && updated.Type != "Expense")
+            return BadRequest("O campo 'Type' deve ser 'Income' ou 'Expense'.");
+        if (updated.Value < 0)
+            return BadRequest("O valor da transação não pode ser negativo.");
 
         var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
         if (transaction == null)
@@ -76,7 +86,7 @@ public class TransactionsController : ControllerBase
 
     [HttpDelete("{id}")]
     [Microsoft.AspNetCore.Authorization.Authorize]
-    public async Task<IActionResult> DeleteTransaction(int id)
+    public async Task<IActionResult> DeleteTransaction(Guid id)
     {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier);
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))

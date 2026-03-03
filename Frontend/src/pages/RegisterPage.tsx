@@ -70,10 +70,8 @@ export default function RegisterPage() {
                     noValidate
                 >
                     <div className="flex flex-col items-center justify-center mb-1">
-                        <h2 className="text-2xl font-bold text-white">
-                            Create Account
-                        </h2>
-                        <p className="text-white text-xs">Sign up to start managing your finances.</p>
+                        <h2 className="text-2xl font-bold">Create Account</h2>
+                        <p className="text-xs">Sign up to start managing your finances.</p>
                     </div>
 
                     {error && (

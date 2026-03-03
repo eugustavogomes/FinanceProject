@@ -33,7 +33,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div>
       <Header />
       <div className="grid grid-cols-3 gap-4 mb-8 p-4">
         <SummaryCard label="Balance" value={summary.balance} type="balance" />
@@ -43,7 +43,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4">
         <div className="lg:col-span-2">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-semibold text-white">Latest Transactions</h3>
+            <h3 className="text-xl font-semibold">Latest Transactions</h3>
             <button
               className="btn btn-primary px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full transition text-sm"
               onClick={() => navigate('/transactions')}
@@ -57,7 +57,7 @@ export default function DashboardPage() {
               <li key={t.id} className="mb-2 border-b border-white/5 pb-2 last:border-0">
                 <div className="flex justify-between">
                   <div>
-                    <strong className="text-white">{t.categoria}</strong>
+                    <strong>{t.categoria}</strong>
                     <div className="text-sm text-gray-400">{t.data}</div>
                   </div>
                   <div className="font-medium text-gray-300">{t.valor}</div>
