@@ -43,7 +43,7 @@ export default function DashboardPage() {
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold">Latest Transactions</h3>
             <button
-              className="btn btn-primary px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full transition text-sm"
+              className="btn btn-primary p-2 bg-green-600 hover:bg-green-700 text-white rounded-full transition text-md"
               onClick={() => navigate('/transactions')}
             >
               View all

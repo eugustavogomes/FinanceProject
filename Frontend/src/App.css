@@ -18,13 +18,13 @@ body {
 
 
 .btn-primary {
-  background: #5c9f60;
+  background: #4db554;
   color: white;
   border: none;
-  padding: 0 2.5rem;
+  padding: 0 2rem;
   font-size: 1rem;
-  border-radius: 8px;
-  height: 48px;
+  border-radius: 6px;
+  height: 40px;
   transition: background .2s;
 }
 .btn-primary:hover {
