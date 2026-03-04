@@ -72,7 +72,6 @@ export default function CategoriesPage() {
   return (
     <main className="p-6 w-full ">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Categorias</h2>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           className="btn btn-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors flex items-center gap-2"

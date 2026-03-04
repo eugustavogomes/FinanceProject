@@ -47,7 +47,7 @@ export default function ForgotPasswordPage() {
                     mouseInfluence={0.15}
                 />
             </div>
-            <div className="card w-full max-w-[430px] mx-auto rounded-xl shadow-3xl border border-white/20 py-8 relative z-10 
+            <div className="w-full max-w-[430px] mx-auto rounded-xl shadow-3xl border border-white/20 py-8 relative z-10 
     bg-white/10 backdrop-blur-8xl px-4">
                 <form
                     className="card-body flex flex-col gap-7 p-4"
@@ -55,10 +55,10 @@ export default function ForgotPasswordPage() {
                     noValidate
                 >
                     <div className="flex flex-col items-center justify-center mb-1">
-                        <h2 className="text-2xl font-bold">
+                        <h2 className="text-2xl font-bold text-white">
                             Forgot Password
                         </h2>
-                        <p className="text-xs text-center mt-2">
+                        <p className="text-xs text-white/70 text-center mt-2">
                             Enter your email address and we'll send you a link to reset your password.
                         </p>
                     </div>
@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
 
                     <button
                         type="submit"
-                        className="btn btn-primary p-2 font-semibold flex justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 font-semibold flex justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={isLoading}
                     >
                         {isLoading ? "Sending..." : "Send Reset Link"}

@@ -93,7 +93,6 @@ export default function TransactionsPage() {
 
   return (
     <main className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Transactions</h2>
       {loading && <div>Carregando...</div>}
       {error && <div className="text-red-500">Erro: {error}</div>}
       <form onSubmit={handleSubmit} className="mb-6 flex gap-4 items-end flex-wrap">

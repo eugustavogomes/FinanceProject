@@ -110,7 +110,7 @@ export default function LoginPage() {
                     <div className="flex justify-center items-center w-full">
                         <button
                             type="submit"
-                            className="btn btn-primary p-2 font-semibold flex justify-center items-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow-md w-full"
+                            className="p-2 font-semibold flex justify-center items-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow-md w-full"
                         >
                             Login
                         </button>

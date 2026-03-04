@@ -62,7 +62,7 @@ export default function RegisterPage() {
                     mouseInfluence={0.15}
                 />
             </div>
-            <div className="card w-full max-w-[430px] mx-auto rounded-xl shadow-3xl border border-white/20 py-8 relative z-10 
+            <div className="w-full max-w-[430px] mx-auto rounded-xl shadow-3xl border border-white/20 py-8 relative z-10 
     bg-white/10 backdrop-blur-8xl px-4">
                 <form
                     className="card-body flex flex-col gap-7 p-4"
@@ -70,8 +70,8 @@ export default function RegisterPage() {
                     noValidate
                 >
                     <div className="flex flex-col items-center justify-center mb-1">
-                        <h2 className="text-2xl font-bold">Create Account</h2>
-                        <p className="text-xs">Sign up to start managing your finances.</p>
+                        <h2 className="text-2xl font-bold text-white">Create Account</h2>
+                        <p className="text-xs text-white/70">Sign up to start managing your finances.</p>
                     </div>
 
                     {error && (
@@ -146,7 +146,7 @@ export default function RegisterPage() {
 
                     <button
                         type="submit"
-                        className="btn btn-primary p-2 font-semibold flex justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow-md"
+                        className="p-2 font-semibold flex justify-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow-md"
                     >
                         Sign Up
                     </button>
