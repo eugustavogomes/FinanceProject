@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { SummaryCard } from "../components/SummaryCard";
-import Header from "../components/Header";
 import FinanceChart from "../components/Chart";
 import { fetchDashboardSummary, fetchLatestTransactions } from '../hooks/useDashboard';
 
@@ -33,8 +32,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div>
-      <Header />
+    <main className="p-6">
       <div className="grid grid-cols-3 gap-4 mb-8 p-4">
         <SummaryCard label="Balance" value={summary.balance} type="balance" />
         <SummaryCard label="Income" value={summary.income} type="income" />
@@ -71,6 +69,6 @@ export default function DashboardPage() {
           <FinanceChart income={summary.income} expense={summary.expense} />
         </div>
       </div>
-    </div>
+    </main>
   );
 }

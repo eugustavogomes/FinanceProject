@@ -10,6 +10,7 @@ import InvestmentsPage from '../pages/InvestmentsPage'
 import { useAuth } from '../contexts/AuthContext'
 import type { ReactNode } from 'react'
 import ForgotPasswordPage from '../pages/ForgotPasswordPage'
+import MainLayout from '../components/MainLayout'
 
 type AppRoute = {
     path: string
@@ -39,7 +40,11 @@ export default function AppRoutes() {
                     key={r.path}
                     path={r.path}
                     element={
-                        r.protected ? (isAuthenticated() ? r.element : <Navigate to="/login" replace />) : r.element
+                        r.protected
+                            ? (isAuthenticated()
+                                ? <MainLayout>{r.element}</MainLayout>
+                                : <Navigate to="/login" replace />)
+                            : r.element
                     }
                 />
             ))}
