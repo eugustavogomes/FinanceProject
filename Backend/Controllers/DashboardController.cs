@@ -24,8 +24,13 @@ public class DashboardController : ControllerBase
             {
                 return Unauthorized("Usuário não autenticado ou id inválido.");
             }
-            var income = await _context.Transactions.Where(t => t.UserId == userId && t.Type == "Income").SumAsync(t => t.Value);
-            var expense = await _context.Transactions.Where(t => t.UserId == userId && t.Type == "Expense").SumAsync(t => t.Value);
+            var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+            if (!userExists)
+            {
+                return Unauthorized("Usuário não foi encontrado. Faça login novamente.");
+            }
+            var income = await _context.Transactions.Where(t => t.UserId == userId && t.Type == TransactionType.Income).SumAsync(t => t.Value);
+            var expense = await _context.Transactions.Where(t => t.UserId == userId && t.Type == TransactionType.Expense).SumAsync(t => t.Value);
             var balance = income - expense;
             return Ok(new { income, expense, balance });
         }

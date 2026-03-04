@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SimpleFinance.Api.Data;
 using SimpleFinance.Api.Models;
 using SimpleFinance.Api.Dtos;
+using System.Security.Claims;
 
 namespace SimpleFinance.Api.Controllers;
 
@@ -17,15 +18,25 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpGet]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> GetCategories()
     {
-        var categoryCount = await _context.Categories.CountAsync();
-        if (categoryCount == 0)
+        var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException());
+        
+        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+        if (!userExists)
         {
-            await SeedBasicCategories();
+            return Unauthorized("Usuário não foi encontrado. Faça login novamente.");
+        }
+        
+        var userCategoryCount = await _context.Categories.CountAsync(c => c.UserId == userId);
+        if (userCategoryCount == 0)
+        {
+            await SeedBasicCategoriesForUser(userId);
         }
 
         var categories = await _context.Categories
+            .Where(c => c.UserId == userId)
             .OrderBy(c => c.Name)
             .ToListAsync();
         return Ok(categories);
@@ -38,8 +49,16 @@ public class CategoriesController : ControllerBase
         if (string.IsNullOrEmpty(dto.Name))
             return BadRequest("Nome da categoria é obrigatório.");
 
+        var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException());
+
+        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+        if (!userExists)
+        {
+            return Unauthorized("Usuário não foi encontrado. Faça login novamente.");
+        }
+
         var existingCategory = await _context.Categories
-            .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.Name.ToLower());
+            .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.Name.ToLower() && c.UserId == userId);
         
         if (existingCategory != null)
             return BadRequest("Já existe uma categoria com este nome.");
@@ -48,7 +67,7 @@ public class CategoriesController : ControllerBase
         {
             Id = Guid.NewGuid(),
             Name = dto.Name,
-            Type = dto.Type ?? "General"
+            UserId = userId
         };
 
         _context.Categories.Add(category);
@@ -63,18 +82,26 @@ public class CategoriesController : ControllerBase
         if (string.IsNullOrEmpty(dto.Name))
             return BadRequest("Nome da categoria é obrigatório.");
 
-        var category = await _context.Categories.FindAsync(id);
+        var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException());
+        
+        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+        if (!userExists)
+        {
+            return Unauthorized("Usuário não foi encontrado. Faça login novamente.");
+        }
+        
+        var category = await _context.Categories
+            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
         if (category == null)
             return NotFound();
 
         var existingCategory = await _context.Categories
-            .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.Name.ToLower() && c.Id != id);
+            .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.Name.ToLower() && c.Id != id && c.UserId == userId);
         
         if (existingCategory != null)
             return BadRequest("Já existe uma categoria com este nome.");
 
         category.Name = dto.Name;
-        category.Type = dto.Type ?? "General";
 
         await _context.SaveChangesAsync();
         return Ok(category);
@@ -84,14 +111,21 @@ public class CategoriesController : ControllerBase
     [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> DeleteCategory(Guid id)
     {
+        var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException());
+        
+        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+        if (!userExists)
+        {
+            return Unauthorized("Usuário não foi encontrado. Faça login novamente.");
+        }
+        
         var category = await _context.Categories
             .Include(c => c.Transactions)
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
         
         if (category == null)
             return NotFound();
 
-        // Verificar se há transações usando esta categoria
         if (category.Transactions != null && category.Transactions.Any())
         {
             return BadRequest("Não é possível excluir categoria que possui transações associadas.");
@@ -102,24 +136,24 @@ public class CategoriesController : ControllerBase
         return NoContent();
     }
 
-    private async Task SeedBasicCategories()
+    private async Task SeedBasicCategoriesForUser(Guid userId)
     {
         var basicCategories = new List<Category>
         {
-            new Category { Id = Guid.NewGuid(), Name = "Alimentação", Type = "Expense" },
-            new Category { Id = Guid.NewGuid(), Name = "Aluguel", Type = "Expense" },
-            new Category { Id = Guid.NewGuid(), Name = "Transporte", Type = "Expense" },
-            new Category { Id = Guid.NewGuid(), Name = "Conta de Água", Type = "Expense" },
-            new Category { Id = Guid.NewGuid(), Name = "Conta de Luz", Type = "Expense" },
-            new Category { Id = Guid.NewGuid(), Name = "Internet", Type = "Expense" },
-            new Category { Id = Guid.NewGuid(), Name = "Telefone", Type = "Expense" },
-            new Category { Id = Guid.NewGuid(), Name = "Saúde", Type = "Expense" },
-            new Category { Id = Guid.NewGuid(), Name = "Educação", Type = "Expense" },
-            new Category { Id = Guid.NewGuid(), Name = "Lazer", Type = "Expense" },
-            new Category { Id = Guid.NewGuid(), Name = "Salário", Type = "Income" },
-            new Category { Id = Guid.NewGuid(), Name = "Freelance", Type = "Income" },
-            new Category { Id = Guid.NewGuid(), Name = "Investimentos", Type = "Income" },
-            new Category { Id = Guid.NewGuid(), Name = "Outros", Type = "General" }
+            new Category { Id = Guid.NewGuid(), Name = "Alimentação", UserId = userId },
+            new Category { Id = Guid.NewGuid(), Name = "Aluguel", UserId = userId },
+            new Category { Id = Guid.NewGuid(), Name = "Transporte", UserId = userId },
+            new Category { Id = Guid.NewGuid(), Name = "Conta de Água", UserId = userId },
+            new Category { Id = Guid.NewGuid(), Name = "Conta de Luz", UserId = userId },
+            new Category { Id = Guid.NewGuid(), Name = "Internet", UserId = userId },
+            new Category { Id = Guid.NewGuid(), Name = "Telefone", UserId = userId },
+            new Category { Id = Guid.NewGuid(), Name = "Saúde", UserId = userId },
+            new Category { Id = Guid.NewGuid(), Name = "Educação", UserId = userId },
+            new Category { Id = Guid.NewGuid(), Name = "Lazer", UserId = userId },
+            new Category { Id = Guid.NewGuid(), Name = "Salário", UserId = userId },
+            new Category { Id = Guid.NewGuid(), Name = "Freelance", UserId = userId },
+            new Category { Id = Guid.NewGuid(), Name = "Investimentos", UserId = userId },
+            new Category { Id = Guid.NewGuid(), Name = "Outros", UserId = userId }
         };
 
         _context.Categories.AddRange(basicCategories);

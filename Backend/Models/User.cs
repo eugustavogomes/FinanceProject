@@ -5,4 +5,5 @@ public class User {
     public string? Email { get; set; }
     public string? PasswordHash { get; set; }
     public ICollection<Transaction>? Transactions { get; set; }
+    public ICollection<Category>? Categories { get; set; }
 }

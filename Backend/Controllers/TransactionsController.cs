@@ -23,6 +23,12 @@ public class TransactionsController : ControllerBase
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
             return Unauthorized("Usuário não autenticado ou id inválido.");
 
+        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+        if (!userExists)
+        {
+            return Unauthorized("Usuário não foi encontrado. Faça login novamente.");
+        }
+
         var transactions = await _context.Transactions
             .Include(t => t.Category)
             .Where(t => t.UserId == userId)
@@ -46,7 +52,13 @@ public class TransactionsController : ControllerBase
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
             return Unauthorized("Usuário não autenticado ou id inválido.");
 
-        if (transaction.Type != "Income" && transaction.Type != "Expense")
+        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+        if (!userExists)
+        {
+            return Unauthorized("Usuário não foi encontrado. Faça login novamente.");
+        }
+
+        if (transaction.Type != TransactionType.Income && transaction.Type != TransactionType.Expense)
             return BadRequest("O campo 'Type' deve ser 'Income' ou 'Expense'.");
         if (transaction.Value < 0)
             return BadRequest("O valor da transação não pode ser negativo.");
@@ -65,7 +77,13 @@ public class TransactionsController : ControllerBase
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
             return Unauthorized("Usuário não autenticado ou id inválido.");
 
-        if (updated.Type != "Income" && updated.Type != "Expense")
+        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+        if (!userExists)
+        {
+            return Unauthorized("Usuário não foi encontrado. Faça login novamente.");
+        }
+
+        if (updated.Type != TransactionType.Income && updated.Type != TransactionType.Expense)
             return BadRequest("O campo 'Type' deve ser 'Income' ou 'Expense'.");
         if (updated.Value < 0)
             return BadRequest("O valor da transação não pode ser negativo.");
@@ -91,6 +109,12 @@ public class TransactionsController : ControllerBase
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier);
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
             return Unauthorized("Usuário não autenticado ou id inválido.");
+
+        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+        if (!userExists)
+        {
+            return Unauthorized("Usuário não foi encontrado. Faça login novamente.");
+        }
 
         var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
         if (transaction == null)

@@ -1,0 +1,209 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using SimpleFinance.Api.Data;
+
+#nullable disable
+
+namespace SimpleFinance.Api.Migrations
+{
+    [DbContext(typeof(ApplicationDbContext))]
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    {
+        protected override void BuildModel(ModelBuilder modelBuilder)
+        {
+#pragma warning disable 612, 618
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("SimpleFinance.Api.Models.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_categories");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_categories_user_id");
+
+                    b.ToTable("categories", (string)null);
+                });
+
+            modelBuilder.Entity("SimpleFinance.Api.Models.Goal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .HasColumnType("text")
+                        .HasColumnName("category");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer")
+                        .HasColumnName("month");
+
+                    b.Property<decimal>("Target")
+                        .HasColumnType("numeric")
+                        .HasColumnName("target");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer")
+                        .HasColumnName("year");
+
+                    b.HasKey("Id")
+                        .HasName("pk_goals");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_goals_user_id");
+
+                    b.ToTable("goals", (string)null);
+                });
+
+            modelBuilder.Entity("SimpleFinance.Api.Models.Transaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("category_id");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("date");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("type");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("numeric")
+                        .HasColumnName("value");
+
+                    b.HasKey("Id")
+                        .HasName("pk_transactions");
+
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("ix_transactions_category_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_transactions_user_id");
+
+                    b.ToTable("transactions", (string)null);
+                });
+
+            modelBuilder.Entity("SimpleFinance.Api.Models.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text")
+                        .HasColumnName("email");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text")
+                        .HasColumnName("password_hash");
+
+                    b.HasKey("Id")
+                        .HasName("pk_users");
+
+                    b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("SimpleFinance.Api.Models.Category", b =>
+                {
+                    b.HasOne("SimpleFinance.Api.Models.User", "User")
+                        .WithMany("Categories")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_categories_users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SimpleFinance.Api.Models.Goal", b =>
+                {
+                    b.HasOne("SimpleFinance.Api.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_goals_users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SimpleFinance.Api.Models.Transaction", b =>
+                {
+                    b.HasOne("SimpleFinance.Api.Models.Category", "Category")
+                        .WithMany("Transactions")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_transactions_categories_category_id");
+
+                    b.HasOne("SimpleFinance.Api.Models.User", "User")
+                        .WithMany("Transactions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_transactions_users_user_id");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SimpleFinance.Api.Models.Category", b =>
+                {
+                    b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("SimpleFinance.Api.Models.User", b =>
+                {
+                    b.Navigation("Categories");
+
+                    b.Navigation("Transactions");
+                });
+#pragma warning restore 612, 618
+        }
+    }
+}
