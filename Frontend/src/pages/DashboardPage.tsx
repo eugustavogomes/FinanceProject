@@ -33,7 +33,7 @@ export default function DashboardPage() {
 
   return (
     <main className="p-6">
-      <div className="grid grid-cols-3 gap-4 mb-8 p-4">
+      <div className="grid grid-cols-3 gap-4 mb-6 p-4">
         <SummaryCard label="Balance" value={summary.balance} type="balance" />
         <SummaryCard label="Income" value={summary.income} type="income" />
         <SummaryCard label="Expenses" value={summary.expense} type="expense" />

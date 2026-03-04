@@ -16,9 +16,9 @@ export function SummaryCard({ label, value, type }: SummaryCardProps) {
   };
 
   return (
-    <div className="rounded-xl shadow px-4 py-6 backdrop-blur-sm border border-gray-200">
-      <span className="block font-semibold text-lg mb-1 ml-3 label">{label}</span>
-      <span className={`text-3xl ml-3 font-bold ${getGradientClass()}`}>
+    <div className="rounded-xl px-4 py-6 backdrop-blur-sm border border-gray-900/10 bg-white/70">
+      <span className={`block font-semibold text-xl mb-1 ml-3 ${getGradientClass()}`}>{label}</span>
+      <span className="text-3xl ml-3 font-bold text-gray-600">
         {value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
       </span>
     </div>

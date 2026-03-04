@@ -75,7 +75,7 @@ export default function CategoriesPage() {
         <h2 className="text-2xl font-bold text-gray-800">Categorias</h2>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-olive-green text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors flex items-center gap-2"
+          className="btn btn-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors flex items-center gap-2"
           style={{ backgroundColor: '#8fa68e' }}
         >
           <Plus size={16} />
@@ -114,7 +114,7 @@ export default function CategoriesPage() {
             <button
               onClick={handleAdd}
               disabled={!newCategoryName.trim() || actionLoading === 'add'}
-              className="bg-olive-green text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors flex items-center gap-2 disabled:opacity-50"
+              className="btn btn-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors flex items-center gap-2 disabled:opacity-50"
               style={{ backgroundColor: '#8fa68e' }}
             >
               {actionLoading === 'add' ? <Loader size={16} className="animate-spin" /> : <Check size={16} />}
@@ -126,7 +126,7 @@ export default function CategoriesPage() {
                 setNewCategoryName('');
                 setNewCategoryType('');
               }}
-              className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors flex items-center gap-2"
+              className="btn btn-secondary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors flex items-center gap-2"
             >
               <X size={16} />
               Cancelar

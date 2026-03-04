@@ -19,13 +19,13 @@ export default function FinanceChart({ income, expense }: Props) {
     legend: {
       position: 'bottom',
       labels: {
-        colors: '#fff'
+        colors: '#000'
       }
     },
     dataLabels: {
       enabled: true,
       style: {
-        colors: ['#fff']
+        colors: ['#898989']
       }
     },
     plotOptions: {
@@ -36,13 +36,13 @@ export default function FinanceChart({ income, expense }: Props) {
             total: {
               show: true,
               label: 'Total',
-              color: '#fff'
+              color: '#9b9b9b'
             },
             value: {
-              color: '#fff'
+              color: '#9b9b9b'
             },
             name: {
-              color: '#fff'
+              color: '#000'
             }
           }
         }
@@ -54,8 +54,8 @@ export default function FinanceChart({ income, expense }: Props) {
   };
 
   return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 shadow-lg rounded-lg p-4">
-      <h3 className="text-lg font-semibold text-white mb-4">Financial Distribution</h3>
+    <div className="bg-transparent border border-gray-200 rounded-lg p-4">
+      <h3 className="text-xl font-semibold text-gray-700 mb-4">Financial Distribution</h3>
       <ReactApexChart options={options} series={series} type="donut" width="100%" />
     </div>
   );
