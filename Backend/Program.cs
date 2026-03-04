@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using SimpleFinance.Api.Data;
 using jwtBearer;
+using DotNetEnv;
 
 
+Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
