@@ -95,21 +95,21 @@ export default function TransactionsPage() {
     <main className="p-6">
       {loading && <div>Carregando...</div>}
       {error && <div className="text-red-500">Erro: {error}</div>}
-      <form onSubmit={handleSubmit} className="mb-6 flex gap-4 items-end flex-wrap">
+      <form onSubmit={handleSubmit} className="mb-6 flex gap-2 items-end flex-wrap">
         <input
           type="text"
           name="value"
           value={form.value}
           onChange={handleValueChange}
           placeholder="Valor (ex: 100,50)"
-          className="px-2 h-10 rounded border border-gray-600"
+          className="px-2 h-10 rounded border border-gray-200"
           required
         />
         <select
           name="type"
           value={form.type}
           onChange={handleChange}
-          className="px-2 h-10 rounded border border-gray-600"
+          className="px-2 h-10 rounded border border-gray-200"
         >
           <option value="Income">Income</option>
           <option value="Expense">Expense</option>
@@ -118,7 +118,7 @@ export default function TransactionsPage() {
           name="categoryId"
           value={form.categoryId}
           onChange={handleChange}
-          className="px-2 h-10 rounded border border-gray-600"
+          className="px-2 h-10 rounded border border-gray-200"
         >
           <option value="">Selecione uma categoria</option>
           {categories.map(category => (
@@ -132,7 +132,7 @@ export default function TransactionsPage() {
           name="date"
           value={form.date}
           onChange={handleChange}
-          className="px-2 h-10 rounded border border-gray-600"
+          className="px-2 h-10 rounded border border-gray-200"
           required
         />
         <input
@@ -141,12 +141,11 @@ export default function TransactionsPage() {
           value={form.description}
           onChange={handleChange}
           placeholder="Descrição"
-          className="px-2 h-10 rounded border border-gray-600"
+          className="px-2 h-10 rounded border border-gray-200"
         />
         <button 
           type="submit" 
-          className="bg-olive-green text-white px-4 h-10 rounded hover:bg-opacity-90 transition-colors" 
-          style={{ backgroundColor: '#8fa68e' }}
+          className="btn btn-primary px-4 h-10 rounded text-white hover:bg-green-700 transition" 
           disabled={loadingCategories}
         >
           {editingId ? 'Salvar' : 'Adicionar'}
@@ -161,7 +160,7 @@ export default function TransactionsPage() {
           </button>
         }
       </form>
-      <div className="bg-white/5 backdrop-blur-sm rounded-lg shadow-lg border border-white/10 p-4">
+      <div className="bg-white rounded-lg border border-gray-300 p-4">
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/10">

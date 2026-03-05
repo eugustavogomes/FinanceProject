@@ -27,12 +27,12 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`fixed top-0 left-0 h-full z-40 flex flex-col justify-between shadow-lg bg-gradient-to-b from-green-900 via-green-700 to-green-800 transition-all duration-500 ease-in-out ${expanded ? 'w-56' : 'w-20'}`}
+      className={`fixed h-full z-40 flex flex-col justify-between shadow-lg bg-green-800 transition-all duration-700 ease-in-out ${expanded ? 'w-56' : 'w-20'}`}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
     >
       <div>
-        <div className="flex items-center justify-center py-6 min-h-[64px]">
+        <div className="flex items-start justify-center py-6 min-h-[64px]">
           {expanded ? (
             <img src={logo} alt="Simple Finance Logo" className="w-40 transition-all duration-200" />
           ) : (
@@ -52,7 +52,7 @@ export default function Sidebar() {
             </span>
           )}
         </div>
-        <nav className={`flex flex-col gap-2 mt-4 transition-all duration-500 ease-in-out ${expanded ? 'px-4' : 'px-1'}`}>
+        <nav className={`flex flex-col gap-2 mt-2 transition-all duration-600 ease-in-out ${expanded ? 'px-4' : 'px-1'}`}>
           {routes.map(route => (
             <NavLink
               key={route.path}

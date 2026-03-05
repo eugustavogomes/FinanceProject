@@ -75,10 +75,9 @@ export default function CategoriesPage() {
         <button
           onClick={() => setShowAddForm(!showAddForm)}
           className="btn btn-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors flex items-center gap-2"
-          style={{ backgroundColor: '#8fa68e' }}
         >
           <Plus size={16} />
-          {showAddForm ? 'Cancelar' : 'Nova Categoria'}
+          Nova Categoria
         </button>
       </div>
 
@@ -113,8 +112,7 @@ export default function CategoriesPage() {
             <button
               onClick={handleAdd}
               disabled={!newCategoryName.trim() || actionLoading === 'add'}
-              className="btn btn-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors flex items-center gap-2 disabled:opacity-50"
-              style={{ backgroundColor: '#8fa68e' }}
+              className="btn btn-primary text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 cursor-pointer"
             >
               {actionLoading === 'add' ? <Loader size={16} className="animate-spin" /> : <Check size={16} />}
               Adicionar
@@ -125,7 +123,7 @@ export default function CategoriesPage() {
                 setNewCategoryName('');
                 setNewCategoryType('');
               }}
-              className="btn btn-secondary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors flex items-center gap-2"
+              className="px-4 py-2 rounded-lg border border-gray-300 bg-transparent text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-2 cursor-pointer"
             >
               <X size={16} />
               Cancelar
@@ -136,7 +134,7 @@ export default function CategoriesPage() {
 
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         <div className="p-4 border-b">
-          <h3 className="text-lg font-semibold">Suas Categorias</h3>
+          <h3 className="text-xl font-bold">Categorias</h3>
         </div>
 
         {loading ? (

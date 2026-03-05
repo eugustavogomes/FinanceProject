@@ -54,7 +54,7 @@ export default function FinanceChart({ income, expense }: Props) {
   };
 
   return (
-    <div className="bg-transparent border border-gray-200 rounded-lg p-4">
+    <div className="bg-white border border-gray-200 rounded-lg p-4">
       <h3 className="text-xl font-semibold text-gray-700 mb-4">Financial Distribution</h3>
       <ReactApexChart options={options} series={series} type="donut" width="100%" />
     </div>
