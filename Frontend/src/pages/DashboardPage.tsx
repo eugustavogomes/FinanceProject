@@ -1,74 +1,37 @@
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { SummaryCard } from "../components/SummaryCard";
-import FinanceChart from "../components/Chart";
-import { fetchDashboardSummary, fetchLatestTransactions } from '../hooks/useDashboard';
+import DonutChart from "../components/DonutChart";
+import LineChart from "../components/LineChart";
+import { fetchDashboardSummary } from '../hooks/useDashboard';
+import LatestTransactions from "../components/LatestTransactions";
 
-type Transaction = {
-  id: number;
-  categoria: string;
-  tipo: string;
-  valor: number;
-  data: string;
-};
+
 export default function DashboardPage() {
-  const navigate = useNavigate();
-
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [summary, setSummary] = useState({ balance: 0, income: 0, expense: 0 });
 
   useEffect(() => {
     fetchDashboardSummary().then(res => setSummary(res.data));
-    fetchLatestTransactions().then(res => {
-      const mapped = res.data.slice(0, 5).map((tx: any) => ({
-        id: tx.id,
-        categoria: tx.category?.name || '',
-        tipo: tx.type,
-        valor: tx.value,
-        data: new Date(tx.date).toLocaleDateString('pt-BR')
-      }));
-      setTransactions(mapped);
-    });
   }, []);
 
   return (
     <main className="p-6">
-      <div className="grid grid-cols-3 gap-4 mb-6 p-4">
+      <div className="grid grid-cols-3 gap-4 mb-4">
         <SummaryCard label="Balance" value={summary.balance} type="balance" />
         <SummaryCard label="Income" value={summary.income} type="income" />
         <SummaryCard label="Expenses" value={summary.expense} type="expense" />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4">
-        <div className="lg:col-span-2">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-semibold">Latest Transactions</h3>
-            <button
-              className="btn btn-primary p-2 bg-green-600 hover:bg-green-700 text-white rounded-full transition text-md"
-              onClick={() => navigate('/transactions')}
-            >
-              View all
-            </button>
-          </div>
-
-          <ul className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-4">
-            {transactions.map((t) => (
-              <li key={t.id} className="mb-2 border-b border-white/5 pb-2 last:border-0">
-                <div className="flex justify-between">
-                  <div>
-                    <strong>{t.categoria}</strong>
-                    <div className="text-sm text-gray-400">{t.data}</div>
-                  </div>
-                  <div className="font-medium text-gray-300">{t.valor}</div>
-                </div>
-              </li>
-            ))}
-          </ul>
+      <div className="flex w-full gap-4 mb-4">
+        <div className="flex-[1.5]">
+          <LineChart
+            income={[1200, 1100, 1300, 1250, 1400, 1500, 1600, 1550, 1700, 1800, 1750, 1900]}
+            expense={[800, 900, 950, 1000, 1100, 1050, 1200, 1150, 1300, 1350, 1400, 1450]}
+          />
         </div>
-
-        <div>
-          <FinanceChart income={summary.income} expense={summary.expense} />
+        <div className="flex-[1]">
+          <DonutChart income={summary.income} expense={summary.expense} />
         </div>
       </div>
+      <LatestTransactions />
     </main>
   );
 }

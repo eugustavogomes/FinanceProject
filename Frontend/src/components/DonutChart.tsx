@@ -1,12 +1,14 @@
 import ReactApexChart from "react-apexcharts";
 import type { ApexOptions } from "apexcharts";
 
+
+// chage to expenses by category later
 type Props = {
   income: number;
   expense: number;
 }
 
-export default function FinanceChart({ income, expense }: Props) {
+export default function DonutChart({ income, expense }: Props) {
   const series = [income, expense];
 
   const options: ApexOptions = {
@@ -25,7 +27,7 @@ export default function FinanceChart({ income, expense }: Props) {
     dataLabels: {
       enabled: true,
       style: {
-        colors: ['#898989']
+        colors: ['#fff']
       }
     },
     plotOptions: {
@@ -39,7 +41,7 @@ export default function FinanceChart({ income, expense }: Props) {
               color: '#9b9b9b'
             },
             value: {
-              color: '#9b9b9b'
+              color: '#4a4747'
             },
             name: {
               color: '#000'
@@ -54,9 +56,9 @@ export default function FinanceChart({ income, expense }: Props) {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4">
-      <h3 className="text-xl font-semibold text-gray-700 mb-4">Financial Distribution</h3>
-      <ReactApexChart options={options} series={series} type="donut" width="100%" />
+    <div className="bg-white border border-gray-200 rounded-lg h-full">
+      <h3 className="text-xl font-semibold text-gray-700 mb-4 p-3">Expenses by Category</h3>
+      <ReactApexChart options={options} series={series} type="donut"/>
     </div>
   );
 }
