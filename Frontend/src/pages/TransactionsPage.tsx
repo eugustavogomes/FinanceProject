@@ -1,26 +1,37 @@
 import { useState } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
 import { useCategories } from '../hooks/useCategories';
-import api from '../services/api';
-import { TRANSACTION_URL } from '../services/endpoints';
+
+
+type TransactionType = 'Income' | 'Expense';
 
 interface TransactionForm {
   value: string;
-  type: string;
+  type: TransactionType;
   categoryId: string;
   date: string;
   description: string;
 }
 interface Transaction {
   id: string | number;
-  categoria: string;
-  tipo: string;
-  valor: number;
-  data: string;
+  value: number;
+  date: string;
+  description: string;
+  type: number;
+  categoryId: string | null;
+  categoryName: string | null;
 }
 
 export default function TransactionsPage() {
-  const { transactions, loading, error } = useTransactions();
+  const { 
+    transactions, 
+    loading, 
+    error, 
+    createTransaction, 
+    updateTransaction, 
+    deleteTransaction 
+  } = useTransactions();
+  const [formError, setFormError] = useState<string | null>(null);
   const { categories, loading: loadingCategories } = useCategories();
   const [form, setForm] = useState<TransactionForm>({
     value: '',
@@ -41,31 +52,30 @@ export default function TransactionsPage() {
     setForm({ ...form, value: numericValue });
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    
+
     const submitData = {
-      ...form,
-      value: parseFloat(form.value.replace(',', '.')) || 0,
-      categoryId: form.categoryId || null
+      value: parseFloat(form.value),
+      type: form.type === 'Income' ? 0 : 1,
+      categoryId: form.categoryId || null,
+      date: form.date,
+      description: form.description
     };
+
+    setFormError(null);
     
+    let result;
     if (editingId) {
-      api.put(`${TRANSACTION_URL}/${editingId}`, submitData).then(() => {
-        resetForm();
-        window.location.reload();
-      }).catch(err => {
-        console.error('Erro ao editar transação:', err);
-        alert('Erro ao editar transação');
-      });
+      result = await updateTransaction(editingId, submitData);
     } else {
-      api.post(TRANSACTION_URL, submitData).then(() => {
-        resetForm();
-        window.location.reload();
-      }).catch(err => {
-        console.error('Erro ao criar transação:', err);
-        alert('Erro ao criar transação');
-      });
+      result = await createTransaction(submitData);
+    }
+
+    if (result.success) {
+      resetForm();
+    } else {
+      setFormError(result.error);
     }
   }
 
@@ -77,24 +87,30 @@ export default function TransactionsPage() {
   function handleEdit(tx: any) {
     setEditingId(Number(tx.id));
     setForm({
-      value: tx.valor.toString(),
-      type: tx.tipo,
+      value: tx.value.toString(),
+      type: tx.type === 0 ? 'Income' : 'Expense',
       categoryId: tx.categoryId || '',
-      date: new Date(tx.data).toISOString().slice(0, 10),
+      date: new Date(tx.date).toISOString().slice(0, 10),
       description: tx.description || ''
     });
   }
 
-  function handleDelete(id: number | string) {
-    api.delete(`${TRANSACTION_URL}/${id}`).then(() => {
-      window.location.reload();
-    });
+  async function handleDelete(id: number | string) {
+    if (!confirm('Tem certeza que deseja deletar esta transação?')) {
+      return;
+    }
+    
+    const result = await deleteTransaction(id);
+    if (!result.success) {
+      setFormError(result.error);
+    }
   }
 
   return (
     <main className="p-6">
       {loading && <div>Carregando...</div>}
       {error && <div className="text-red-500">Erro: {error}</div>}
+      {formError && <div className="text-red-500 mb-2">{formError}</div>}
       <form onSubmit={handleSubmit} className="mb-6 flex gap-2 items-end flex-wrap">
         <input
           type="text"
@@ -123,7 +139,7 @@ export default function TransactionsPage() {
           <option value="">Selecione uma categoria</option>
           {categories.map(category => (
             <option key={category.id} value={category.id}>
-              {category.name} ({category.type})
+              {category.name} {category.type}
             </option>
           ))}
         </select>
@@ -143,17 +159,17 @@ export default function TransactionsPage() {
           placeholder="Descrição"
           className="px-2 h-10 rounded border border-gray-200"
         />
-        <button 
-          type="submit" 
-          className="btn btn-primary px-4 h-10 rounded text-white hover:bg-green-700 transition" 
+        <button
+          type="submit"
+          className="btn btn-primary px-4 h-10 rounded text-white hover:bg-green-700 transition"
           disabled={loadingCategories}
         >
           {editingId ? 'Salvar' : 'Adicionar'}
         </button>
-        {editingId && 
-          <button 
-            type="button" 
-            className="bg-gray-400 text-white px-4 h-10 rounded hover:bg-opacity-90 transition-colors" 
+        {editingId &&
+          <button
+            type="button"
+            className="bg-gray-400 text-white px-4 h-10 rounded hover:bg-opacity-90 transition-colors"
             onClick={resetForm}
           >
             Cancelar
@@ -173,12 +189,14 @@ export default function TransactionsPage() {
           <tbody>
             {transactions.map(tx => (
               <tr key={tx.id} className="border-b border-white/5 hover:bg-white/5">
-                <td className="py-2 text-gray-300">{tx.categoria}</td>
-                <td className="py-2 text-gray-300">{tx.tipo}</td>
-                <td className={`py-2 text-right font-medium ${tx.tipo === 'Income' ? 'text-green-400' : 'text-red-400'}`}>
-                  {tx.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                <td className="py-2 text-gray-300">{tx.categoryName || 'Sem categoria'}</td>
+                <td className="py-2 text-gray-300">{tx.type === 0 ? 'Income' : 'Expense'}</td>
+                <td className={`py-2 text-right font-medium ${tx.type === 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {typeof tx.value === 'number' && !isNaN(tx.value)
+                    ? tx.value.toFixed(2)
+                    : '--'}
                 </td>
-                <td className="py-2 text-right text-gray-300">{tx.data}</td>
+                <td className="py-2 text-right text-gray-300">{new Date(tx.date).toLocaleDateString('pt-BR')}</td>
                 <td className="py-2 text-right">
                   <button className="bg-blue-500 text-white px-2 py-1 rounded mr-2" onClick={() => handleEdit(tx)}>Editar</button>
                   <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => handleDelete(tx.id)}>Deletar</button>
@@ -203,11 +221,11 @@ export function LatestTransactions({ transactions }: LatestTransactionsProps) {
       <ul>
         {transactions.map(tx => (
           <li key={tx.id} className={`flex justify-between py-2 border-b`}>
-            <span>{tx.categoria} ({tx.tipo})</span>
-            <span className={tx.tipo === 'Income' ? 'text-green-600':'text-red-500'}>
-              {tx.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            <span>{tx.categoryName || 'Sem categoria'} ({tx.type === 0 ? 'Income' : 'Expense'})</span>
+            <span className={tx.type === 0 ? 'text-green-600' : 'text-red-500'}>
+              {tx.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </span>
-            <span>{tx.data}</span>
+            <span>{new Date(tx.date).toLocaleDateString('pt-BR')}</span>
           </li>
         ))}
       </ul>

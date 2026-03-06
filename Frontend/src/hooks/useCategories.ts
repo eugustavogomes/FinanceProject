@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import { CATEGORY_URL } from '../services/endpoints';
 
@@ -12,9 +12,13 @@ export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isFetchingRef = useRef(false);
 
   const fetchCategories = async () => {
+    if (isFetchingRef.current) return;
+    
     try {
+      isFetchingRef.current = true;
       setLoading(true);
       const response = await api.get(CATEGORY_URL);
       setCategories(response.data);
@@ -24,6 +28,7 @@ export function useCategories() {
       setError(err?.response?.data || err.message);
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
   };
 

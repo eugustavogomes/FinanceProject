@@ -1,11 +1,5 @@
 namespace SimpleFinance.Api.Models;
 
-public enum TransactionType
-{
-    Income,
-    Expense
-}
-
 public class Transaction {
     public Guid Id { get; set; }
     public decimal Value { get; set; }

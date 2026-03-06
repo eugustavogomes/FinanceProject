@@ -38,6 +38,7 @@ public class TransactionsController : ControllerBase
                 t.Date,
                 t.Description,
                 t.Type,
+                t.CategoryId,
                 CategoryName = t.Category != null ? t.Category.Name : null
             })
             .ToListAsync();
@@ -62,6 +63,9 @@ public class TransactionsController : ControllerBase
             return BadRequest("O campo 'Type' deve ser 'Income' ou 'Expense'.");
         if (transaction.Value < 0)
             return BadRequest("O valor da transação não pode ser negativo.");
+
+        if (transaction.Date.Kind == DateTimeKind.Unspecified)
+            transaction.Date = DateTime.SpecifyKind(transaction.Date, DateTimeKind.Utc);
 
         transaction.UserId = userId;
         _context.Transactions.Add(transaction);
@@ -91,6 +95,9 @@ public class TransactionsController : ControllerBase
         var transaction = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
         if (transaction == null)
             return NotFound();
+
+        if (updated.Date.Kind == DateTimeKind.Unspecified)
+            updated.Date = DateTime.SpecifyKind(updated.Date, DateTimeKind.Utc);
 
         transaction.Value = updated.Value;
         transaction.Type = updated.Type;
