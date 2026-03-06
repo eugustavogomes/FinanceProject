@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
 import { useCategories } from '../hooks/useCategories';
+import { TrashIcon, Pencil } from 'lucide-react';
 
 
 type TransactionType = 'Income' | 'Expense';
@@ -108,7 +109,7 @@ export default function TransactionsPage() {
 
   return (
     <main className="p-6">
-      {loading && <div>Carregando...</div>}
+      {loading && <div>Loading...</div>}
       {error && <div className="text-red-500">Erro: {error}</div>}
       {formError && <div className="text-red-500 mb-2">{formError}</div>}
       <form onSubmit={handleSubmit} className="mb-6 flex gap-2 items-end flex-wrap">
@@ -156,7 +157,7 @@ export default function TransactionsPage() {
           name="description"
           value={form.description}
           onChange={handleChange}
-          placeholder="Descrição"
+          placeholder="Description"
           className="px-2 h-10 rounded border border-gray-200"
         />
         <button
@@ -164,7 +165,7 @@ export default function TransactionsPage() {
           className="btn btn-primary px-4 h-10 rounded text-white hover:bg-green-700 transition"
           disabled={loadingCategories}
         >
-          {editingId ? 'Salvar' : 'Adicionar'}
+          {editingId ? 'Save' : 'Add Transaction'}
         </button>
         {editingId &&
           <button
@@ -172,7 +173,7 @@ export default function TransactionsPage() {
             className="bg-gray-400 text-white px-4 h-10 rounded hover:bg-opacity-90 transition-colors"
             onClick={resetForm}
           >
-            Cancelar
+            Cancel
           </button>
         }
       </form>
@@ -189,17 +190,21 @@ export default function TransactionsPage() {
           <tbody>
             {transactions.map(tx => (
               <tr key={tx.id} className="border-b border-white/5 hover:bg-white/5">
-                <td className="py-2 text-gray-300">{tx.categoryName || 'Sem categoria'}</td>
-                <td className="py-2 text-gray-300">{tx.type === 0 ? 'Income' : 'Expense'}</td>
+                <td className="py-2 text-gray-700 font-semibold">{tx.categoryName || 'No category'}</td>
+                <td className="py-2 text-gray-500">{tx.type === 0 ? 'Income' : 'Expense'}</td>
                 <td className={`py-2 text-right font-medium ${tx.type === 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {typeof tx.value === 'number' && !isNaN(tx.value)
-                    ? tx.value.toFixed(2)
+                  {typeof tx.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) === 'string'
+                    ? tx.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
                     : '--'}
                 </td>
-                <td className="py-2 text-right text-gray-300">{new Date(tx.date).toLocaleDateString('pt-BR')}</td>
-                <td className="py-2 text-right">
-                  <button className="bg-blue-500 text-white px-2 py-1 rounded mr-2" onClick={() => handleEdit(tx)}>Editar</button>
-                  <button className="bg-red-500 text-white px-2 py-1 rounded" onClick={() => handleDelete(tx.id)}>Deletar</button>
+                <td className="text-right text-gray-500">{new Date(tx.date).toLocaleDateString('pt-BR')}</td>
+                <td className="text-right">
+                  <button className="border border-gray-400 text-white p-2 rounded mr-2" onClick={() => handleEdit(tx)}>
+                    <Pencil className="w-4 h-4 text-gray-400" />
+                  </button>
+                  <button className="border border-red-400 text-white p-2 rounded" onClick={() => handleDelete(tx.id)}>
+                    <TrashIcon className="w-4 h-4 text-red-400" />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -217,11 +222,11 @@ interface LatestTransactionsProps {
 export function LatestTransactions({ transactions }: LatestTransactionsProps) {
   return (
     <div className="flex-1">
-      <h3 className="font-semibold mb-2">Últimos lançamentos</h3>
+      <h3 className="font-semibold mb-2">Latest Transactions</h3>
       <ul>
         {transactions.map(tx => (
           <li key={tx.id} className={`flex justify-between py-2 border-b`}>
-            <span>{tx.categoryName || 'Sem categoria'} ({tx.type === 0 ? 'Income' : 'Expense'})</span>
+            <span>{tx.categoryName || 'No category'} ({tx.type === 0 ? 'Income' : 'Expense'})</span>
             <span className={tx.type === 0 ? 'text-green-600' : 'text-red-500'}>
               {tx.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </span>

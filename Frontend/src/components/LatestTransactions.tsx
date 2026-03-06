@@ -4,9 +4,9 @@ import { fetchLatestTransactions } from "../hooks/useDashboard";
 
 type Transaction = {
     id: number;
-    categoria: string;
-    tipo: string;
-    valor: number;
+    category: string;
+    type: string;
+    value: number;
     data: string;
 };
 
@@ -15,9 +15,9 @@ export default function LatestTransactions() {
         fetchLatestTransactions().then(res => {
             const mapped = res.data.slice(0, 5).map((tx: any) => ({
                 id: tx.id,
-                categoria: tx.category?.name || '',
-                tipo: tx.type,
-                valor: tx.value,
+                category: tx.category?.name || '',
+                type: tx.type,
+                value: tx.value,
                 data: new Date(tx.date).toLocaleDateString('pt-BR')
             }));
             setTransactions(mapped);
@@ -43,10 +43,10 @@ export default function LatestTransactions() {
                     <li key={t.id} className="mb-2 border-b border-white/5 pb-2 last:border-0">
                         <div className="flex justify-between">
                             <div>
-                                <strong>{t.categoria}</strong>
+                                <strong>{t.category}</strong>
                                 <div className="text-sm text-gray-700">{t.data}</div>
                             </div>
-                            <div className="font-medium text-gray-700">{t.valor}</div>
+                            <div className="font-semibold text-gray-700">{t.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
                         </div>
                     </li>
                 ))}
