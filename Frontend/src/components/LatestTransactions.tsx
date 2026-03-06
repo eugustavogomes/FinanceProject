@@ -28,8 +28,8 @@ export default function LatestTransactions() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
 
     return (
-        <div>
-            <div className="flex  items-center mb-4">
+        <div className="p-4 bg-white backdrop-blur-sm rounded-lg border border-gray-200">
+            <div className="flex  items-center mb-4 justify-between">
                 <h3 className="text-xl font-semibold">Latest Transactions</h3>
                 <button
                     className="btn btn-primary p-2 bg-green-600 hover:bg-green-700 text-white rounded-full transition text-md"
@@ -44,9 +44,9 @@ export default function LatestTransactions() {
                         <div className="flex justify-between">
                             <div>
                                 <strong>{t.categoria}</strong>
-                                <div className="text-sm text-gray-400">{t.data}</div>
+                                <div className="text-sm text-gray-700">{t.data}</div>
                             </div>
-                            <div className="font-medium text-gray-300">{t.valor}</div>
+                            <div className="font-medium text-gray-700">{t.valor}</div>
                         </div>
                     </li>
                 ))}

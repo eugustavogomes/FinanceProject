@@ -21,7 +21,7 @@ export default function DashboardPage() {
         <SummaryCard label="Expenses" value={summary.expense} type="expense" />
       </div>
       <div className="flex w-full gap-4 mb-4">
-        <div className="flex-[1.5]">
+        <div className="flex-[4]">
           <LineChart
             income={[1200, 1100, 1300, 1250, 1400, 1500, 1600, 1550, 1700, 1800, 1750, 1900]}
             expense={[800, 900, 950, 1000, 1100, 1050, 1200, 1150, 1300, 1350, 1400, 1450]}
