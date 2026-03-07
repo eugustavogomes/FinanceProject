@@ -80,3 +80,7 @@ export function useTransactions() {
     deleteTransaction
   };
 }
+
+export async function fetchLatestTransactions() {
+  return api.get(TRANSACTION_URL);
+}

@@ -1,31 +1,36 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchLatestTransactions } from "../hooks/useDashboard";
+import { fetchLatestTransactions } from "../hooks/useTransactions";
 
 type Transaction = {
     id: number;
     category: string;
-    type: string;
+    type: number;
     value: number;
-    data: string;
+    date: string;
+    description?: string;
 };
 
 export default function LatestTransactions() {
+    const navigate = useNavigate();
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
+        setLoading(true);
         fetchLatestTransactions().then(res => {
             const mapped = res.data.slice(0, 5).map((tx: any) => ({
                 id: tx.id,
-                category: tx.category?.name || '',
+                category: tx.categoryName || tx.category?.name || 'No category',
                 type: tx.type,
                 value: tx.value,
-                data: new Date(tx.date).toLocaleDateString('pt-BR')
+                date: new Date(tx.date).toLocaleDateString('pt-BR'),
+                description: tx.description || ''
             }));
             setTransactions(mapped);
-
-        });
+            setLoading(false);
+        }).catch(() => setLoading(false));
     }, []);
-    const navigate = useNavigate();
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
 
     return (
         <div className="p-4 bg-white backdrop-blur-sm rounded-lg border border-gray-200">
@@ -39,14 +44,24 @@ export default function LatestTransactions() {
                 </button>
             </div>
             <ul className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-4">
-                {transactions.map((t) => (
-                    <li key={t.id} className="mb-2 border-b border-white/5 pb-2 last:border-0">
-                        <div className="flex justify-between">
-                            <div>
-                                <strong>{t.category}</strong>
-                                <div className="text-sm text-gray-700">{t.data}</div>
+                {loading ? (
+                    <li className="py-6 text-center">
+                        <span className="inline-block animate-spin rounded-full border-4 border-gray-300 border-t-green-500 h-8 w-8"></span>
+                    </li>
+                ) : transactions.map((t) => (
+                    <li key={t.id} className="mb-2 border-white/5 pb-2 border-b last:border-0 cursor-pointer hover:bg-gray-50 rounded transition" onClick={() => navigate(`/transactions/${t.id}`)}>
+                        <div className="grid items-center gap-4" style={{ gridTemplateColumns: '1fr 400px 120px' }}>
+                            <div className="min-w-0">
+                                <strong className="block text-gray-800 truncate">{t.category}</strong>
+                                {t.description && <div className="text-sm text-gray-600 truncate">{t.description}</div>}
                             </div>
-                            <div className="font-semibold text-gray-700">{t.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
+                            <div className="text-sm text-gray-500 text-center">
+                                <div className="truncate">{t.date}</div>
+                                <div className="text-xs text-gray-400">{t.type === 0 ? 'Income' : 'Expense'}</div>
+                            </div>
+                            <div className={`font-semibold text-right ${t.type === 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                {t.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                            </div>
                         </div>
                     </li>
                 ))}
