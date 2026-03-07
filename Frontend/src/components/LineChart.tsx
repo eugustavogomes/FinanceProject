@@ -71,7 +71,7 @@ export default function LineChart({ income, expense, months }: Props) {
     return (
         <div className="bg-white border border-gray-200 rounded-lg">
             <h3 className="text-xl font-semibold text-gray-700 mb-2 p-3">Income and Expenses - Last 12 Months</h3>
-            <ReactApexChart options={options} series={series} type="area" height={250} />
+            <ReactApexChart options={options} series={series} type="area" height={250} width='100%' />
         </div>
     );
 }

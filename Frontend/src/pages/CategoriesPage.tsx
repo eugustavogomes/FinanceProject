@@ -14,7 +14,7 @@ export default function CategoriesPage() {
 
   const handleAdd = async () => {
     if (!newCategoryName.trim()) return;
-    
+
     try {
       setActionLoading('add');
       await createCategory(newCategoryName.trim(), newCategoryType.trim() || undefined);
@@ -30,7 +30,7 @@ export default function CategoriesPage() {
 
   const handleEdit = async (id: string) => {
     if (!editName.trim()) return;
-    
+
     try {
       setActionLoading(`edit-${id}`);
       await updateCategory(id, editName.trim(), editType.trim() || undefined);
@@ -46,7 +46,7 @@ export default function CategoriesPage() {
 
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`Tem certeza que deseja excluir a categoria "${name}"?`)) return;
-    
+
     try {
       setActionLoading(`delete-${id}`);
       await deleteCategory(id);
@@ -91,7 +91,7 @@ export default function CategoriesPage() {
                 type="text"
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
-                placeholder="Ex. Alimentação"
+                placeholder="Ex. Rent"
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-olive-green/20 focus:border-olive-green"
                 style={{ '--olive-green': '#8fa68e' } as any}
               />
