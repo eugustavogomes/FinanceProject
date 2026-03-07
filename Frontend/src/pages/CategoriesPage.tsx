@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pen, Trash2, Check, X, Loader } from 'lucide-react';
+import { Trash2, Check, X, Loader, Pencil } from 'lucide-react';
 import { useCategories } from '../hooks/useCategories';
 import AddCategoryModal from '../components/modals/AddCategoryModal';
 
@@ -52,7 +52,7 @@ export default function CategoriesPage() {
     }
   };
 
-  const startEdit = (category: any) => {
+  const HandleEdit = (category: any) => {
     setEditingId(category.id);
     setEditName(category.name);
     setEditType(category.type || '');
@@ -135,18 +135,18 @@ export default function CategoriesPage() {
                       <h4 className="font-semibold text-gray-800">{category.name}</h4>
                       {category.type && <p className="text-sm text-gray-600">{category.type}</p>}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex">
                       <button
-                        onClick={() => startEdit(category)}
-                        className="text-blue-600 hover:text-blue-800 p-1 rounded"
+                        onClick={() => HandleEdit(category)}
+                        className="shadow-md rounded-xl border border-gray-200 text-gray-400 p-2 hover:bg-gray-400 hover:text-white rounded mr-2"
                         title="Editar categoria"
                       >
-                        <Pen size={16} />
+                        <Pencil size={16} />
                       </button>
                       <button
                         onClick={() => handleDelete(category.id, category.name)}
                         disabled={actionLoading === `delete-${category.id}`}
-                        className="text-red-600 hover:text-red-800 p-1 rounded disabled:opacity-50"
+                        className="shadow-md rounded-xl border border-red-200 hover:bg-red-600 hover:border-white p-2 text-red-400 hover:text-white rounded"
                         title="Excluir categoria"
                       >
                         {actionLoading === `delete-${category.id}` ? (

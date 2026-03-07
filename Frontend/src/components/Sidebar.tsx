@@ -1,6 +1,8 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, ArrowUpDown, ChartNoAxesCombined, User, Target, LayoutList, LogOut } from 'lucide-react';
+import { LayoutDashboard, ArrowUpDown, ChartNoAxesCombined, User, Target, LayoutList } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import ProfileModal from '../components/modals/ProfileModal';
+import { useState } from 'react';
 
 
 const routes = [
@@ -9,15 +11,13 @@ const routes = [
   { name: 'Categories', path: '/categories', icon: <LayoutList size={15} /> },
   { name: 'Goals', path: '/goals', icon: <Target size={15} /> },
   { name: 'Investments', path: '/investments', icon: <ChartNoAxesCombined size={15} /> },
-  { name: 'Profile', path: '/profile', icon: <User size={15} /> },
 ];
 
-import React from 'react';
-
 export default function Sidebar() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   function handleLogout() {
     logout();
@@ -80,17 +80,27 @@ export default function Sidebar() {
           ))}
         </nav>
       </div>
-      <button
-        onClick={handleLogout}
-        className={`flex items-center ${expanded ? 'gap-3 px-4 py-3' : 'justify-center py-3'} text-white rounded-lg mb-6 mx-2 hover:bg-green-700/80 transition-all duration-500 ease-in-out font-semibold text-base`}
-        title="Sair"
+      <div
+        className={`flex items-center ${expanded ? 'gap-3 px-4 py-3' : 'justify-center py-3'} text-white rounded-lg mb-6 mx-2 hover:bg-green-700/80 transition-all duration-500 ease-in-out font-semibold text-base cursor-pointer`}
+        onClick={() => setShowProfile(true)}
+        title="Perfil"
       >
-        <LogOut size={20} />
+        {!expanded && <User size={15} />}
         <span
           className={`transition-opacity duration-500 ease-in-out ${expanded ? 'opacity-100 ml-2' : 'opacity-0 ml-0'}`}
           style={{ width: expanded ? 'auto' : 0, overflow: 'hidden', display: expanded ? 'inline' : 'inline-block' }}
-        >Sair</span>
-      </button>
+        >
+          {expanded ? (user?.email || 'Perfil') : ''}
+        </span>
+      </div>
+
+      <ProfileModal
+        isOpen={showProfile}
+        onClose={() => setShowProfile(false)}
+        email={user?.email}
+        name={user?.name}
+        onLogout={handleLogout}
+      />
     </aside>
   );
 }
