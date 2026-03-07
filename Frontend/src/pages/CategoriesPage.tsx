@@ -1,28 +1,23 @@
 import { useState } from 'react';
-import { Pen, Trash2, Plus, Check, X, Loader } from 'lucide-react';
+import { Pen, Trash2, Check, X, Loader } from 'lucide-react';
 import { useCategories } from '../hooks/useCategories';
+import AddCategoryModal from '../components/modals/AddCategoryModal';
 
 export default function CategoriesPage() {
   const { categories, loading, error, createCategory, updateCategory, deleteCategory } = useCategories();
-  const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [newCategoryType, setNewCategoryType] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
   const [editName, setEditName] = useState('');
   const [editType, setEditType] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  const handleAdd = async () => {
-    if (!newCategoryName.trim()) return;
-
+  const handleAdd = async (name: string, type?: string) => {
     try {
       setActionLoading('add');
-      await createCategory(newCategoryName.trim(), newCategoryType.trim() || undefined);
-      setNewCategoryName('');
-      setNewCategoryType('');
-      setShowAddForm(false);
+      await createCategory(name, type);
+      setShowAddModal(false);
     } catch (error: any) {
-      alert('Erro ao criar categoria: ' + error.message);
+      alert('Erro ao criar categoria: ' + (error.message || String(error)));
     } finally {
       setActionLoading(null);
     }
@@ -71,66 +66,6 @@ export default function CategoriesPage() {
 
   return (
     <main className="p-6 w-full ">
-      <div className="flex justify-between items-center mb-6">
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="btn btn-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors flex items-center gap-2"
-        >
-          <Plus size={16} />
-          Nova Categoria
-        </button>
-      </div>
-
-      {showAddForm && (
-        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm mb-6">
-          <h3 className="text-lg font-semibold mb-4">Nova Categoria</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">nome</label>
-              <input
-                type="text"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                placeholder="Ex. Rent"
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-olive-green/20 focus:border-olive-green"
-                style={{ '--olive-green': '#8fa68e' } as any}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tipo (opcional)</label>
-              <input
-                type="text"
-                value={newCategoryType}
-                onChange={(e) => setNewCategoryType(e.target.value)}
-                placeholder="Ex. Despesa"
-                className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-olive-green/20 focus:border-olive-green"
-                style={{ '--olive-green': '#8fa68e' } as any}
-              />
-            </div>
-          </div>
-          <div className="flex gap-2 mt-4">
-            <button
-              onClick={handleAdd}
-              disabled={!newCategoryName.trim() || actionLoading === 'add'}
-              className="btn btn-primary text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 cursor-pointer"
-            >
-              {actionLoading === 'add' ? <Loader size={16} className="animate-spin" /> : <Check size={16} />}
-              Adicionar
-            </button>
-            <button
-              onClick={() => {
-                setShowAddForm(false);
-                setNewCategoryName('');
-                setNewCategoryType('');
-              }}
-              className="px-4 py-2 rounded-lg border border-gray-300 bg-transparent text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-2 cursor-pointer"
-            >
-              <X size={16} />
-              Cancelar
-            </button>
-          </div>
-        </div>
-      )}
 
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         <div className="p-4 border-b">
@@ -227,7 +162,30 @@ export default function CategoriesPage() {
             ))}
           </div>
         )}
+        <div className="w-full flex justify-end mt-4 p-3">
+          <button
+            className="btn btn-primary"
+            onClick={() => setShowAddModal(true)}
+            aria-label="Add category"
+          >
+            Add Category +
+          </button>
+        </div>
       </div>
+
+      <AddCategoryModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSubmit={async (data) => {
+          const res = { success: true } as { success: boolean; error?: string };
+          try {
+            await handleAdd(data.name, data.type);
+            return res;
+          } catch (err: any) {
+            return { success: false, error: err?.message || String(err) };
+          }
+        }}
+      />
     </main>
   );
 }
