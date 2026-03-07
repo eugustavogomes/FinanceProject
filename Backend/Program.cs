@@ -25,8 +25,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllers();
 
 
-builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();

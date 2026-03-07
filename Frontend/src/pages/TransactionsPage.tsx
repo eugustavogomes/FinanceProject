@@ -2,16 +2,7 @@ import { useState } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
 import { useCategories } from '../hooks/useCategories';
 import { TrashIcon, Pencil } from 'lucide-react';
-
-type TransactionType = 'Income' | 'Expense';
-
-interface TransactionForm {
-  value: string;
-  type: TransactionType;
-  categoryId: string;
-  date: string;
-  description: string;
-}
+import AddTransactionModal from '../components/modals/AddTransactionModal';
 
 export default function TransactionsPage() {
   const {
@@ -24,66 +15,20 @@ export default function TransactionsPage() {
   } = useTransactions();
   const [formError, setFormError] = useState<string | null>(null);
   const { categories, loading: loadingCategories } = useCategories();
-  const [form, setForm] = useState<TransactionForm>({
-    value: '',
-    type: 'Income',
-    categoryId: '',
-    date: new Date().toISOString().slice(0, 10),
-    description: ''
-  });
   const [editingId, setEditingId] = useState<number | null>(null);
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-  }
-
-  function handleValueChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const numericValue = e.target.value.replace(/[^0-9.,]/g, '');
-    setForm({ ...form, value: numericValue });
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    const submitData = {
-      value: parseFloat(form.value),
-      type: form.type === 'Income' ? 0 : 1,
-      categoryId: form.categoryId || null,
-      date: form.date,
-      description: form.description
-    };
-
-    setFormError(null);
-
-    let result;
-    if (editingId) {
-      result = await updateTransaction(editingId, submitData);
-    } else {
-      result = await createTransaction(submitData);
-    }
-
-    if (result.success) {
-      resetForm();
-    } else {
-      setFormError(result.error);
-    }
-  }
-
-  function resetForm() {
-    setEditingId(null);
-    setForm({ value: '', type: 'Income', categoryId: '', date: new Date().toISOString().slice(0, 10), description: '' });
-  }
+  const [showModal, setShowModal] = useState(false);
+  const [modalInitialData, setModalInitialData] = useState<any | undefined>(undefined);
 
   function handleEdit(tx: any) {
     setEditingId(Number(tx.id));
-    setForm({
-      value: tx.value.toString(),
-      type: tx.type === 0 ? 'Income' : 'Expense',
-      categoryId: tx.categoryId || '',
-      date: new Date(tx.date).toISOString().slice(0, 10),
+    setModalInitialData({
+      value: tx.value,
+      type: tx.type,
+      categoryId: tx.categoryId || null,
+      date: tx.date,
       description: tx.description || ''
     });
+    setShowModal(true);
   }
 
   async function handleDelete(id: number | string) {
@@ -101,71 +46,25 @@ export default function TransactionsPage() {
     <main className="p-6">
       {error && <div className="text-red-500">Erro: {error}</div>}
       {formError && <div className="text-red-500 mb-2">{formError}</div>}
-      <form onSubmit={handleSubmit} className="mb-6 flex gap-2 items-end flex-wrap">
-        <input
-          type="text"
-          name="value"
-          value={form.value}
-          onChange={handleValueChange}
-          placeholder="Valor (ex: 100,50)"
-          className="px-2 h-10 rounded border border-gray-200"
-          required
-        />
-        <select
-          name="type"
-          value={form.type}
-          onChange={handleChange}
-          className="px-2 h-10 rounded border border-gray-200"
-        >
-          <option value="Income">Income</option>
-          <option value="Expense">Expense</option>
-        </select>
-        <select
-          name="categoryId"
-          value={form.categoryId}
-          onChange={handleChange}
-          className="px-2 h-10 rounded border border-gray-200"
-        >
-          <option value="">Selecione uma categoria</option>
-          {categories.map(category => (
-            <option key={category.id} value={category.id}>
-              {category.name} {category.type}
-            </option>
-          ))}
-        </select>
-        <input
-          type="date"
-          name="date"
-          value={form.date}
-          onChange={handleChange}
-          className="px-2 h-10 rounded border border-gray-200"
-          required
-        />
-        <input
-          type="text"
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          placeholder="Description"
-          className="px-2 h-10 rounded border border-gray-200"
-        />
-        <button
-          type="submit"
-          className="btn btn-primary px-4 h-10 rounded text-white hover:bg-green-700 transition"
-          disabled={loadingCategories}
-        >
-          {editingId ? 'Save' : 'Add Transaction'}
-        </button>
-        {editingId &&
-          <button
-            type="button"
-            className="bg-gray-400 text-white px-4 h-10 rounded hover:bg-opacity-90 transition-colors"
-            onClick={resetForm}
-          >
-            Cancel
-          </button>
-        }
-      </form>
+      {/* Botão para abrir modal será renderizado abaixo da tabela com um + */}
+      <AddTransactionModal
+        isOpen={showModal}
+        onClose={() => { setShowModal(false); setEditingId(null); setModalInitialData(undefined); }}
+        onSubmit={async (data) => {
+          setFormError(null);
+          let result;
+          if (editingId) {
+            result = await updateTransaction(editingId, data as any);
+          } else {
+            result = await createTransaction(data as any);
+          }
+          if (!result.success) setFormError(result.error);
+          return result;
+        }}
+        initialData={modalInitialData}
+        categories={categories}
+        loadingCategories={loadingCategories}
+      />
       <div className="bg-white rounded-lg border border-gray-300 p-3">
         <table className="w-full">
           <thead>
@@ -209,6 +108,15 @@ export default function TransactionsPage() {
             )}
           </tbody>
         </table>
+        <div className="w-full flex justify-end mt-4">
+          <button
+            className="btn btn-primary "
+            onClick={() => { setEditingId(null); setModalInitialData(undefined); setShowModal(true); }}
+            aria-label="Add transaction"
+          >
+            Add Transaction +
+          </button>
+        </div>
       </div>
     </main>
   )

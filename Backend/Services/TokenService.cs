@@ -19,10 +19,10 @@ public static class TokenService
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: "SimpleFinanceIssuer",
-            audience: "SimpleFinanceAudience",
+            issuer: jwtBearer.Configuration.Issuer ?? "SimpleFinanceIssuer",
+            audience: jwtBearer.Configuration.Audience ?? "SimpleFinanceAudience",
             claims: claims,
-            expires: DateTime.Now.AddDays(7),
+            expires: DateTime.UtcNow.AddDays(7),
             signingCredentials: creds
         );
 
