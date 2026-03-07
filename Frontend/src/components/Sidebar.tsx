@@ -1,7 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, ArrowUpDown, ChartNoAxesCombined, User, Target, LayoutList, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import logo from '../assets/logo3.png';
 
 
 const routes = [
@@ -34,7 +33,18 @@ export default function Sidebar() {
       <div>
         <div className="flex items-start justify-center py-6 min-h-[64px]">
           {expanded ? (
-            <img src={logo} alt="Simple Finance Logo" className="w-40 transition-all duration-200" />
+            <span className="select-none text-white"
+              style={{
+                fontFamily: 'Montserrat, sans-serif',
+                fontSize: '1.3rem',
+                letterSpacing: '0.05em',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <span style={{ fontWeight: 800 }}>Simple</span>
+                <span style={{ fontWeight: 300, marginLeft: 6 }}>Finance</span>
+              </span>
           ) : (
             <span
               className="select-none text-white"

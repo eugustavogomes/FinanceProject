@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { SummaryCard } from "../components/SummaryCard";
-import DonutChart from "../components/DonutChart";
+import IncomeDonutChart from "../components/IncomeDonutChart";
 import LineChart from "../components/LineChart";
 import { fetchDashboardSummary } from '../hooks/useDashboard';
 import LatestTransactions from "../components/LatestTransactions";
 import { useTransactions } from "../hooks/useTransactions";
 import { useCategories } from "../hooks/useCategories";
+import ExpenseDonutChart from "../components/ExpenseDonutChart";
 
 
 export default function DashboardPage() {
@@ -24,15 +25,18 @@ export default function DashboardPage() {
         <SummaryCard label="Income" value={summary.income} type="income" />
         <SummaryCard label="Expenses" value={summary.expense} type="expense" />
       </div>
-      <div className="flex w-full gap-4 mb-4">
-        <div className="flex-[1]">
-          <DonutChart transactions={transactions} categories={categories} />
+      <div className="flex w-full gap-4 mb-4 items-start">
+        <div className="w-[20%] flex flex-col gap-4">
+          <ExpenseDonutChart transactions={transactions} categories={categories} />
         </div>
-        <div className="flex-[4] max-w-[1000px]">
+        <div className="flex-1">
           <LineChart
             income={[1200, 1100, 1300, 1250, 1400, 1500, 1600, 1550, 1700, 1800, 1750, 1900]}
             expense={[800, 900, 950, 1000, 1100, 1050, 1200, 1150, 1300, 1350, 1400, 1450]}
           />
+        </div>
+        <div className="w-[20%] flex flex-col gap-4">
+          <IncomeDonutChart transactions={transactions} categories={categories} />
         </div>
       </div>
       <LatestTransactions />

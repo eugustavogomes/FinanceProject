@@ -6,7 +6,7 @@ type Props = {
   categories: any[];
 };
 
-export default function DonutChart({ transactions = [], categories = [] }: Props) {
+export default function ExpenseDonutChart({ transactions = [], categories = [] }: Props) {
   // Debug logs
   console.log('DonutChart - transactions:', transactions);
   console.log('DonutChart - categories:', categories);

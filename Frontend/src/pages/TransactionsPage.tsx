@@ -14,13 +14,13 @@ interface TransactionForm {
 }
 
 export default function TransactionsPage() {
-  const { 
-    transactions, 
-    loading, 
-    error, 
-    createTransaction, 
-    updateTransaction, 
-    deleteTransaction 
+  const {
+    transactions,
+    loading,
+    error,
+    createTransaction,
+    updateTransaction,
+    deleteTransaction
   } = useTransactions();
   const [formError, setFormError] = useState<string | null>(null);
   const { categories, loading: loadingCategories } = useCategories();
@@ -55,7 +55,7 @@ export default function TransactionsPage() {
     };
 
     setFormError(null);
-    
+
     let result;
     if (editingId) {
       result = await updateTransaction(editingId, submitData);
@@ -90,7 +90,7 @@ export default function TransactionsPage() {
     if (!confirm('Tem certeza que deseja deletar esta transação?')) {
       return;
     }
-    
+
     const result = await deleteTransaction(id);
     if (!result.success) {
       setFormError(result.error);
@@ -173,6 +173,7 @@ export default function TransactionsPage() {
               <th className="text-left py-3 text-gray-600">Category</th>
               <th className="text-left py-3 text-gray-600">Type</th>
               <th className="text-right py-3 text-gray-600">Amount</th>
+              <th className="text-right py-3 text-gray-600">Description</th>
               <th className="text-right py-3 text-gray-600">Date</th>
             </tr>
           </thead>
@@ -188,11 +189,12 @@ export default function TransactionsPage() {
                 <tr key={tx.id} className="border-b border-gray-200 mb-3 last:border-0">
                   <td className="py-3 text-gray-700 font-semibold">{tx.categoryName || 'No category'}</td>
                   <td className="py-3 text-gray-500">{tx.type === 0 ? 'Income' : 'Expense'}</td>
-                  <td className={`py-3 text-right font-semibold ${tx.type === 0 ? 'text-green-400' : 'text-red-400'}`}> 
+                  <td className={`py-3 text-right font-semibold ${tx.type === 0 ? 'text-green-400' : 'text-red-400'}`}>
                     {typeof tx.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) === 'string'
                       ? tx.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
                       : '--'}
                   </td>
+                  <td className="py-3 text-right text-gray-500">{tx.description}</td>
                   <td className="text-right text-gray-500">{new Date(tx.date).toLocaleDateString('pt-BR')}</td>
                   <td className="text-right">
                     <button className="shadow-md rounded-xl border border-gray-200 text-gray-400 p-2 hover:bg-gray-400 hover:text-white rounded mr-2" onClick={() => handleEdit(tx)}>
