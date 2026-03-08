@@ -33,7 +33,7 @@ export default function LatestTransactions() {
     }, []);
 
     return (
-        <div className="p-2 bg-white backdrop-blur-sm rounded-lg border border-gray-200">
+        <div className="p-2 bg-white backdrop-blur-sm rounded-lg border border-gray-200 h-full">
             <ul className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 px-3 py-2">
                 {loading ? (
                     <li className="py-3 text-center">

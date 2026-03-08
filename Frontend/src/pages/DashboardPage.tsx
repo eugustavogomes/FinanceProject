@@ -104,12 +104,16 @@ export default function DashboardPage() {
           <IncomeDonutChart transactions={filteredTransactions} categories={categories} />
         </div>
       </div>
-      <div className="flex mb-2 gap-4">
-        <LatestTransactions />
-        <LineChart
-          income={lineData.incomeSeries}
-          expense={lineData.expenseSeries}
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+        <div className="h-full">
+          <LatestTransactions />
+        </div>
+        <div className="h-full">
+          <LineChart
+            income={lineData.incomeSeries}
+            expense={lineData.expenseSeries}
+          />
+        </div>
       </div>
     </main>
   );
