@@ -29,14 +29,10 @@ export default function ExpenseDonutChart({ transactions = [], categories = [] }
     }
   });
 
-  console.log('DonutChart - categoryExpenseMap:', categoryExpenseMap);
 
   const labels = Object.values(categoryExpenseMap).map(cat => cat.name);
   const series = Object.values(categoryExpenseMap).map(cat => cat.value);
   
-  console.log('DonutChart - labels:', labels);
-  console.log('DonutChart - series:', series);
-
   if (series.length === 0 || series.every(s => s === 0)) {
     return (
       <div className="bg-white border border-gray-200 rounded-lg h-full flex items-center justify-center">
@@ -50,7 +46,7 @@ export default function ExpenseDonutChart({ transactions = [], categories = [] }
 
   const options: ApexOptions = {
     chart: {
-      type: 'donut',
+      type: 'pie',
       background: 'transparent',
     },
     labels,
@@ -67,26 +63,6 @@ export default function ExpenseDonutChart({ transactions = [], categories = [] }
         colors: ['#fff']
       }
     },
-    plotOptions: {
-      pie: {
-        donut: {
-          labels: {
-            show: true,
-            total: {
-              show: true,
-              label: 'Total',
-              color: '#9b9b9b'
-            },
-            value: {
-              color: '#4a4747'
-            },
-            name: {
-              color: '#000'
-            }
-          }
-        }
-      }
-    },
     tooltip: {
       theme: 'dark'
     }
@@ -95,7 +71,7 @@ export default function ExpenseDonutChart({ transactions = [], categories = [] }
   return (
     <div className="bg-white border border-gray-200 rounded-lg h-full">
       <h3 className="text-xl font-semibold text-gray-700 mb-4 p-3">Expenses by Category</h3>
-      <ReactApexChart options={options} series={series} type="donut" height={200} />
+      <ReactApexChart options={options} series={series} type="pie" height={200} />
     </div>
   );
 }

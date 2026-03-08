@@ -40,7 +40,7 @@ export default function IncomeDonutChart({ transactions = [], categories = [] }:
 
   const options: ApexOptions = {
     chart: {
-      type: 'donut',
+      type: 'pie',
       background: 'transparent',
     },
     labels,
@@ -57,26 +57,6 @@ export default function IncomeDonutChart({ transactions = [], categories = [] }:
         colors: ['#fff']
       }
     },
-    plotOptions: {
-      pie: {
-        donut: {
-          labels: {
-            show: true,
-            total: {
-              show: true,
-              label: 'Total',
-              color: '#9b9b9b'
-            },
-            value: {
-              color: '#4a4747'
-            },
-            name: {
-              color: '#000'
-            }
-          }
-        }
-      }
-    },
     tooltip: {
       theme: 'dark'
     }
@@ -85,7 +65,7 @@ export default function IncomeDonutChart({ transactions = [], categories = [] }:
   return (
     <div className="bg-white border border-gray-200 rounded-lg h-full">
       <h3 className="text-xl font-semibold text-gray-700 mb-4 p-3">Income by Category</h3>
-      <ReactApexChart options={options} series={series} type="donut" height={200} />
+      <ReactApexChart options={options} series={series} type="pie" height={200} />
     </div>
   );
 }

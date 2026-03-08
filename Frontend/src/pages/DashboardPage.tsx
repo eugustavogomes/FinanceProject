@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { SummaryCard } from "../components/SummaryCard";
 import IncomeDonutChart from "../components/IncomeDonutChart";
-import LineChart from "../components/LineChart";
+import YearTransactionsChart from "../components/YearTransactionsChart";
 import { fetchDashboardSummary } from '../hooks/useDashboard';
 import LatestTransactions from "../components/LatestTransactions";
 import { useTransactions } from "../hooks/useTransactions";
@@ -109,7 +109,7 @@ export default function DashboardPage() {
           <LatestTransactions />
         </div>
         <div className="h-full">
-          <LineChart
+          <YearTransactionsChart
             income={lineData.incomeSeries}
             expense={lineData.expenseSeries}
           />

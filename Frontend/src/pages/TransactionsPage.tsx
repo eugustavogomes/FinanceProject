@@ -108,16 +108,16 @@ export default function TransactionsPage() {
             )}
           </tbody>
         </table>
-        <div className="w-full flex justify-end mt-4 p-3">
-          <button
-            className="btn btn-primary"
-            onClick={() => { setEditingId(null); setModalInitialData(undefined); setShowModal(true); }}
-            aria-label="Add transaction"
-          >
-            Add Transaction +
-          </button>
-        </div>
       </div>
+
+      <button
+        onClick={() => { setEditingId(null); setModalInitialData(undefined); setShowModal(true); }}
+        aria-label="Add Transaction"
+        title="Add Transaction"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-green-600 text-white shadow-lg flex items-center justify-center text-3xl hover:bg-green-500 transition"
+      >
+        +
+      </button>
     </main>
   )
 }

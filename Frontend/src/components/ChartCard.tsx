@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactApexChart from 'react-apexcharts';
 import type { ApexOptions } from 'apexcharts';
 import { useNavigate } from 'react-router-dom';

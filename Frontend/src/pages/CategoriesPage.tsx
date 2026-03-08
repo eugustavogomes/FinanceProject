@@ -162,15 +162,17 @@ export default function CategoriesPage() {
             ))}
           </div>
         )}
-        <div className="w-full flex justify-end mt-4 p-3">
-          <button
-            className="btn btn-primary"
-            onClick={() => setShowAddModal(true)}
-            aria-label="Add category"
-          >
-            Add Category +
-          </button>
-        </div>
+      </div>
+      <div className='mt-12' >
+
+        <button
+          onClick={() => setShowAddModal(true)}
+          aria-label="Adicionar categoria"
+          title="Adicionar categoria"
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-green-600 text-white shadow-lg flex items-center justify-center text-2xl hover:bg-green-500 transition"
+        >
+          +
+        </button>
       </div>
 
       <AddCategoryModal

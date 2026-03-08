@@ -19,7 +19,7 @@ export default function LatestTransactions() {
     useEffect(() => {
         setLoading(true);
         fetchLatestTransactions().then(res => {
-            const mapped = res.data.slice(0, 5).map((tx: any) => ({
+            const mapped = res.data.slice(0, 6).map((tx: any) => ({
                 id: tx.id,
                 category: tx.categoryName || tx.category?.name || 'No category',
                 type: tx.type,

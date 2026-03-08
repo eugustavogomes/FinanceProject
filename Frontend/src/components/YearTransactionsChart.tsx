@@ -7,7 +7,7 @@ type Props = {
     months?: string[];
 }
 
-export default function LineChart({ income, expense, months }: Props) {
+export default function YearTransactionsChart({ income, expense, months }: Props) {
     const defaultMonths = Array.from({ length: 12 }, (_, i) => {
         const date = new Date();
         date.setMonth(date.getMonth() - (11 - i));
@@ -71,7 +71,7 @@ export default function LineChart({ income, expense, months }: Props) {
     return (
         <div className="bg-white border border-gray-200 rounded-lg p-4 h-full w-max-full">
             <h3 className="text-xl font-semibold text-gray-700 mb-2">Income and Expenses - Last 12 Months</h3>
-            <ReactApexChart options={options} series={series} type="area" height={200}/>
+            <ReactApexChart options={options} series={series} type="area" height={240}/>
         </div>
     );
 }
