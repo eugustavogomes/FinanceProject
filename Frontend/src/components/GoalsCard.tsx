@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 
 interface Props {
   progress?: number; // 0..100
@@ -11,7 +12,7 @@ export default function GoalsCard({ progress = 0, title = 'Goals' }: Props) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 h-full flex flex-col justify-between">
       <div>
-        <h3 className="text-lg font-semibold">{title}</h3>
+        <h3 className="text-xl font-semibold">{title}</h3>
         <div className="mt-2">
           <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
             <div className="bg-green-500 h-3" style={{ width: `${Math.max(0, Math.min(100, progress))}%` }} />
@@ -20,7 +21,10 @@ export default function GoalsCard({ progress = 0, title = 'Goals' }: Props) {
         </div>
       </div>
       <div className="mt-4 flex justify-end">
-        <button onClick={() => navigate('/goals')} className="px-3 py-1 rounded bg-green-600 text-white text-sm">Ver metas</button>
+        <button onClick={() => navigate('/goals')} className="px-2 py-1 rounded bg-green-600 text-white text-sm flex items-center">
+          Goals
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </button>
       </div>
     </div>
   );

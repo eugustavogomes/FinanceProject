@@ -56,6 +56,14 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%
   }
+
+.raleway-400 {
+  font-family: "Raleway", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
 }
 
 @layer base {
@@ -64,5 +72,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Raleway', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
   }
+  
+}
+
+.font-raleway {
+  font-family: 'Raleway', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }

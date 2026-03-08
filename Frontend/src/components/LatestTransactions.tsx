@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchLatestTransactions } from "../hooks/useTransactions";
+import { Eye } from 'lucide-react';
 
 type Transaction = {
     id: number;
@@ -56,11 +57,12 @@ export default function LatestTransactions() {
                     </li>
                 ))}
             </ul>
-            <div className="p-2 flex justify-end">
+            <div className="px-1 flex justify-end">
             <button
-                className="btn btn-primary"
+                className="px-3 py-2 gap-3 rounded-lg bg-green-600 text-white text-sm flex items-center font-semibold"
                 onClick={() => navigate('/transactions')}
             >
+                <Eye className="w-4 h-4" />
                 View all
             </button>
             </div>

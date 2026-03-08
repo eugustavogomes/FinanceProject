@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { User, Settings } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -35,34 +36,36 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
               className={`w-full text-left px-3 py-2 rounded ${tab === 'settings' ? 'bg-white font-semibold shadow-sm' : 'text-gray-600 hover:bg-gray-100'}`}
               onClick={() => setTab('settings')}
             >
-              Configurações
+              <Settings className="w-4 h-4 inline mr-2 text-gray-600" />
+              Settings
             </button>
             <button
               className={`w-full text-left px-3 py-2 rounded ${tab === 'account' ? 'bg-white font-semibold shadow-sm' : 'text-gray-600 hover:bg-gray-100'}`}
               onClick={() => setTab('account')}
             >
-              Conta
+              <User className="w-4 h-4 inline mr-2 text-gray-600" />
+              Account
             </button>
           </div>
 
           <div className="p-6 flex-1">
             {tab === 'settings' ? (
               <div className="space-y-4">
-                <p className="text-sm text-gray-600">Aqui você pode ajustar preferências do aplicativo.</p>
+                <p className="text-sm text-gray-600">Here you can adjust application preferences.</p>
                 <div className="grid grid-cols-1 gap-3">
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
-                      <p className="font-medium">Tema</p>
-                      <p className="text-sm text-gray-500">Selecionar modo claro/escuro</p>
+                      <p className="font-medium">Theme</p>
+                      <p className="text-sm text-gray-500">Select light/dark mode</p>
                     </div>
-                    <button className="px-3 py-1 bg-gray-200 rounded">Alternar</button>
+                    <button className="px-3 py-1 bg-gray-200 rounded">Toggle</button>
                   </div>
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
-                      <p className="font-medium">Notificações</p>
-                      <p className="text-sm text-gray-500">Ativar alertas</p>
+                      <p className="font-medium">Notifications</p>
+                      <p className="text-sm text-gray-500">Enable alerts</p>
                     </div>
-                    <button className="px-3 py-1 bg-gray-200 rounded">Alternar</button>
+                    <button className="px-3 py-1 bg-gray-200 rounded">Toggle</button>
                   </div>
                 </div>
               </div>
@@ -73,7 +76,7 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
                   <p className="font-medium text-gray-800">{userEmail}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Nome</p>
+                  <p className="text-sm text-gray-600">Name</p>
                   <p className="font-medium text-gray-800">{userName}</p>
                 </div>
                 <div className="pt-4 border-t flex justify-end gap-3">

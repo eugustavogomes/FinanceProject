@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
 import { useCategories } from '../hooks/useCategories';
 import { TrashIcon, Pencil } from 'lucide-react';
@@ -18,6 +18,9 @@ export default function TransactionsPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [modalInitialData, setModalInitialData] = useState<any | undefined>(undefined);
+  const [search, setSearch] = useState('');
+  const [filterType, setFilterType] = useState<'all' | 0 | 1>('all');
+  const [filterCategory, setFilterCategory] = useState<string>('all');
 
   function handleEdit(tx: any) {
     setEditingId(Number(tx.id));
@@ -42,72 +45,123 @@ export default function TransactionsPage() {
     }
   }
 
+  const filtered = useMemo(() => {
+    return transactions.filter((tx: any) => {
+      if (filterType !== 'all' && tx.type !== filterType) return false;
+      if (filterCategory !== 'all' && String(tx.categoryId || tx.categoryName) !== String(filterCategory)) return false;
+      if (search && !String(tx.description || tx.categoryName || '').toLowerCase().includes(search.toLowerCase())) return false;
+      return true;
+    });
+  }, [transactions, filterType, filterCategory, search]);
+
   return (
-    <main className="p-6">
+    <main className="p-6 bg-gray-50 min-h-screen">
       {error && <div className="text-red-500">Erro: {error}</div>}
       {formError && <div className="text-red-500 mb-2">{formError}</div>}
-      <AddTransactionModal
-        isOpen={showModal}
-        onClose={() => { setShowModal(false); setEditingId(null); setModalInitialData(undefined); }}
-        onSubmit={async (data) => {
-          setFormError(null);
-          let result;
-          if (editingId) {
-            result = await updateTransaction(editingId, data as any);
-          } else {
-            result = await createTransaction(data as any);
-          }
-          if (!result.success) setFormError(result.error);
-          return result;
-        }}
-        initialData={modalInitialData}
-        categories={categories}
-        loadingCategories={loadingCategories}
-      />
-      <div className="bg-white rounded-lg border border-gray-300">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-gray-300">
-              <th className="text-left py-3 text-gray-600 p-3">Category</th>
-              <th className="text-left py-3 text-gray-600 p-3">Type</th>
-              <th className="text-right py-3 text-gray-600 p-3">Amount</th>
-              <th className="text-right py-3 text-gray-600 p-3">Description</th>
-              <th className="text-right py-3 text-gray-600 p-3">Date</th>
-              <th className="text-right py-3 text-gray-600 p-3">Options</th>
-            </tr>
-          </thead>
-          <tbody >
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="py-6 text-center">
-                  <span className="inline-block animate-spin rounded-full border-4 border-gray-300 border-t-green-500 h-8 w-8"></span>
-                </td>
+
+      <div className="mb-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">Transações</h1>
+          <p className="text-sm text-gray-500">Visão geral das suas transações recentes</p>
+        </div>
+
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por descrição ou categoria"
+            className="w-full md:w-72 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-200"
+          />
+          <select value={filterType} onChange={e => setFilterType((e.target.value === 'all' ? 'all' : Number(e.target.value)) as any)} className="px-3 py-2 border rounded-lg">
+            <option value="all">Todos</option>
+            <option value={0}>Income</option>
+            <option value={1}>Expense</option>
+          </select>
+          <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)} className="px-3 py-2 border rounded-lg">
+            <option value="all">Todas categorias</option>
+            {categories.map((c: any) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100">
+        <AddTransactionModal
+          isOpen={showModal}
+          onClose={() => { setShowModal(false); setEditingId(null); setModalInitialData(undefined); }}
+          onSubmit={async (data) => {
+            setFormError(null);
+            let result;
+            if (editingId) {
+              result = await updateTransaction(editingId, data as any);
+            } else {
+              result = await createTransaction(data as any);
+            }
+            if (!result.success) setFormError(result.error);
+            return result;
+          }}
+          initialData={modalInitialData}
+          categories={categories}
+          loadingCategories={loadingCategories}
+        />
+
+        <div className="overflow-x-auto">
+          <table className="w-full table-auto">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left py-3 text-sm text-gray-600 p-3 sticky top-0 bg-white z-10">Category</th>
+                <th className="text-left py-3 text-sm text-gray-600 p-3 sticky top-0 bg-white z-10">Description</th>
+                <th className="text-left py-3 text-sm text-gray-600 p-3 sticky top-0 bg-white z-10">Date</th>
+                <th className="text-right py-3 text-sm text-gray-600 p-3 sticky top-0 bg-white z-10">Amount</th>
+                <th className="text-right py-3 text-sm text-gray-600 p-3 sticky top-0 bg-white z-10">Actions</th>
               </tr>
-            ) : (
-              transactions.map(tx => (
-                <tr key={tx.id} className="border-b border-gray-200 mb-3 last:border-0">
-                  <td className="p-2 text-gray-700 font-semibold">{tx.categoryName || 'No category'}</td>
-                  <td className="p-2 text-gray-500">{tx.type === 0 ? 'Income' : 'Expense'}</td>
-                  <td className={`p-2 text-right font-semibold ${tx.type === 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {typeof tx.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) === 'string'
-                      ? tx.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-                      : '--'}
-                  </td>
-                  <td className="p-2 text-right text-gray-500">{tx.description}</td>
-                  <td className="p-2 text-right text-gray-500">{new Date(tx.date).toLocaleDateString('pt-BR')}</td>
-                  <td className="p-2 text-right">
-                    <button className="shadow-md rounded-xl border border-gray-200 text-gray-400 p-2 hover:bg-gray-400 hover:text-white rounded mr-2" onClick={() => handleEdit(tx)}>
-                      <Pencil className="w-4 h-4 " />
-                    </button>
-                    <button className="shadow-md rounded-xl border border-red-200 hover:bg-red-600 hover:border-white p-2 text-red-400 hover:text-white rounded" onClick={() => handleDelete(tx.id)}>
-                      <TrashIcon className="w-4 h-4" />
-                    </button>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="p-3"><div className="h-4 bg-gray-200 rounded w-32" /></td>
+                    <td className="p-3"><div className="h-4 bg-gray-200 rounded w-full" /></td>
+                    <td className="p-3"><div className="h-4 bg-gray-200 rounded w-24" /></td>
+                    <td className="p-3 text-right"><div className="h-4 bg-gray-200 rounded w-20 ml-auto" /></td>
+                    <td className="p-3 text-right"><div className="h-8 bg-gray-200 rounded w-20 ml-auto" /></td>
+                  </tr>
+                ))
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="p-8 text-center">
+                    <p className="text-gray-600 mb-4">Nenhuma transação encontrada</p>
+                    <button onClick={() => { setEditingId(null); setModalInitialData(undefined); setShowModal(true); }} className="px-4 py-2 bg-green-600 text-white rounded">Adicionar primeira transação</button>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                filtered.map((tx: any) => (
+                  <tr key={tx.id} className="hover:bg-gray-50 transition">
+                    <td className="p-3 align-top">
+                      <div className="flex items-center gap-3">
+                        <div className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700">{tx.categoryName || tx.category || 'No category'}</div>
+                      </div>
+                    </td>
+                    <td className="p-3 text-sm text-gray-600 max-w-xs truncate">{tx.description || '-'}</td>
+                    <td className="p-3 text-sm text-gray-600">{new Date(tx.date).toLocaleDateString('pt-BR')}</td>
+                    <td className={`p-3 text-right font-semibold ${tx.type === 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {typeof tx.value === 'number' ? tx.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '--'}
+                    </td>
+                    <td className="p-3 text-right">
+                      <button className="shadow-sm rounded-lg border border-gray-200 text-gray-500 p-2 hover:bg-gray-100 mr-2" onClick={() => handleEdit(tx)}>
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button className="shadow-sm rounded-lg border border-red-200 p-2 text-red-500 hover:bg-red-50" onClick={() => handleDelete(tx.id)}>
+                        <TrashIcon className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <button
