@@ -28,7 +28,7 @@ namespace SimpleFinance.Api.Controllers
             var user = _db.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null) return NotFound();
 
-            return Ok(new { id = user.Id, email = user.Email });
+            return Ok(new { id = user.Id, email = user.Email, name = user.Name });
         }
     }
 }

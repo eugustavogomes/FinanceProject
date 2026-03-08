@@ -86,12 +86,15 @@ export default function Sidebar() {
         title="Perfil"
       >
         {!expanded && <User size={15} />}
-        <span
+        <div
           className={`transition-opacity duration-500 ease-in-out ${expanded ? 'opacity-100 ml-2' : 'opacity-0 ml-0'}`}
-          style={{ width: expanded ? 'auto' : 0, overflow: 'hidden', display: expanded ? 'inline' : 'inline-block' }}
+          style={{ width: expanded ? 'auto' : 0, overflow: 'hidden', display: expanded ? 'inline-flex' : 'inline-block' }}
         >
-          {expanded ? (user?.email || 'Perfil') : ''}
-        </span>
+          <div className="flex flex-col min-w-0">
+            <span className="block text-white font-bold text-xl truncate">{expanded ? (user?.name || 'Perfil') : ''}</span>
+            <span className="block text-white text-sm font-normal truncate">{expanded ? (user?.email || '') : ''}</span>
+          </div>
+        </div>
       </div>
 
       <ProfileModal

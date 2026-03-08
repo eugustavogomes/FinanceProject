@@ -7,12 +7,13 @@ namespace jwtBearer.Services;
 
 public static class TokenService
 {
-    public static string GenerateToken(Guid userId, string email)
+    public static string GenerateToken(Guid userId, string email, string? name = null)
     {
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-            new Claim(ClaimTypes.Email, email)
+            new Claim(ClaimTypes.Email, email),
+            new Claim(ClaimTypes.Name, name ?? string.Empty)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtBearer.Configuration.PrivateKey));

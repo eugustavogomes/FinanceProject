@@ -33,6 +33,7 @@ namespace SimpleFinance.Api.Controllers
             var user = new User
             {
                 Email = dto.Email,
+                Name = dto.Name,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
 
             };
@@ -51,7 +52,7 @@ namespace SimpleFinance.Api.Controllers
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
                 return Unauthorized("Credenciais inválidas.");
 
-            var token = TokenService.GenerateToken(user.Id, user.Email);
+            var token = TokenService.GenerateToken(user.Id, user.Email, user.Name);
             return Ok(new { token });
         }
 
