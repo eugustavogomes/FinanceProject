@@ -7,13 +7,10 @@ interface Props {
 }
 
 export default function IncomeDonutChart({ transactions = [], categories = [] }: Props) {
-  // Debug logs
-  // Filtra receitas
   const incomeTransactions = transactions.filter(
     (tx: any) => tx.type === 0 && (tx.categoryId || tx.categoryName)
   );
 
-  // Agrupa receitas por categoria
   const categoryIncomeMap: Record<string, { name: string; value: number }> = {};
   incomeTransactions.forEach((tx: any) => {
     const categoryKey = tx.categoryId || tx.categoryName;
@@ -26,7 +23,6 @@ export default function IncomeDonutChart({ transactions = [], categories = [] }:
     }
   });
 
-  // Extrai labels e series
   const labels = Object.values(categoryIncomeMap).map(cat => cat.name);
   const series = Object.values(categoryIncomeMap).map(cat => cat.value);
 

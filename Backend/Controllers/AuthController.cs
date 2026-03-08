@@ -28,7 +28,7 @@ namespace SimpleFinance.Api.Controllers
         public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
         {
             if (_db.Users.Any(u => u.Email == dto.Email))
-                return BadRequest("Usuário já existe.");
+                return BadRequest("User already exists.");
 
             var user = new User
             {
@@ -50,7 +50,7 @@ namespace SimpleFinance.Api.Controllers
 
             var user = _db.Users.FirstOrDefault(u => u.Email == dto.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-                return Unauthorized("Credenciais inválidas.");
+                return Unauthorized("Invalid credentials.");
 
             var token = TokenService.GenerateToken(user.Id, user.Email, user.Name);
             return Ok(new { token });

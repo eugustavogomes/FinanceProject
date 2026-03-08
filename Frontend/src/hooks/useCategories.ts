@@ -35,7 +35,7 @@ export function useCategories() {
   const createCategory = async (name: string, type?: string) => {
     try {
       const response = await api.post(CATEGORY_URL, { name, type });
-      await fetchCategories(); // Recarregar lista
+      await fetchCategories(); 
       return response.data;
     } catch (err: any) {
       throw new Error(err?.response?.data || err.message);
@@ -45,7 +45,7 @@ export function useCategories() {
   const updateCategory = async (id: string, name: string, type?: string) => {
     try {
       const response = await api.put(`${CATEGORY_URL}/${id}`, { name, type });
-      await fetchCategories(); // Recarregar lista
+      await fetchCategories(); 
       return response.data;
     } catch (err: any) {
       throw new Error(err?.response?.data || err.message);
@@ -55,7 +55,7 @@ export function useCategories() {
   const deleteCategory = async (id: string) => {
     try {
       await api.delete(`${CATEGORY_URL}/${id}`);
-      await fetchCategories(); // Recarregar lista
+      await fetchCategories(); 
     } catch (err: any) {
       throw new Error(err?.response?.data || err.message);
     }
