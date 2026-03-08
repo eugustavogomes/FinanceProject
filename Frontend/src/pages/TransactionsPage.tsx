@@ -1,9 +1,18 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTransactions } from '../hooks/useTransactions';
 import { useCategories } from '../hooks/useCategories';
 import { TrashIcon, Pencil } from 'lucide-react';
 import AddTransactionModal from '../components/modals/AddTransactionModal';
+import ConfirmationModal from '../components/modals/ConfirmationModal';
 
+/**
+ * TransactionsPage
+ * Main page component that displays the user's transactions list with
+ * search and filters, provides actions to add/edit transactions via a modal,
+ * and allows deleting transactions through a confirmation modal.
+ * It reads transactions and categories from hooks and keeps a local
+ * `filtered` state which is updated whenever dependencies change.
+ */
 export default function TransactionsPage() {
   const {
     transactions,
@@ -21,7 +30,19 @@ export default function TransactionsPage() {
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState<'all' | 0 | 1>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
-
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState<{ id: number | string; label?: string } | null>(null);
+  const [filtered, setFiltered] = useState<any[]>([]);
+  
+  /**
+   * handleEdit
+   * Prepare the Add/Edit Transaction modal for editing an existing transaction.
+   * - converts the provided transaction id to number and stores in `editingId`.
+   * - fills `modalInitialData` with the transaction fields so the modal
+   *   form is pre-populated.
+   * - opens the modal by setting `showModal` to true.
+   */
   function handleEdit(tx: any) {
     setEditingId(Number(tx.id));
     setModalInitialData({
@@ -34,24 +55,49 @@ export default function TransactionsPage() {
     setShowModal(true);
   }
 
-  async function handleDelete(id: number | string) {
-    if (!confirm('Tem certeza que deseja deletar esta transação?')) {
-      return;
-    }
-
-    const result = await deleteTransaction(id);
-    if (!result.success) {
-      setFormError(result.error);
-    }
+  /**
+   * openDeleteConfirm
+   * Open the deletion confirmation modal for a specific transaction.
+   * - stores the target id and optional label in `confirmTarget`.
+   * - shows the confirmation modal by setting `confirmOpen` to true.
+   */
+  function openDeleteConfirm(id: number | string, label?: string) {
+    setConfirmTarget({ id, label });
+    setConfirmOpen(true);
   }
 
-  const filtered = useMemo(() => {
-    return transactions.filter((tx: any) => {
+  /**
+   * handleConfirmDelete
+   * Called when the user confirms deletion in the confirmation modal.
+   * - if there is no target, it no-ops.
+   * - sets a loading flag while calling the `deleteTransaction` API from the hook.
+   * - closes the modal and clears the target afterwards.
+   * - if the delete operation fails, stores the error in `formError` so it can
+   *   be displayed to the user.
+   */
+  async function handleConfirmDelete() {
+    if (!confirmTarget) return;
+    setConfirmLoading(true);
+    const result = await deleteTransaction(confirmTarget.id);
+    setConfirmLoading(false);
+    setConfirmOpen(false);
+    setConfirmTarget(null);
+    if (!result.success) setFormError(result.error);
+  }
+
+  /**
+   * Effect to recompute the filtered transactions list.
+   * Runs whenever `transactions`, `filterType`, `filterCategory` or `search` change.
+   * The computed array is stored in the `filtered` state used for rendering.
+   */
+  useEffect(() => {
+    const next = transactions.filter((tx: any) => {
       if (filterType !== 'all' && tx.type !== filterType) return false;
       if (filterCategory !== 'all' && String(tx.categoryId || tx.categoryName) !== String(filterCategory)) return false;
       if (search && !String(tx.description || tx.categoryName || '').toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
+    setFiltered(next);
   }, [transactions, filterType, filterCategory, search]);
 
   return (
@@ -85,27 +131,7 @@ export default function TransactionsPage() {
           </select>
         </div>
       </div>
-
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100">
-        <AddTransactionModal
-          isOpen={showModal}
-          onClose={() => { setShowModal(false); setEditingId(null); setModalInitialData(undefined); }}
-          onSubmit={async (data) => {
-            setFormError(null);
-            let result;
-            if (editingId) {
-              result = await updateTransaction(editingId, data as any);
-            } else {
-              result = await createTransaction(data as any);
-            }
-            if (!result.success) setFormError(result.error);
-            return result;
-          }}
-          initialData={modalInitialData}
-          categories={categories}
-          loadingCategories={loadingCategories}
-        />
-
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
@@ -152,7 +178,7 @@ export default function TransactionsPage() {
                       <button className="shadow-sm rounded-lg border border-gray-200 text-gray-500 p-2 hover:bg-gray-100 mr-2" onClick={() => handleEdit(tx)}>
                         <Pencil className="w-4 h-4" />
                       </button>
-                      <button className="shadow-sm rounded-lg border border-red-200 p-2 text-red-500 hover:bg-red-50" onClick={() => handleDelete(tx.id)}>
+                      <button className="shadow-sm rounded-lg border border-red-200 p-2 text-red-500 hover:bg-red-50" onClick={() => openDeleteConfirm(tx.id, tx.description || tx.category)}>
                         <TrashIcon className="w-4 h-4" />
                       </button>
                     </td>
@@ -163,6 +189,35 @@ export default function TransactionsPage() {
           </table>
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={confirmOpen}
+        title="Delete transaction"
+        message={confirmTarget ? `Are you sure you want to delete ${confirmTarget.label || 'this transaction'}? This action cannot be undone.` : 'Are you sure?'}
+        confirmLabel="Yes, I want to delete"
+        cancelLabel="Cancel"
+        loading={confirmLoading}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => { setConfirmOpen(false); setConfirmTarget(null); }}
+      />
+      <AddTransactionModal
+        isOpen={showModal}
+        onClose={() => { setShowModal(false); setEditingId(null); setModalInitialData(undefined); }}
+        onSubmit={async (data) => {
+          setFormError(null);
+          let result;
+          if (editingId) {
+            result = await updateTransaction(editingId, data as any);
+          } else {
+            result = await createTransaction(data as any);
+          }
+          if (!result.success) setFormError(result.error);
+          return result;
+        }}
+        initialData={modalInitialData}
+        categories={categories}
+        loadingCategories={loadingCategories}
+      />
 
       <button
         onClick={() => { setEditingId(null); setModalInitialData(undefined); setShowModal(true); }}

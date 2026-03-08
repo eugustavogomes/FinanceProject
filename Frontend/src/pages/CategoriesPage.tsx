@@ -1,8 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Trash2, Loader, Pencil } from 'lucide-react';
 import { useCategories } from '../hooks/useCategories';
 import AddCategoryModal from '../components/modals/AddCategoryModal';
+import ConfirmationModal from '../components/modals/ConfirmationModal';
 
+/**
+ * CategoriesPage
+ * Main page component for listing, searching and managing categories.
+ * - Displays categories fetched from `useCategories`.
+ * - Supports searching, inline editing, creating via modal and deletion
+ *   via a confirmation modal.
+ */
 export default function CategoriesPage() {
   const { categories, loading, error, createCategory, updateCategory, deleteCategory } =
     useCategories();
@@ -13,25 +21,44 @@ export default function CategoriesPage() {
   const [editType, setEditType] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState<{ id: string; name?: string } | null>(null);
 
-  const filtered = useMemo(() => {
-    return categories.filter((c: any) =>
+  const [filtered, setFiltered] = useState<any[]>([]);
+
+  useEffect(() => {
+    const next = categories.filter((c: any) =>
       String(c.name || '').toLowerCase().includes(search.toLowerCase())
     );
+    setFiltered(next);
   }, [categories, search]);
 
+  /**
+   * handleAdd
+   * Create a new category using the hook and close the add modal on success.
+   * - sets `actionLoading` to 'add' while the request runs.
+   * - on error, shows an alert with the error message.
+   */
   const handleAdd = async (name: string, type?: string) => {
     try {
       setActionLoading('add');
       await createCategory(name, type);
       setShowAddModal(false);
     } catch (error: any) {
-      alert('Erro ao criar categoria: ' + (error.message || String(error)));
+      alert('Error creating category: ' + (error.message || String(error)));
     } finally {
       setActionLoading(null);
     }
   };
 
+  /**
+   * handleEdit
+   * Save edits for a category with the given id.
+   * - validates the editName is not empty.
+   * - sets a per-action loading flag while calling `updateCategory`.
+   * - clears editing state on success and shows an alert on error.
+   */
   const handleEdit = async (id: string) => {
     if (!editName.trim()) return;
 
@@ -42,31 +69,60 @@ export default function CategoriesPage() {
       setEditName('');
       setEditType('');
     } catch (error: any) {
-      alert('Erro ao editar categoria: ' + (error.message || String(error)));
+      alert('Error editing category: ' + (error.message || String(error)));
     } finally {
       setActionLoading(null);
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Tem certeza que deseja excluir a categoria "${name}"?`)) return;
+  /**
+   * handleDelete
+   * Open the confirmation modal for deleting a category.
+   * - stores the id and name in `confirmTarget` and opens the modal.
+   */
+  function handleDelete(id: string, name: string) {
+    setConfirmTarget({ id, name });
+    setConfirmOpen(true);
+  }
 
+  /**
+   * handleConfirmDelete
+   * Called when the user confirms category deletion.
+   * - shows a loading state and calls `deleteCategory`.
+   * - hides the modal and clears state after completion.
+   * - on error, displays an alert with the error message.
+   */
+  async function handleConfirmDelete() {
+    if (!confirmTarget) return;
+    setConfirmLoading(true);
+    setActionLoading(`delete-${confirmTarget.id}`);
     try {
-      setActionLoading(`delete-${id}`);
-      await deleteCategory(id);
+      await deleteCategory(confirmTarget.id);
     } catch (error: any) {
-      alert('Erro ao excluir categoria: ' + (error.message || String(error)));
+      alert('Error deleting category: ' + (error.message || String(error)));
     } finally {
       setActionLoading(null);
+      setConfirmLoading(false);
+      setConfirmOpen(false);
+      setConfirmTarget(null);
     }
-  };
+  }
 
+  /**
+   * startEdit
+   * Begin inline editing for the given category by populating edit fields
+   * and setting `editingId`.
+   */
   const startEdit = (category: any) => {
     setEditingId(category.id);
     setEditName(category.name);
     setEditType(category.type || '');
   };
 
+  /**
+   * cancelEdit
+   * Cancel inline editing and clear temporary edit state.
+   */
   const cancelEdit = () => {
     setEditingId(null);
     setEditName('');
@@ -77,15 +133,15 @@ export default function CategoriesPage() {
     <main className="p-6 bg-gray-50 min-h-screen">
       <div className="mb-4 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Categorias</h1>
-          <p className="text-sm text-gray-500">Gerencie suas categorias</p>
+          <h1 className="text-2xl font-bold">Categories</h1>
+          <p className="text-sm text-gray-500">Manage your categories</p>
         </div>
 
         <div className="flex items-center gap-2 w-full md:w-auto">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar categorias"
+            placeholder="Search categories"
             className="w-full md:w-64 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-200"
           />
         </div>
@@ -103,16 +159,16 @@ export default function CategoriesPage() {
           </div>
         ) : error ? (
           <div className="p-8 text-center">
-            <p className="text-red-600">Erro ao carregar: {String(error)}</p>
+            <p className="text-red-600">Error loading: {String(error)}</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-8 text-center">
-            <p className="text-gray-600">Nenhuma categoria encontrada</p>
+            <p className="text-gray-600">No categories found</p>
             <button
               onClick={() => setShowAddModal(true)}
               className="mt-4 px-4 py-2 bg-green-600 text-white rounded"
             >
-              Adicionar categoria
+              Add category
             </button>
           </div>
         ) : (
@@ -132,7 +188,7 @@ export default function CategoriesPage() {
                         type="text"
                         value={editType}
                         onChange={(e) => setEditType(e.target.value)}
-                        placeholder="Tipo (opcional)"
+                        placeholder="Type (optional)"
                         className="w-full p-2 border border-gray-300 rounded-lg"
                       />
                       <div className="flex gap-2">
@@ -144,12 +200,12 @@ export default function CategoriesPage() {
                           {actionLoading === `edit-${category.id}` ? (
                             <Loader className="animate-spin" />
                           ) : (
-                            'Salvar'
+                            'Save'
                           )}
                         </button>
 
                         <button onClick={cancelEdit} className="px-3 py-1 bg-gray-200 rounded">
-                          Cancelar
+                          Cancel
                         </button>
                       </div>
                     </div>
@@ -191,8 +247,8 @@ export default function CategoriesPage() {
 
       <button
         onClick={() => setShowAddModal(true)}
-        aria-label="Adicionar categoria"
-        title="Adicionar categoria"
+        aria-label="Add category"
+        title="Add category"
         className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-green-600 text-white shadow-lg flex items-center justify-center text-2xl hover:bg-green-500 transition"
       >
         +
@@ -209,6 +265,16 @@ export default function CategoriesPage() {
             return { success: false, error: err?.message || String(err) };
           }
         }}
+      />
+      <ConfirmationModal
+        isOpen={confirmOpen}
+        title="Delete category"
+        message={confirmTarget ? `Are you sure you want to delete "${confirmTarget.name}"? This action cannot be undone.` : 'Are you sure?'}
+        confirmLabel="Yes, I want to delete"
+        cancelLabel="Cancel"
+        loading={confirmLoading}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => { setConfirmOpen(false); setConfirmTarget(null); }}
       />
     </main>
   );
