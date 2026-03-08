@@ -80,17 +80,17 @@ export default function DashboardPage() {
 
 
   return (
-    <main className="p-6">
-      <div className="mb-4 flex items-center justify-center">
+    <main className="p-4">
+      <div className="mb-3 flex items-center justify-center">
       <MonthNavbar selected={selectedMonth} onChange={(m) => setSelectedMonth(m)} />
       </div>
-      <div className="grid grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-4 gap-4 mb-3">
         <SummaryCard label="Saldo Atual" value={summary.balance} type="balance" />
         <SummaryCard label="Income" value={summary.income} type="income" />
         <SummaryCard label="Expenses" value={summary.expense} type="expense" />
         <SummaryCard label="Transações" value={transactions.length} type="" />
       </div>
-      <div className="grid grid-cols-4 gap-4 mb-4">
+      <div className="grid grid-cols-4 gap-4 mb-3">
         <div>
           <ExpenseDonutChart transactions={filteredTransactions} categories={categories} />
         </div>

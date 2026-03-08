@@ -85,7 +85,7 @@ export default function IncomeDonutChart({ transactions = [], categories = [] }:
   return (
     <div className="bg-white border border-gray-200 rounded-lg h-full">
       <h3 className="text-xl font-semibold text-gray-700 mb-4 p-3">Income by Category</h3>
-      <ReactApexChart options={options} series={series} type="donut" height={250} />
+      <ReactApexChart options={options} series={series} type="donut" height={200} />
     </div>
   );
 }
