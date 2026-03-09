@@ -8,7 +8,7 @@ import { FaCheck } from "react-icons/fa";
 import { loginUser } from '../hooks/useLogin';
 
 export default function LoginPage() {
-    const [email, setEmail] = useState("");
+    const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword] = useState(false);
     const [error, setError] = useState("");
@@ -18,14 +18,14 @@ export default function LoginPage() {
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 
-        if (!email || !password) {
+        if (!identifier || !password) {
             setError("Please fill in both fields");
             return;
         }
 
         try {
             setError("");
-            const res = await loginUser({ email, password });
+            const res = await loginUser({ identifier, password });
             const token = res.data.token;
             login(token);
             navigate("/dashboard");
@@ -71,11 +71,11 @@ export default function LoginPage() {
                         <div className="relative">
                             <MdEmail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" />
                             <input
-                                type="email"
-                                placeholder="Email"
+                                type="text"
+                                placeholder="Email or Username"
                                 className="w-full bg-transparent text-white placeholder-white pl-10 py-2 border-0 border-b-2 border-b-gray-400 focus:border-b-blue-400 focus:ring-0 transition outline-none"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={identifier}
+                                onChange={(e) => setIdentifier(e.target.value)}
                             />
                         </div>
                         <div className="relative">

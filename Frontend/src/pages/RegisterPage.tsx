@@ -7,6 +7,7 @@ import { FaCheck } from "react-icons/fa";
 import { registerUser } from '../hooks/useRegister';
 
 export default function RegisterPage() {
+    const [username, setUsername] = useState("");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -19,7 +20,7 @@ export default function RegisterPage() {
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 
-        if (!name || !email || !password || !confirmPassword) {
+        if (!username || !name || !email || !password || !confirmPassword) {
             setError("Please fill in all fields");
             return;
         }
@@ -37,7 +38,7 @@ export default function RegisterPage() {
         try {
             setError("");
             setSuccess("");
-            await registerUser({ name, email, password });
+            await registerUser({ username, name, email, password });
             setSuccess("Account created successfully! Redirecting to login...");
             setTimeout(() => {
                 navigate("/login");
@@ -87,6 +88,16 @@ export default function RegisterPage() {
                     )}
 
                     <div className="flex flex-col gap-2 px-2">
+                        <div className="relative">
+                            <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" />
+                            <input
+                                type="text"
+                                placeholder="Username"
+                                className="w-full bg-transparent text-white placeholder-white pl-10 py-2 border-0 border-b-2 border-b-gray-400 focus:border-b-blue-400 focus:ring-0 transition outline-none"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                            />
+                        </div>
                         <div className="relative">
                             <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" />
                             <input

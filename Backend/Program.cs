@@ -3,7 +3,6 @@ using SimpleFinance.Api.Data;
 using jwtBearer;
 using DotNetEnv;
 
-Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
@@ -25,6 +24,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllers();
 
 
+Env.Load();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();
