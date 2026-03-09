@@ -33,8 +33,8 @@ namespace jwtBearer
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"]
+                    ValidIssuer = Issuer,
+                    ValidAudience = Audience
                 };
             });
         }
