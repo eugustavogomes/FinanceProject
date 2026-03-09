@@ -35,6 +35,14 @@ export default function TransactionsPage() {
   const [confirmTarget, setConfirmTarget] = useState<{ id: number | string; label?: string } | null>(null);
   const [filtered, setFiltered] = useState<any[]>([]);
   
+  function isIncomeTransaction(tx: any) {
+    const rawType = tx?.type;
+    if (typeof rawType === 'string') {
+      return rawType.toLowerCase() === 'income';
+    }
+    return rawType === 0;
+  }
+  
   /**
    * handleEdit
    * Prepare the Add/Edit Transaction modal for editing an existing transaction.
@@ -92,7 +100,11 @@ export default function TransactionsPage() {
    */
   useEffect(() => {
     const next = transactions.filter((tx: any) => {
-      if (filterType !== 'all' && tx.type !== filterType) return false;
+      if (filterType !== 'all') {
+        const income = isIncomeTransaction(tx);
+        const matchesType = (filterType === 0 && income) || (filterType === 1 && !income);
+        if (!matchesType) return false;
+      }
       if (filterCategory !== 'all' && String(tx.categoryId || tx.categoryName) !== String(filterCategory)) return false;
       if (search && !String(tx.description || tx.categoryName || '').toLowerCase().includes(search.toLowerCase())) return false;
       return true;
@@ -131,7 +143,7 @@ export default function TransactionsPage() {
           </select>
         </div>
       </div>
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 mb-8">
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
@@ -166,12 +178,20 @@ export default function TransactionsPage() {
                   <tr key={tx.id} className="hover:bg-gray-50 transition">
                     <td className="p-3 align-top">
                       <div className="flex items-center gap-3">
-                        <div className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700">{tx.categoryName || tx.category || 'No category'}</div>
+                        <div
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${
+                            isIncomeTransaction(tx)
+                              ? 'bg-emerald-50 text-emerald-700'
+                              : 'bg-red-50 text-red-700'
+                          }`}
+                        >
+                          {tx.categoryName || tx.category || 'No category'}
+                        </div>
                       </div>
                     </td>
                     <td className="p-3 text-sm text-gray-600 max-w-xs truncate">{tx.description || '-'}</td>
                     <td className="p-3 text-sm text-gray-600">{new Date(tx.date).toLocaleDateString('pt-BR')}</td>
-                    <td className={`p-3 text-right font-semibold ${tx.type === 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    <td className={`p-3 text-right font-semibold ${isIncomeTransaction(tx) ? 'text-green-600' : 'text-red-600'}`}>
                       {typeof tx.value === 'number' ? tx.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '--'}
                     </td>
                     <td className="p-3 text-right">

@@ -118,7 +118,6 @@ export function SummaryCard({ label, value, type = '', trend, sparklineData, var
         <div className="mt-3 flex items-center justify-between">
           <div className="text-sm text-gray-500">Summary for the selected period</div>
           <div>
-            <button className="px-3 py-1 text-sm bg-gray-100 rounded-md">Details</button>
           </div>
         </div>
       )}

@@ -193,25 +193,33 @@ export default function CategoriesPage() {
               <div key={category.id} className="p-4 flex items-center justify-between">
                 {editingId === category.id ? (
                   <div className="flex-1">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <input
-                        type="text"
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-lg"
-                      />
-                      <input
-                        type="text"
-                        value={editType}
-                        onChange={(e) => setEditType(e.target.value)}
-                        placeholder="Type (optional)"
-                        className="w-full p-2 border border-gray-300 rounded-lg"
-                      />
-                      <div className="flex gap-2">
+                    <div className="grid grid-cols-1 md:grid-cols-[2fr,1.5fr,auto] gap-4 items-center">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Name</label>
+                        <input
+                          type="text"
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Type</label>
+                        <select
+                          value={editType}
+                          onChange={(e) => setEditType(e.target.value)}
+                          className="w-full p-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400"
+                        >
+                          <option value="">Select type</option>
+                          <option value="Income">Income</option>
+                          <option value="Expense">Expense</option>
+                        </select>
+                      </div>
+                      <div className="flex gap-2 justify-end">
                         <button
                           onClick={() => handleEdit(category.id)}
                           disabled={!editName.trim() || actionLoading === `edit-${category.id}`}
-                          className="px-3 py-1 bg-emerald-500 text-white rounded"
+                          className="px-3 py-1.5 bg-emerald-500 text-white rounded-full text-xs font-semibold shadow-sm hover:bg-emerald-600 disabled:opacity-60"
                         >
                           {actionLoading === `edit-${category.id}` ? (
                             <Loader className="animate-spin" />
@@ -220,7 +228,7 @@ export default function CategoriesPage() {
                           )}
                         </button>
 
-                        <button onClick={cancelEdit} className="px-3 py-1 bg-gray-200 rounded">
+                        <button onClick={cancelEdit} className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold border border-gray-200 hover:bg-gray-200">
                           Cancel
                         </button>
                       </div>
@@ -228,32 +236,38 @@ export default function CategoriesPage() {
                   </div>
                 ) : (
                   <>
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-semibold text-gray-800">{category.name}</h4>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-semibold text-gray-800">{category.name}</h4>
                       {typeLabel && (
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${typeClasses}`}>
                           {typeLabel}
                         </span>
                       )}
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => startEdit(category)}
-                        className="px-2 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50"
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs font-medium shadow-sm"
                       >
-                        <Pencil size={16} />
+                        <Pencil size={14} />
+                        Edit
                       </button>
 
                       <button
                         onClick={() => handleDelete(category.id, category.name)}
                         disabled={actionLoading === `delete-${category.id}`}
-                        className="px-2 py-1 rounded border border-red-200 text-red-500 hover:bg-red-50"
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-red-200 text-red-500 hover:bg-red-50 text-xs font-medium shadow-sm"
                       >
                         {actionLoading === `delete-${category.id}` ? (
                           <Loader className="animate-spin" />
                         ) : (
-                          <Trash2 size={16} />
+                          <>
+                            <Trash2 size={14} />
+                            Delete
+                          </>
                         )}
                       </button>
                     </div>
