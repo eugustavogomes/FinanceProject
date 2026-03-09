@@ -64,7 +64,8 @@ namespace SimpleFinance.Api.Controllers
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
                 return Unauthorized("Invalid credentials.");
 
-            var token = TokenService.GenerateToken(user.Id, user.Email, user.Name);
+            var email = user.Email ?? string.Empty;
+            var token = TokenService.GenerateToken(user.Id, email, user.Name);
             return Ok(new { token });
         }
 

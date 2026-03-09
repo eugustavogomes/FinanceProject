@@ -55,13 +55,15 @@ export default function AddCategoryModal({ isOpen, onClose, onSubmit }: Props) {
             className="px-2 h-10 rounded border border-gray-200"
             required
           />
-          <input
-            type="text"
+          <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            placeholder="Tipo (opcional)"
             className="px-2 h-10 rounded border border-gray-200"
-          />
+          >
+            <option value="">Select type</option>
+            <option value="Expense">Expense</option>
+            <option value="Income">Income</option>
+          </select>
 
           <div className="flex gap-2 justify-end mt-2">
             <button type="button" className="bg-gray-300 px-4 h-10 rounded" onClick={onClose} disabled={loading}>Cancelar</button>

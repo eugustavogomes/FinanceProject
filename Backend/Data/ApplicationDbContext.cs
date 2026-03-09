@@ -51,6 +51,11 @@ public class ApplicationDbContext : DbContext
         .HasForeignKey(c => c.UserId)
         .OnDelete(DeleteBehavior.Cascade);
 
+    // Category.Type stored as string ("Income"/"Expense")
+    modelBuilder.Entity<Category>()
+        .Property(c => c.Type)
+        .HasConversion<string>();
+
     // Transactions (1:N)
     modelBuilder.Entity<Transaction>()
         .HasOne(t => t.User)

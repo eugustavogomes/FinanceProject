@@ -7,15 +7,15 @@ namespace jwtBearer
 {
     public static class Configuration
     {
-        public static string PrivateKey => Environment.GetEnvironmentVariable("PRIVATE_KEY_JWT");
+        public static string PrivateKey =>
+            Environment.GetEnvironmentVariable("PRIVATE_KEY_JWT")
+            ?? throw new Exception("JWT Key is missing in PRIVATE_KEY_JWT!");
         public static string? Issuer { get; private set; }
         public static string? Audience { get; private set; }
 
         public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtKey = PrivateKey;
-            if (string.IsNullOrEmpty(jwtKey))
-                throw new Exception("JWT Key is missing in PRIVATE_KEY_JWT!");
             var key = Encoding.ASCII.GetBytes(jwtKey);
 
             Issuer = configuration["Jwt:Issuer"];

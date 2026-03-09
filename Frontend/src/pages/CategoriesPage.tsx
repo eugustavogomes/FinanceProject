@@ -173,7 +173,23 @@ export default function CategoriesPage() {
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
-            {filtered.map((category: any) => (
+            {filtered.map((category: any) => {
+              const rawType = category.type;
+              const typeLabel = typeof rawType === 'string'
+                ? rawType
+                : rawType === 0
+                  ? 'Income'
+                  : rawType === 1
+                    ? 'Expense'
+                    : '';
+
+              const typeClasses = typeLabel === 'Income'
+                ? 'bg-emerald-50 text-emerald-700'
+                : typeLabel === 'Expense'
+                  ? 'bg-red-50 text-red-700'
+                  : 'bg-gray-100 text-gray-600';
+
+              return (
               <div key={category.id} className="p-4 flex items-center justify-between">
                 {editingId === category.id ? (
                   <div className="flex-1">
@@ -212,9 +228,13 @@ export default function CategoriesPage() {
                   </div>
                 ) : (
                   <>
-                    <div>
+                    <div className="flex items-center gap-2">
                       <h4 className="font-semibold text-gray-800">{category.name}</h4>
-                      {category.type && <p className="text-sm text-gray-600">{category.type}</p>}
+                      {typeLabel && (
+                        <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${typeClasses}`}>
+                          {typeLabel}
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -240,7 +260,8 @@ export default function CategoriesPage() {
                   </>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -249,7 +270,7 @@ export default function CategoriesPage() {
         onClick={() => setShowAddModal(true)}
         aria-label="Add category"
         title="Add category"
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-green-600 text-white shadow-lg flex items-center justify-center text-2xl hover:bg-green-500 transition"
+        className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-green-600 text-white shadow-xl flex items-center justify-center text-3xl hover:bg-green-500 transition"
       >
         +
       </button>

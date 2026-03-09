@@ -223,7 +223,7 @@ export default function TransactionsPage() {
         onClick={() => { setEditingId(null); setModalInitialData(undefined); setShowModal(true); }}
         aria-label="Add Transaction"
         title="Add Transaction"
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-green-600 text-white shadow-lg flex items-center justify-center text-3xl hover:bg-green-500 transition"
+        className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-green-600 text-white shadow-xl flex items-center justify-center text-3xl hover:bg-green-500 transition"
       >
         +
       </button>

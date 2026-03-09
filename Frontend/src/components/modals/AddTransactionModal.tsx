@@ -11,7 +11,7 @@ interface Props {
     categoryId: string | null;
     date: string;
     description: string;
-  }) => Promise<{ success: boolean; error?: string }>; 
+  }) => Promise<{ success: boolean; error?: string }>;
   initialData?: {
     value?: number;
     type?: number;
@@ -31,6 +31,10 @@ export default function AddTransactionModal({ isOpen, onClose, onSubmit, initial
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const filteredCategories = categories.filter(c =>
+    !c.type || c.type === type
+  );
 
   useEffect(() => {
     if (initialData) {
@@ -95,7 +99,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSubmit, initial
           </select>
           <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="px-2 h-10 rounded border border-gray-200">
             <option value="">Selecione uma categoria</option>
-            {categories.map(c => (
+            {filteredCategories.map(c => (
               <option key={c.id} value={c.id}>{c.name} {c.type}</option>
             ))}
           </select>

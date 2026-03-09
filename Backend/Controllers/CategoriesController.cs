@@ -58,7 +58,7 @@ public class CategoriesController : ControllerBase
         }
 
         var existingCategory = await _context.Categories
-            .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.Name.ToLower() && c.UserId == userId);
+            .FirstOrDefaultAsync(c => c.Name != null && c.Name.ToLower() == dto.Name.ToLower() && c.UserId == userId);
         
         if (existingCategory != null)
             return BadRequest("Já existe uma categoria com este nome.");
@@ -67,6 +67,7 @@ public class CategoriesController : ControllerBase
         {
             Id = Guid.NewGuid(),
             Name = dto.Name,
+            Type = dto.Type ?? TransactionType.Expense,
             UserId = userId
         };
 
@@ -96,13 +97,16 @@ public class CategoriesController : ControllerBase
             return NotFound();
 
         var existingCategory = await _context.Categories
-            .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.Name.ToLower() && c.Id != id && c.UserId == userId);
+            .FirstOrDefaultAsync(c => c.Name != null && c.Name.ToLower() == dto.Name.ToLower() && c.Id != id && c.UserId == userId);
         
         if (existingCategory != null)
             return BadRequest("Já existe uma categoria com este nome.");
 
         category.Name = dto.Name;
-
+        if (dto.Type.HasValue)
+        {
+            category.Type = dto.Type.Value;
+        }
         await _context.SaveChangesAsync();
         return Ok(category);
     }
@@ -139,24 +143,27 @@ public class CategoriesController : ControllerBase
     private async Task SeedBasicCategoriesForUser(Guid userId)
     {
         var basicCategories = new List<Category>
-        {
-            new Category { Id = Guid.NewGuid(), Name = "Alimentação", UserId = userId },
-            new Category { Id = Guid.NewGuid(), Name = "Aluguel", UserId = userId },
-            new Category { Id = Guid.NewGuid(), Name = "Transporte", UserId = userId },
-            new Category { Id = Guid.NewGuid(), Name = "Conta de Água", UserId = userId },
-            new Category { Id = Guid.NewGuid(), Name = "Conta de Luz", UserId = userId },
-            new Category { Id = Guid.NewGuid(), Name = "Internet", UserId = userId },
-            new Category { Id = Guid.NewGuid(), Name = "Telefone", UserId = userId },
-            new Category { Id = Guid.NewGuid(), Name = "Saúde", UserId = userId },
-            new Category { Id = Guid.NewGuid(), Name = "Educação", UserId = userId },
-            new Category { Id = Guid.NewGuid(), Name = "Lazer", UserId = userId },
-            new Category { Id = Guid.NewGuid(), Name = "Salário", UserId = userId },
-            new Category { Id = Guid.NewGuid(), Name = "Freelance", UserId = userId },
-            new Category { Id = Guid.NewGuid(), Name = "Investimentos", UserId = userId },
-            new Category { Id = Guid.NewGuid(), Name = "Outros", UserId = userId }
-        };
+    {
+        // EXPENSES
+        new Category { Id = Guid.NewGuid(), Name = "Alimentação", UserId = userId, Type = TransactionType.Expense },
+        new Category { Id = Guid.NewGuid(), Name = "Aluguel", UserId = userId, Type = TransactionType.Expense },
+        new Category { Id = Guid.NewGuid(), Name = "Transporte", UserId = userId, Type = TransactionType.Expense },
+        new Category { Id = Guid.NewGuid(), Name = "Conta de Água", UserId = userId, Type = TransactionType.Expense },
+        new Category { Id = Guid.NewGuid(), Name = "Conta de Luz", UserId = userId, Type = TransactionType.Expense },
+        new Category { Id = Guid.NewGuid(), Name = "Internet", UserId = userId, Type = TransactionType.Expense },
+        new Category { Id = Guid.NewGuid(), Name = "Telefone", UserId = userId, Type = TransactionType.Expense },
+        new Category { Id = Guid.NewGuid(), Name = "Saúde", UserId = userId, Type = TransactionType.Expense },
+        new Category { Id = Guid.NewGuid(), Name = "Educação", UserId = userId, Type = TransactionType.Expense },
+        new Category { Id = Guid.NewGuid(), Name = "Lazer", UserId = userId, Type = TransactionType.Expense },
 
-        _context.Categories.AddRange(basicCategories);
-        await _context.SaveChangesAsync();
-    }
+        // INCOMES
+        new Category { Id = Guid.NewGuid(), Name = "Salário", UserId = userId, Type = TransactionType.Income },
+        new Category { Id = Guid.NewGuid(), Name = "Freelance", UserId = userId, Type = TransactionType.Income },
+        new Category { Id = Guid.NewGuid(), Name = "Ações", UserId = userId, Type = TransactionType.Income },
+        new Category { Id = Guid.NewGuid(), Name = "Fundos Imobiliários", UserId = userId, Type = TransactionType.Income },
+    };
+
+    _context.Categories.AddRange(basicCategories);
+    await _context.SaveChangesAsync();
+}
 }
