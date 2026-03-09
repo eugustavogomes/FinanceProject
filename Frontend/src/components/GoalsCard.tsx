@@ -10,7 +10,7 @@ export default function GoalsCard({ progress = 0, title = 'Goals' }: Props) {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 h-full flex flex-col justify-between">
+    <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-4 h-full flex flex-col justify-between">
       <div>
         <h3 className="text-xl font-semibold">{title}</h3>
         <div className="mt-2">

@@ -25,7 +25,7 @@ export default function InvestmentsPieCard({ investments = [] }: Props) {
 
   if (series.length === 0) {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg p-4 h-full flex flex-col justify-between">
+      <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-4 h-full flex flex-col justify-between">
         <div>
           <h3 className="text-xl font-semibold">Investments</h3>
           <p className="text-sm text-gray-500">Nenhum investimento cadastrado</p>
@@ -41,7 +41,7 @@ export default function InvestmentsPieCard({ investments = [] }: Props) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-3 h-full flex flex-col">
+    <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-3 h-full flex flex-col">
       <div>
         <h3 className="text-xl font-semibold">Investments</h3>
       </div>

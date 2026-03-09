@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchLatestTransactions } from "../hooks/useTransactions";
-import { Eye } from 'lucide-react';
+import { Eye, ArrowUp, ArrowDown, ChevronRight } from 'lucide-react';
 
 type Transaction = {
     id: number;
@@ -20,7 +20,7 @@ export default function LatestTransactions() {
     useEffect(() => {
         setLoading(true);
         fetchLatestTransactions().then(res => {
-            const mapped = res.data.slice(0, 6).map((tx: any) => ({
+            const mapped = res.data.slice(0, 4).map((tx: any) => ({
                 id: tx.id,
                 category: tx.categoryName || tx.category?.name || 'No category',
                 type: tx.type,
@@ -34,37 +34,74 @@ export default function LatestTransactions() {
     }, []);
 
     return (
-        <div className="p-2 bg-white backdrop-blur-sm rounded-lg border border-gray-200 h-full">
-            <ul className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 px-3 py-2">
-                {loading ? (
-                    <li className="py-3 text-center">
-                        <span className="inline-block animate-spin rounded-full border-4 border-gray-300 border-t-green-500 h-8 w-8"></span>
-                    </li>
-                ) : transactions.map((t) => (
-                    <li key={t.id} className="mb-2 border-white/5 pb-2 border-b last:border-0 cursor-pointer hover:bg-gray-50 rounded transition" onClick={() => navigate(`/transactions/${t.id}`)}>
-                        <div className="grid items-center gap-4" style={{ gridTemplateColumns: '1fr 400px 120px' }}>
-                            <div className="min-w-0">
-                                <strong className="block text-gray-800 truncate">{t.category}</strong>
-                            </div>
-                            <div className="text-sm text-gray-500 text-center">
-                                <div className="truncate">{t.date}</div>
-                            </div>
-                            <div className={`font-semibold text-right truncate ${t.type === 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                {t.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                            </div>
-                        </div>
+        <div className="p-4 bg-white rounded-lg border border-gray-100 shadow-sm shadow-sm h-full flex flex-col">
+            <div className="flex items-start justify-between mb-3">
+                <div>
+                    <h3 className="text-lg font-semibold text-gray-800">Latest Transactions</h3>
+                    <p className="text-sm text-gray-500">Recent activity from your account</p>
+                </div>
+                <div className="text-sm text-gray-500">{loading ? 'Loading...' : `${transactions.length} shown`}</div>
+            </div>
 
-                    </li>
-                ))}
-            </ul>
-            <div className="px-1 flex justify-end">
-            <button
-                className="px-3 py-2 gap-3 rounded-lg bg-green-600 text-white text-sm flex items-center font-semibold"
-                onClick={() => navigate('/transactions')}
-            >
-                <Eye className="w-4 h-4" />
-                View all
-            </button>
+            <div className="flex-1 overflow-auto">
+                <ul className="space-y-2">
+                    {loading ? (
+                        Array.from({ length: 6 }).map((_, i) => (
+                            <li key={i} className="animate-pulse p-3 bg-gray-50 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 bg-gray-200 rounded-full" />
+                                    <div className="flex-1">
+                                        <div className="h-3 bg-gray-200 rounded w-3/4 mb-2" />
+                                        <div className="h-2 bg-gray-200 rounded w-1/2" />
+                                    </div>
+                                    <div className="h-3 bg-gray-200 rounded w-20" />
+                                </div>
+                            </li>
+                        ))
+                    ) : transactions.length === 0 ? (
+                        <li className="p-6 text-center text-gray-500">
+                            <p className="mb-3">No recent transactions</p>
+                            <div className="flex items-center justify-center gap-2">
+                                <button onClick={() => navigate('/transactions/new')} className="px-3 py-2 bg-green-600 text-white rounded-md">Add transaction</button>
+                                <button onClick={() => navigate('/transactions')} className="px-3 py-2 border rounded-md">View all</button>
+                            </div>
+                        </li>
+                    ) : (
+                        transactions.map((t) => (
+                            <li key={t.id}>
+                                <button onClick={() => navigate(`/transactions/${t.id}`)} className="w-full text-left p-1 flex items-center gap-3 hover:bg-gray-50 rounded-lg transition">
+                                    <div className={`flex items-center justify-center h-5 w-5 rounded-full ${t.type === 0 ? 'bg-green-50' : 'bg-red-50'}`}>
+                                        {t.type === 0 ? <ArrowUp className="text-green-600" /> : <ArrowDown className="text-red-600" />}
+                                    </div>
+
+                                    <div className="flex-1">
+                                        <div className="flex items-center justify- gap-4">
+                                            <strong className="text-gray-800 truncate">{t.category}</strong>
+                                            <div className="text-xs text-gray-500 flex items-center">
+                                                <span className="whitespace-nowrap">{t.date}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3">
+                                        <div className={`font-semibold ${t.type === 0 ? 'text-green-600' : 'text-red-600'} text-right`}>{t.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
+                                        <ChevronRight className="w-4 h-4 text-gray-300" />
+                                    </div>
+                                </button>
+                            </li>
+                        ))
+                    )}
+                </ul>
+            </div>
+
+            <div className="mt-4 flex justify-end">
+                <button
+                    className="px-3 py-2 gap-2 rounded-lg bg-green-600 text-white text-sm flex items-center font-semibold"
+                    onClick={() => navigate('/transactions')}
+                >
+                    <Eye className="w-4 h-4" />
+                    View all
+                </button>
             </div>
         </div>
     );

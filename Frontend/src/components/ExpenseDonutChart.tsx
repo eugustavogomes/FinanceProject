@@ -69,7 +69,7 @@ export default function ExpenseDonutChart({ transactions = [], categories = [] }
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg h-full">
+    <div className="bg-white border border-gray-100 shadow-sm rounded-lg h-full">
       <h3 className="text-xl font-semibold text-gray-700 mb-4 p-3">Expenses by Category</h3>
       <ReactApexChart options={options} series={series} type="pie" height={200} />
     </div>

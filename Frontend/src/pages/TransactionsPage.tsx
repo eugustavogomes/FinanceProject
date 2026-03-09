@@ -101,7 +101,7 @@ export default function TransactionsPage() {
   }, [transactions, filterType, filterCategory, search]);
 
   return (
-    <main className="p-6 bg-gray-50 min-h-screen">
+    <main className="p-6">
       {error && <div className="text-red-500">Erro: {error}</div>}
       {formError && <div className="text-red-500 mb-2">{formError}</div>}
 

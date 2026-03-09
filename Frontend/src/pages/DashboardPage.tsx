@@ -24,7 +24,6 @@ export default function DashboardPage() {
   const { transactions } = useTransactions();
   const { categories } = useCategories();
   const [selectedMonth, setSelectedMonth] = useState<number | 'all'>('all');
-  const lineData = selectedMonth === 'all' ? getMonthlySeries() : getDailySeriesForMonth(selectedMonth as number);
 
 
   /**
@@ -82,6 +81,7 @@ export default function DashboardPage() {
    *   filter.
    * - Returns `{ incomeSeries, expenseSeries, days }`.
    */
+  const lineData = selectedMonth === 'all' ? getMonthlySeries() : getDailySeriesForMonth(selectedMonth as number);
   function getDailySeriesForMonth(monthIndex: number) {
     const now = new Date();
     const year = now.getFullYear();

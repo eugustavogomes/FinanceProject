@@ -10,8 +10,17 @@ interface CreateTransactionDto {
   description: string;
 }
 
+interface Transaction {
+  id: number;
+  category: string;
+  type: number;
+  value: number;
+  date: string;
+  description?: string;
+}
+
 export function useTransactions() {
-  const [transactions, setTransactions] = useState<any[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const isFetchingRef = useRef(false);

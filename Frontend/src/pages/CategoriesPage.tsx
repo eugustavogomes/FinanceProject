@@ -130,10 +130,10 @@ export default function CategoriesPage() {
   };
 
   return (
-    <main className="p-6 bg-gray-50 min-h-screen">
+    <main className="p-6">
       <div className="mb-4 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Categories</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Categories</h1>
           <p className="text-sm text-gray-500">Manage your categories</p>
         </div>
 
