@@ -29,14 +29,14 @@ public class CategoriesController : ControllerBase
             return Unauthorized("Usuário não foi encontrado. Faça login novamente.");
         }
         
-        var userCategoryCount = await _context.Categories.CountAsync(c => c.UserId == userId);
+        var userCategoryCount = await _context.Categories.CountAsync(c => c.UserId == userId && c.IsActive);
         if (userCategoryCount == 0)
         {
             await SeedBasicCategoriesForUser(userId);
         }
 
         var categories = await _context.Categories
-            .Where(c => c.UserId == userId)
+            .Where(c => c.UserId == userId && c.IsActive)
             .OrderBy(c => c.Name)
             .ToListAsync();
         return Ok(categories);
@@ -58,7 +58,7 @@ public class CategoriesController : ControllerBase
         }
 
         var existingCategory = await _context.Categories
-            .FirstOrDefaultAsync(c => c.Name != null && c.Name.ToLower() == dto.Name.ToLower() && c.UserId == userId);
+            .FirstOrDefaultAsync(c => c.IsActive && c.Name != null && c.Name.ToLower() == dto.Name.ToLower() && c.UserId == userId);
         
         if (existingCategory != null)
             return BadRequest("Já existe uma categoria com este nome.");
@@ -92,12 +92,12 @@ public class CategoriesController : ControllerBase
         }
         
         var category = await _context.Categories
-            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
+            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId && c.IsActive);
         if (category == null)
             return NotFound();
 
         var existingCategory = await _context.Categories
-            .FirstOrDefaultAsync(c => c.Name != null && c.Name.ToLower() == dto.Name.ToLower() && c.Id != id && c.UserId == userId);
+            .FirstOrDefaultAsync(c => c.IsActive && c.Name != null && c.Name.ToLower() == dto.Name.ToLower() && c.Id != id && c.UserId == userId);
         
         if (existingCategory != null)
             return BadRequest("Já existe uma categoria com este nome.");
@@ -124,18 +124,13 @@ public class CategoriesController : ControllerBase
         }
         
         var category = await _context.Categories
-            .Include(c => c.Transactions)
-            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
+            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId && c.IsActive);
         
         if (category == null)
             return NotFound();
 
-        if (category.Transactions != null && category.Transactions.Any())
-        {
-            return BadRequest("Não é possível excluir categoria que possui transações associadas.");
-        }
-
-        _context.Categories.Remove(category);
+        // Soft delete: mantém categoria para histórico das transações
+        category.IsActive = false;
         await _context.SaveChangesAsync();
         return NoContent();
     }
