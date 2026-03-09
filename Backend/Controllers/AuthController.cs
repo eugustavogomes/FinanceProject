@@ -68,5 +68,39 @@ namespace SimpleFinance.Api.Controllers
             return Ok(new { token });
         }
 
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public IActionResult ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email))
+                return BadRequest("Email is required.");
+
+            var user = _db.Users.FirstOrDefault(u => u.Email == dto.Email);
+
+
+            return Ok("If an account exists for this email, a reset link has been sent.");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Email))
+                return BadRequest("Email is required.");
+
+            if (string.IsNullOrWhiteSpace(dto.NewPassword))
+                return BadRequest("New password is required.");
+
+            var user = _db.Users.FirstOrDefault(u => u.Email == dto.Email);
+
+            if (user == null)
+                return Ok("If an account exists for this email, the password has been reset.");
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            await _db.SaveChangesAsync();
+
+            return Ok("If an account exists for this email, the password has been reset.");
+        }
+
     }
 }

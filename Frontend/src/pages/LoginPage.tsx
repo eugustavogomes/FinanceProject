@@ -5,12 +5,13 @@ import LightRays from '../components/LightRays';
 import { MdEmail } from "react-icons/md";
 import { FaLock } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
+import { Eye, EyeClosed } from "lucide-react";
 import { loginUser } from '../hooks/useLogin';
 
 export default function LoginPage() {
     const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
-    const [showPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const { login } = useAuth();
@@ -57,12 +58,12 @@ export default function LoginPage() {
                     noValidate
                 >
                     <div className="flex flex-col items-center justify-center mb-1">
-                        <h2 className="text-2xl font-bold text-white">Finance Dashboard Login</h2>
+                        <h2 className="text-2xl font-bold text-white">Simple Finance Login</h2>
                         <p className="text-xs text-gray-300">Financial dashboard for managing your personal finances.</p>
                     </div>
 
                     {error && (
-                        <div className="alert alert-danger text-red-600 bg-red-100 p-2 text-center rounded">
+                        <div className="border border-red-400/60 bg-red-500/10 text-red-200 text-xs px-3 py-2 text-center rounded-md">
                             {error}
                         </div>
                     )}
@@ -87,6 +88,18 @@ export default function LoginPage() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition"
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                                {showPassword ? (
+                                    <EyeClosed className="w-4 h-4" />
+                                ) : (
+                                    <Eye className="w-4 h-4" />
+                                )}
+                            </button>
                         </div>
                     </div>
 

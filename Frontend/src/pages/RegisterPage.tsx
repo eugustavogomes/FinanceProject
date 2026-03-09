@@ -4,6 +4,7 @@ import LightRays from '../components/LightRays';
 import { MdEmail } from "react-icons/md";
 import { FaLock, FaUser } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
+import { Eye, EyeClosed } from "lucide-react";
 import { registerUser } from '../hooks/useRegister';
 
 export default function RegisterPage() {
@@ -12,7 +13,7 @@ export default function RegisterPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [showPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const navigate = useNavigate();
@@ -76,13 +77,13 @@ export default function RegisterPage() {
                     </div>
 
                     {error && (
-                        <div className="alert alert-danger text-red-600 bg-red-100 p-2 text-center rounded">
+                        <div className="border border-red-400/60 bg-red-500/10 text-red-200 text-xs px-3 py-2 text-center rounded-md">
                             {error}
                         </div>
                     )}
 
                     {success && (
-                        <div className="alert alert-success text-green-600 bg-green-100 p-2 text-center rounded">
+                        <div className="border border-emerald-400/60 bg-emerald-500/10 text-emerald-200 text-xs px-3 py-2 text-center rounded-md">
                             {success}
                         </div>
                     )}
@@ -127,6 +128,18 @@ export default function RegisterPage() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition"
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                                {showPassword ? (
+                                    <EyeClosed className="w-4 h-4" />
+                                ) : (
+                                    <Eye className="w-4 h-4" />
+                                )}
+                            </button>
                         </div>
                         <div className="relative">
                             <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" />
@@ -137,6 +150,18 @@ export default function RegisterPage() {
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition"
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                                {showPassword ? (
+                                    <EyeClosed className="w-4 h-4" />
+                                ) : (
+                                    <Eye className="w-4 h-4" />
+                                )}
+                            </button>
                         </div>
                     </div>
 
