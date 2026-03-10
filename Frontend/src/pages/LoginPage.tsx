@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import LightRays from '../components/LightRays';
@@ -11,10 +11,19 @@ import { loginUser } from '../hooks/useLogin';
 export default function LoginPage() {
     const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
+    const [rememberMe, setRememberMe] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const { login } = useAuth();
+
+    useEffect(() => {
+        const storedIdentifier = localStorage.getItem("sf-remembered-identifier");
+        if (storedIdentifier) {
+            setIdentifier(storedIdentifier);
+            setRememberMe(true);
+        }
+    }, []);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -29,6 +38,13 @@ export default function LoginPage() {
             const res = await loginUser({ identifier, password });
             const token = res.data.token;
             login(token);
+
+            if (rememberMe) {
+                localStorage.setItem("sf-remembered-identifier", identifier);
+            } else {
+                localStorage.removeItem("sf-remembered-identifier");
+            }
+
             navigate("/dashboard");
         } catch (err: any) {
             setError(err?.response?.data || "Login failed");
@@ -110,6 +126,8 @@ export default function LoginPage() {
                                     type="checkbox"
                                     className="peer appearance-none w-4 h-4 border border-gray-500 rounded bg-transparent checked:bg-blue-600 checked:border-blue-600 transition-all"
                                     id="remember"
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.target.checked)}
                                 />
                                 <FaCheck className="pointer-events-none absolute inset-0 m-auto w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition" />
                             </span>
