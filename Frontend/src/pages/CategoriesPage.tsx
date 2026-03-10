@@ -26,13 +26,29 @@ export default function CategoriesPage() {
   const [confirmTarget, setConfirmTarget] = useState<{ id: string; name?: string } | null>(null);
 
   const [filtered, setFiltered] = useState<any[]>([]);
+  const [typeFilter, setTypeFilter] = useState<'Income' | 'Expense'>('Income');
 
   useEffect(() => {
-    const next = categories.filter((c: any) =>
-      String(c.name || '').toLowerCase().includes(search.toLowerCase())
-    );
+    const next = categories
+      .map((c: any) => {
+        const rawType = c.type;
+        const typeLabel = typeof rawType === 'string'
+          ? rawType
+          : rawType === 0
+            ? 'Income'
+            : rawType === 1
+              ? 'Expense'
+              : '';
+
+        return { ...c, __typeLabel: typeLabel };
+      })
+      .filter((c: any) => c.__typeLabel === typeFilter)
+      .filter((c: any) =>
+        String(c.name || '').toLowerCase().includes(search.toLowerCase())
+      );
+
     setFiltered(next);
-  }, [categories, search]);
+  }, [categories, search, typeFilter]);
 
   /**
    * handleAdd
@@ -132,8 +148,31 @@ export default function CategoriesPage() {
   return (
     <main className="p-3">
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-        <div className="border-b px-4 py-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+        <div className="border-b px-4 py-3 flex flex-col gap-3 md:grid md:grid-cols-[auto,1fr,auto] md:items-center md:gap-4">
           <div className="text-sm font-medium text-gray-700">Filtrar categorias</div>
+
+          <div className="flex justify-center">
+            <div className="inline-flex rounded-full border border-gray-200 bg-gray-50 p-1 text-xs font-medium">
+              {(['Income', 'Expense'] as const).map((t) => {
+                const active = typeFilter === t;
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTypeFilter(t)}
+                    className={`px-4 py-1 rounded-full transition-colors ${
+                      active
+                        ? 'bg-green-600 text-white shadow-sm'
+                        : 'text-gray-500 hover:bg-white'
+                    }`}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="w-full md:w-64">
             <input
               value={search}
@@ -170,13 +209,15 @@ export default function CategoriesPage() {
           <div className="divide-y divide-gray-100">
             {filtered.map((category: any) => {
               const rawType = category.type;
-              const typeLabel = typeof rawType === 'string'
-                ? rawType
-                : rawType === 0
-                  ? 'Income'
-                  : rawType === 1
-                    ? 'Expense'
-                    : '';
+              const typeLabel = typeof category.__typeLabel === 'string'
+                ? category.__typeLabel
+                : typeof rawType === 'string'
+                  ? rawType
+                  : rawType === 0
+                    ? 'Income'
+                    : rawType === 1
+                      ? 'Expense'
+                      : '';
 
               const typeClasses = typeLabel === 'Income'
                 ? 'bg-emerald-50 text-emerald-700'

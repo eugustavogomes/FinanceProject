@@ -56,13 +56,13 @@ export default function Sidebar({ expanded }: SidebarProps) {
             </span>
           )}
         </div>
-        <nav className={`flex flex-col transition-all duration-600 ease-in-out ${expanded ? 'px-4' : 'px-1'}`}>
+        <nav className={`flex flex-col transition-all duration-600 ease-in-out ${expanded ? 'px-2' : 'px-1'}`}>
           {routes.map(route => (
             <NavLink
               key={route.path}
               to={route.path}
               className={({ isActive }) =>
-                `flex items-center ${expanded ? 'gap-3 px-3 py-2' : 'justify-center py-2'} text-white rounded-lg transition-all duration-500 ease-in-out hover:bg-green-700/80 ${isActive ? 'bg-green-800 font-bold' : ''}`
+                `flex items-center ${expanded ? 'gap-3 px-3 py-2' : 'justify-center py-2'} text-white rounded-xl transition-all duration-500 ease-in-out hover:bg-green-700/80 ${isActive ? 'bg-green-800 font-bold' : ''}`
               }
             >
               {route.icon}
@@ -75,26 +75,26 @@ export default function Sidebar({ expanded }: SidebarProps) {
         </nav>
       </div>
       <div
-        className={`flex items-center ${expanded ? 'gap-3 px-4 py-3' : 'justify-center py-3'} text-white rounded-lg mb-6 mx-2 hover:bg-green-700/80 transition-all duration-500 ease-in-out font-semibold text-base cursor-pointer`}
+        className={`flex items-center ${expanded ? 'gap-3 px-2 py-2' : 'justify-center py-3'} text-white rounded-xl mb-2 mx-2 hover:bg-green-700/80 transition-all duration-500 ease-in-out font-semibold cursor-pointer`}
         onClick={() => setShowProfile(true)}
         title="Perfil"
       >
         {!expanded && <User size={15} />}
         {expanded && (
           <>
-            <div className="flex items-center justify-center h-11 w-11 rounded-full bg-emerald-500 text-white font-semibold text-lg shadow-sm">
+            <div className="flex items-center justify-center h-10 w-8 rounded-full bg-emerald-500 text-white font-semibold text-sm shadow-sm bg-opacity-50">
               {userInitial}
             </div>
             <div
-              className={`transition-opacity duration-500 ease-in-out ${expanded ? 'opacity-100 ' : 'opacity-0 ml-0'}`}
+              className={`transition-opacity duration-500 ease-in-out ${expanded ? 'opacity-100 ' : 'opacity-0'}`}
               style={{ width: expanded ? 'auto' : 0, overflow: 'hidden', display: expanded ? 'inline-flex' : 'inline-block' }}
             >
               <div className="flex flex-col min-w-0">
-                <span className="block text-white font-bold text-xl truncate">{user?.name || 'Perfil'}</span>
-                <span className="block text-white text-sm font-normal truncate">{user?.email || ''}</span>
+                <span className="block text-white font-bold text-lg truncate">{user?.name || 'Perfil'}</span>
+                <span className="block text-white text-xs font-normal truncate">{user?.email || ''}</span>
               </div>
             </div>
-            <ChevronsUpDown className="ml-auto w-6 h-6 text-emerald-100" />
+            <ChevronsUpDown className="ml-auto w-4 h-4 text-emerald-100" />
           </>
         )}
       </div>
