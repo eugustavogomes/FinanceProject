@@ -2,7 +2,10 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, ArrowUpDown, ChartNoAxesCombined, User, Target, LayoutList, ChevronsUpDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ProfileModal from '../components/modals/ProfileModal';
+import logo from '../assets/logo.png';
+import logomini from '../assets/logomini.png';
 import { useState } from 'react';
+
 
 
 const routes = [
@@ -13,10 +16,13 @@ const routes = [
   { name: 'Investments', path: '/investments', icon: <ChartNoAxesCombined size={15} /> },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  expanded: boolean;
+}
+
+export default function Sidebar({ expanded }: SidebarProps) {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const [expanded, setExpanded] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
   const userInitial = (user?.name || user?.email || 'U').trim().charAt(0).toUpperCase();
@@ -29,42 +35,28 @@ export default function Sidebar() {
   return (
     <aside
       className={`fixed h-full z-40 flex flex-col justify-between shadow-lg bg-green-800 transition-all duration-700 ease-in-out ${expanded ? 'w-56' : 'w-20'}`}
-      onMouseEnter={() => setExpanded(true)}
-      onMouseLeave={() => setExpanded(false)}
     >
       <div>
-        <div className="flex items-start justify-center py-6 min-h-[64px]">
+        <div className="flex items-center justify-center py-3 min-h-[64px]">
           {expanded ? (
-            <span className="select-none text-white"
-              style={{
-                fontFamily: 'Raleway, sans-serif',
-                fontSize: '1.3rem',
-                letterSpacing: '0em',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <span style={{ fontWeight: 800 }}>Simple</span>
-                <span style={{ fontWeight: 300, marginLeft: 6 }}>Finance</span>
-              </span>
+            <span className="select-none text-white inline-flex items-center justify-center">
+              <img
+                src={logo}
+                alt="SimpleFinance Logo"
+                className="max-h-12 w-auto"
+              />
+            </span>
           ) : (
-            <span
-              className="select-none text-white"
-              style={{
-                fontFamily: 'Raleway, sans-serif',
-                fontSize: '1.5rem',
-                letterSpacing: '0.05em',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <span style={{ fontWeight: 700 }}>S</span>
-              <span style={{ fontWeight: 400 }}>F</span>
+            <span className="select-none text-white inline-flex items-center justify-center">
+              <img
+                src={logomini}
+                alt="SimpleFinance Logo compacta"
+                className="h-12 w-auto"
+              />
             </span>
           )}
         </div>
-        <nav className={`flex flex-col gap-2 mt-2 transition-all duration-600 ease-in-out ${expanded ? 'px-4' : 'px-1'}`}>
+        <nav className={`flex flex-col transition-all duration-600 ease-in-out ${expanded ? 'px-4' : 'px-1'}`}>
           {routes.map(route => (
             <NavLink
               key={route.path}
