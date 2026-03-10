@@ -89,15 +89,8 @@ export default function InvestmentsPage() {
   }
 
   return (
-    <main className="p-6">
+    <main className="p-3">
       <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold mb-1">Investimentos e Patrimônio</h2>
-          <p className="text-sm text-gray-600 max-w-xl">
-            Cadastre seus investimentos (ações, renda fixa, fundos, caixa, etc.) para acompanhar o patrimônio total,
-            o quanto foi investido e o quanto já rendeu.
-          </p>
-        </div>
         <div className="grid grid-cols-3 gap-3 text-xs">
           <div className="bg-white border border-gray-100 rounded-lg shadow-sm px-3 py-2">
             <div className="text-gray-500">Patrimônio atual</div>
@@ -159,16 +152,6 @@ export default function InvestmentsPage() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <div className="flex flex-col">
-              <label className="text-xs font-medium text-gray-600 mb-1">Retorno alvo anual (%) (opcional)</label>
-              <input
-                className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200"
-                placeholder="Ex: 10"
-                value={form.expectedReturnYearly}
-                onChange={(e) => setForm((f) => ({ ...f, expectedReturnYearly: e.target.value }))}
-                inputMode="decimal"
-              />
-            </div>
             <div className="flex gap-2 justify-end md:justify-start">
               {editingId && (
                 <button

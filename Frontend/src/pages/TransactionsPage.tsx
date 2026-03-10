@@ -113,40 +113,47 @@ export default function TransactionsPage() {
   }, [transactions, filterType, filterCategory, search]);
 
   return (
-    <main className="p-6">
+    <main className="p-3">
       {error && <div className="text-red-500">Erro: {error}</div>}
       {formError && <div className="text-red-500 mb-2">{formError}</div>}
-
-      <div className="mb-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Transações</h1>
-          <p className="text-sm text-gray-500">Visão geral das suas transações recentes</p>
-        </div>
-
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por descrição ou categoria"
-            className="w-full md:w-72 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-200"
-          />
-          <select value={filterType} onChange={e => setFilterType((e.target.value === 'all' ? 'all' : Number(e.target.value)) as any)} className="px-3 py-2 border rounded-lg">
-            <option value="all">Todos</option>
-            <option value={0}>Income</option>
-            <option value={1}>Expense</option>
-          </select>
-          <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)} className="px-3 py-2 border rounded-lg">
-            <option value="all">Todas categorias</option>
-            {categories.map((c: any) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-        </div>
-      </div>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 mb-8">
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
+              <tr className="border-b">
+                <th colSpan={5} className="p-3">
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <div className="text-sm font-medium text-gray-700">Filtrar transações</div>
+                    <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+                      <input
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Buscar por descrição ou categoria"
+                        className="w-full md:w-64 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-200"
+                      />
+                      <select
+                        value={filterType}
+                        onChange={e => setFilterType((e.target.value === 'all' ? 'all' : Number(e.target.value)) as any)}
+                        className="px-3 py-2 border rounded-lg text-sm min-w-[130px]"
+                      >
+                        <option value="all">Todos os tipos</option>
+                        <option value={0}>Income</option>
+                        <option value={1}>Expense</option>
+                      </select>
+                      <select
+                        value={filterCategory}
+                        onChange={e => setFilterCategory(e.target.value)}
+                        className="px-3 py-2 border rounded-lg text-sm min-w-[160px]"
+                      >
+                        <option value="all">Todas categorias</option>
+                        {categories.map((c: any) => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </th>
+              </tr>
               <tr className="border-b">
                 <th className="text-left py-3 text-sm text-gray-600 p-3 sticky top-0 bg-white z-10">Category</th>
                 <th className="text-left py-3 text-sm text-gray-600 p-3 sticky top-0 bg-white z-10">Description</th>

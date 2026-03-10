@@ -83,25 +83,7 @@ export default function GoalsPage() {
   }
 
   return (
-    <main className="p-6">
-      <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold mb-1">Metas e Sonhos</h2>
-          <p className="text-sm text-gray-600 max-w-xl">
-            Defina objetivos como viagem, reserva de emergência ou compra de um bem, informe o custo e o prazo,
-            e a aplicação estima quanto você precisa poupar por mês com base no seu histórico de renda e despesas.
-          </p>
-        </div>
-        <div className="text-sm text-gray-600 bg-emerald-50 border border-emerald-100 rounded-lg px-4 py-3">
-          <div className="font-semibold text-emerald-700 mb-1">Poupança média estimada</div>
-          <div>
-            {averageMonthlyNet > 0
-              ? `Você tem poupado em média ${formatCurrency(averageMonthlyNet)} por mês (últimos meses).`
-              : 'Ainda não foi possível estimar uma poupança média. Comece registrando suas transações.'}
-          </div>
-        </div>
-      </div>
-
+    <main className="p-3">
       <section className="mb-8 bg-white border border-gray-100 rounded-lg shadow-sm p-4">
         <h3 className="text-lg font-semibold mb-3">Nova meta</h3>
         {formError && <div className="mb-3 text-sm text-red-600">{formError}</div>}
