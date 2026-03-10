@@ -29,12 +29,14 @@ export default function ExpenseDonutChart({ transactions = [], categories = [] }
 
   const labels = Object.values(categoryExpenseMap).map(cat => cat.name);
   const series = Object.values(categoryExpenseMap).map(cat => cat.value);
+
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
   
   if (series.length === 0) {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg h-full flex items-center justify-center">
-        <div className="text-center text-gray-500">
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">Expenses by Category</h3>
+      <div className="bg-white dark:bg-gray-800 text-card-foreground border border-gray-100 dark:border-gray-700 rounded-lg h-full flex items-center justify-center shadow-sm">
+        <div className="text-center text-muted-foreground">
+          <h3 className="text-xl font-semibold text-foreground mb-2">Expenses by Category</h3>
           <p>No expense data available</p>
         </div>
       </div>
@@ -45,29 +47,30 @@ export default function ExpenseDonutChart({ transactions = [], categories = [] }
     chart: {
       type: 'pie',
       background: 'transparent',
+      foreColor: isDark ? '#e5e7eb' : '#111827',
     },
     labels,
     colors: ['#ef4444', '#599d9b', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#f472b6', '#d1d5db'],
     legend: {
       position: 'bottom',
       labels: {
-        colors: '#000'
+        colors: isDark ? '#e5e7eb' : '#4b5563'
       }
     },
     dataLabels: {
       enabled: true,
       style: {
-        colors: ['#fff']
+        colors: [isDark ? '#020617' : '#ffffff']
       }
     },
     tooltip: {
-      theme: 'dark'
+      theme: isDark ? 'dark' : 'light'
     }
   };
 
   return (
-    <div className="bg-white shadow-sm rounded-lg h-full">
-      <h3 className="text-xl font-semibold text-gray-700 mb-4 p-3">Expenses by Category</h3>
+    <div className="bg-white dark:bg-gray-800 text-card-foreground border border-gray-100 dark:border-gray-700 shadow-sm rounded-lg h-full">
+      <h3 className="text-xl font-semibold text-foreground mb-4 p-3">Expenses by Category</h3>
       <ReactApexChart options={options} series={series} type="pie" height={200} />
     </div>
   );

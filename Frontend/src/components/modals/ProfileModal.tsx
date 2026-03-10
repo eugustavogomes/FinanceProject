@@ -33,16 +33,16 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black opacity-40" onClick={onClose}></div>
-      <div className="bg-card rounded-lg p-0 z-10 w-full max-w-lg shadow-lg overflow-hidden">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose}></div>
+      <div className="bg-white rounded-lg p-0 z-10 w-full max-w-lg shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
 
         <div className="flex flex-col md:flex-row">
-          <div className="bg-muted md:w-40 p-3 flex md:flex-col gap-2">
+          <div className="dark:bg-gray-800 bg-white md:w-40 p-3 flex md:flex-col gap-2 border-b md:border-b-0 md:border-r border-gray-100 dark:border-gray-700">
             <button
               className={`w-full text-left px-3 py-2 rounded ${
                 tab === 'settings'
-                  ? 'bg-card font-semibold shadow-sm'
-                  : 'text-muted-foreground hover:bg-muted'
+                  ? 'bg-gray-100 dark:bg-gray-900 font-semibold shadow-sm'
+                  : 'text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
               onClick={() => setTab('settings')}
             >
@@ -52,8 +52,8 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
             <button
               className={`w-full text-left px-3 py-2 rounded ${
                 tab === 'account'
-                  ? 'bg-card font-semibold shadow-sm'
-                  : 'text-muted-foreground hover:bg-muted'
+                  ? 'bg-gray-100 dark:bg-gray-900 font-semibold shadow-sm'
+                  : 'text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
               onClick={() => setTab('account')}
             >
@@ -62,12 +62,12 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
             </button>
           </div>
 
-          <div className="p-6 flex-1">
+          <div className="p-6 flex-1 dark:bg-gray-900 bg-white text-foreground space-y-6">
             {tab === 'settings' ? (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">Here you can adjust application preferences.</p>
                 <div className="grid grid-cols-1 gap-3">
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center justify-between p-3 border rounded-lg border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
                     <div>
                       <p className="font-medium">Theme</p>
                       <p className="text-sm text-muted-foreground">Select light/dark mode</p>
@@ -88,7 +88,7 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
                       />
                     </button>
                   </div>
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center justify-between p-3 border rounded-lg border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
                     <div>
                       <p className="font-medium">Notifications</p>
                       <p className="text-sm text-muted-foreground">Enable alerts</p>
@@ -121,28 +121,28 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
                   <p className="text-sm text-muted-foreground">Name</p>
                   <p className="font-medium text-foreground">{userName}</p>
                 </div>
-                <div className="pt-4 border-t space-y-4">
+                <div className="pt-4 border-t border-gray-100 dark:border-gray-700 space-y-4">
                   <div className="space-y-2">
                     <p className="text-sm font-semibold text-foreground">Alterar senha</p>
                     <p className="text-xs text-muted-foreground">Protótipo: em breve será conectado ao backend para alterar sua senha com segurança.</p>
                     <div className="space-y-2">
                       <input
                         type="password"
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200 bg-background text-foreground"
+                        className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200 bg-background text-foreground"
                         placeholder="Senha atual"
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                       />
                       <input
                         type="password"
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200 bg-background text-foreground"
+                        className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200 bg-background text-foreground"
                         placeholder="Nova senha"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                       />
                       <input
                         type="password"
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200 bg-background text-foreground"
+                        className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200 bg-background text-foreground"
                         placeholder="Confirmar nova senha"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
@@ -158,8 +158,8 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
                       </button>
                     </div>
                   </div>
-                  <div className="flex justify-end gap-3 border-t pt-4">
-                    <button className="px-4 py-2 rounded bg-red-500 text-white" onClick={handleLogout}>Logout</button>
+                  <div className="flex justify-end gap-3 border-t border-gray-100 dark:border-gray-700 pt-4">
+                    <button className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600" onClick={handleLogout}>Logout</button>
                   </div>
                 </div>
               </div>

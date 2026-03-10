@@ -130,7 +130,7 @@ export default function DashboardPage() {
         <SummaryCard label="Current Balance" value={summary.balance} type="balance" />
         <SummaryCard label="Income" value={summary.income} type="income" />
         <SummaryCard label="Expenses" value={summary.expense} type="expense" />
-        <SummaryCard label="Transactions" value={transactions.length} type="" />
+        <SummaryCard label="Transactions" value={filteredTransactions.length}/>
       </div>
       <div className="grid grid-cols-4 gap-4 mb-3">
         <div>

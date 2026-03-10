@@ -21,7 +21,7 @@ export default function AppHeader({ expanded, onToggle }: Props) {
   const title = TITLES[path] || 'Simple Finance';
 
   return (
-    <header className="h-14 bg-green-600 flex items-center px-4 shadow-sm border-b border-green-700/40">
+    <header className="h-14 bg-gray-600 flex items-center px-4 shadow-sm border-b border-gray-700/40">
       <button
         type="button"
         onClick={onToggle}

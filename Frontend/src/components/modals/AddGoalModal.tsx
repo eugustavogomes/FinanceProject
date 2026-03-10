@@ -85,26 +85,26 @@ export default function AddGoalModal({ isOpen, onClose, onSubmit, initialData }:
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black opacity-40" onClick={onClose}></div>
-      <div className="bg-white rounded-lg p-6 z-10 w-full max-w-md">
-        <h3 className="text-lg font-semibold mb-4">
+      <div className="absolute inset-0 bg-black/60" onClick={onClose}></div>
+      <div className="bg-white dark:bg-gray-900 rounded-lg p-6 z-10 w-full max-w-md border border-gray-100 dark:border-gray-700 shadow-lg">
+        <h3 className="text-lg font-semibold mb-4 text-foreground">
           {initialData ? 'Editar meta' : 'Nova meta'}
         </h3>
         {error && <div className="mb-3 text-sm text-red-600">{error}</div>}
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div className="flex flex-col">
-            <label className="text-xs font-medium text-gray-600 mb-1">Nome do sonho/meta</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1">Nome do sonho/meta</label>
             <input
-              className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200"
+              className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
               placeholder="Ex: Viagem, carro, reserva..."
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-xs font-medium text-gray-600 mb-1">Custo total desejado</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1">Custo total desejado</label>
             <input
-              className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200"
+              className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
               placeholder="Ex: 10000"
               value={target}
               onChange={(e) => setTarget(e.target.value)}
@@ -112,10 +112,10 @@ export default function AddGoalModal({ isOpen, onClose, onSubmit, initialData }:
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-xs font-medium text-gray-600 mb-1">Prazo (mês/ano)</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1">Prazo (mês/ano)</label>
             <input
               type="month"
-              className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200"
+              className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
             />
@@ -124,7 +124,7 @@ export default function AddGoalModal({ isOpen, onClose, onSubmit, initialData }:
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-2 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
+              className="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-100 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
               disabled={loading}
             >
               Cancelar

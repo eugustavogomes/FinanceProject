@@ -118,15 +118,15 @@ export default function AddInvestmentModal({ isOpen, onClose, onSubmit, initialD
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black opacity-40" onClick={onClose}></div>
-      <div className="bg-white rounded-lg p-6 z-10 w-full max-w-md">
-        <h3 className="text-lg font-semibold mb-4">{initialData ? 'Edit investment' : 'Add investment'}</h3>
+      <div className="absolute inset-0 bg-black/60" onClick={onClose}></div>
+      <div className="bg-white dark:bg-gray-900 rounded-lg p-6 z-10 w-full max-w-md border border-gray-100 dark:border-gray-700 shadow-lg">
+        <h3 className="text-lg font-semibold mb-4 text-foreground">{initialData ? 'Edit investment' : 'Add investment'}</h3>
         {error && <div className="text-red-500 mb-2 text-sm">{error}</div>}
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div className="flex flex-col">
-            <label className="text-xs font-medium text-gray-600 mb-1">Name</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1">Name</label>
             <input
-              className="px-2 h-10 rounded border border-gray-200 text-sm"
+              className="px-2 h-10 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-emerald-200 focus:outline-none"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ex: Stock XYZ, Treasury..."
@@ -135,9 +135,9 @@ export default function AddInvestmentModal({ isOpen, onClose, onSubmit, initialD
           </div>
 
           <div className="flex flex-col">
-            <label className="text-xs font-medium text-gray-600 mb-1">Category / Type</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1">Category / Type</label>
             <input
-              className="px-2 h-10 rounded border border-gray-200 text-sm"
+              className="px-2 h-10 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-emerald-200 focus:outline-none"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               placeholder="Ex: Stocks, Fixed income, Funds..."
@@ -145,9 +145,9 @@ export default function AddInvestmentModal({ isOpen, onClose, onSubmit, initialD
           </div>
 
           <div className="flex flex-col">
-            <label className="text-xs font-medium text-gray-600 mb-1">Invested amount</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1">Invested amount</label>
             <input
-              className="px-2 h-10 rounded border border-gray-200 text-sm"
+              className="px-2 h-10 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-emerald-200 focus:outline-none"
               value={investedAmount}
               onChange={(e) => setInvestedAmount(formatCurrencyInput(e.target.value))}
               placeholder="Ex: R$ 10.000,00"
@@ -156,9 +156,9 @@ export default function AddInvestmentModal({ isOpen, onClose, onSubmit, initialD
           </div>
 
           <div className="flex flex-col">
-            <label className="text-xs font-medium text-gray-600 mb-1">Current value</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1">Current value</label>
             <input
-              className="px-2 h-10 rounded border border-gray-200 text-sm"
+              className="px-2 h-10 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-emerald-200 focus:outline-none"
               value={currentValue}
               onChange={(e) => setCurrentValue(formatCurrencyInput(e.target.value))}
               placeholder="Ex: R$ 12.000,00"
@@ -167,9 +167,9 @@ export default function AddInvestmentModal({ isOpen, onClose, onSubmit, initialD
           </div>
 
           <div className="flex flex-col">
-            <label className="text-xs font-medium text-gray-600 mb-1">Expected return / year (%)</label>
+            <label className="text-xs font-medium text-muted-foreground mb-1">Expected return / year (%)</label>
             <input
-              className="px-2 h-10 rounded border border-gray-200 text-sm"
+              className="px-2 h-10 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-emerald-200 focus:outline-none"
               value={expectedReturnYearly}
               onChange={(e) => setExpectedReturnYearly(e.target.value.replace(/[^0-9.,-]/g, ''))}
               placeholder="Ex: 10,5"
@@ -180,7 +180,7 @@ export default function AddInvestmentModal({ isOpen, onClose, onSubmit, initialD
           <div className="flex gap-2 justify-end mt-2">
             <button
               type="button"
-              className="bg-gray-300 px-4 h-10 rounded text-sm"
+              className="px-4 h-10 rounded bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-sm border border-gray-300 dark:border-gray-700 hover:bg-gray-300 dark:hover:bg-gray-700"
               onClick={onClose}
               disabled={loading}
             >
@@ -188,7 +188,7 @@ export default function AddInvestmentModal({ isOpen, onClose, onSubmit, initialD
             </button>
             <button
               type="submit"
-              className="btn btn-primary px-4 h-10 rounded text-white text-sm"
+              className="px-4 h-10 rounded bg-green-600 text-white text-sm hover:bg-green-500 disabled:opacity-60"
               disabled={loading}
             >
               {loading ? 'Saving...' : initialData ? 'Save' : 'Add'}

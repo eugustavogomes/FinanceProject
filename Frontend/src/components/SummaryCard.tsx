@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Card } from './ui/Card';
 import { ArrowUp, ArrowDown } from 'lucide-react';
 
 type Trend = {
@@ -71,31 +72,34 @@ export function SummaryCard({ label, value, type = '', trend, sparklineData, var
   }, [value]);
 
   const gradientClass = useMemo(() => {
-    if (type === 'income') return 'bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent';
-    if (type === 'expense') return 'bg-gradient-to-r from-red-500 to-rose-600 bg-clip-text text-transparent';
-    if (type === 'balance') return 'bg-gradient-to-r from-indigo-500 to-blue-600 bg-clip-text text-transparent';
-    return 'text-gray-700';
+    if (type === 'income') return 'bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent';
+    if (type === 'expense') return 'bg-gradient-to-r from-red-500 to-rose-500 bg-clip-text text-transparent';
+    if (type === 'balance') return 'bg-gradient-to-r from-indigo-400 to-blue-500 bg-clip-text text-transparent';
+    return 'text-foreground';
   }, [type]);
 
   if (loading) {
     return (
-      <div role="status" className="rounded-xl p-4 bg-white/80 border border-gray-100">
-        <div className="animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-24 mb-3" />
-          <div className="h-10 bg-gray-200 rounded w-40 mb-2" />
-          <div className="h-6 bg-gray-200 rounded w-full" />
+      <Card>
+        <div role="status" className="rounded-xl p-2">
+          <div className="animate-pulse">
+            <div className="h-4 bg-gray-200 rounded w-24 mb-3" />
+            <div className="h-10 bg-gray-200 rounded w-40 mb-2" />
+            <div className="h-6 bg-gray-200 rounded w-full" />
+          </div>
         </div>
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div role="region" aria-label={label} className="rounded-xl p-4 bg-white border border-gray-100 shadow-sm">
+    <Card>
+      <div role="region" aria-label={label} className="rounded-xl p-2">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className={`text-sm font-medium uppercase tracking-wide mb-1 ${gradientClass}`}>{label}</div>
           <div className="flex items-center gap-3">
-            <div className="text-2xl md:text-3xl font-extrabold text-gray-800" title={currencyFormatter(value)}>
+            <div className="text-2xl md:text-3xl font-extrabold text-foreground" title={currencyFormatter(value)}>
               {abbreviateNumber(displayValue)}
             </div>
             {trend && typeof trend.percent === 'number' ? (
@@ -116,11 +120,12 @@ export function SummaryCard({ label, value, type = '', trend, sparklineData, var
 
       {variant === 'default' && (
         <div className="mt-3 flex items-center justify-between">
-          <div className="text-sm text-gray-500">Summary for the selected period</div>
+          <div className="text-sm text-muted-foreground">Summary for the selected period</div>
           <div>
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </Card>
   );
 }

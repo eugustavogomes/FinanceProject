@@ -147,12 +147,12 @@ export default function CategoriesPage() {
 
   return (
     <main className="p-3">
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-        <div className="border-b px-4 py-3 flex flex-col gap-3 md:grid md:grid-cols-[auto,1fr,auto] md:items-center md:gap-4">
-          <div className="text-sm font-medium text-gray-700">Filtrar categorias</div>
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
+        <div className="border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex flex-col gap-3 md:grid md:grid-cols-[auto,1fr,auto] md:items-center md:gap-4">
+          <div className="text-sm font-medium text-foreground">Filtrar categorias</div>
 
           <div className="flex justify-center">
-            <div className="inline-flex rounded-full border border-gray-200 bg-gray-50 p-1 text-xs font-medium">
+            <div className="inline-flex rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-1 text-xs font-medium">
               {(['Income', 'Expense'] as const).map((t) => {
                 const active = typeFilter === t;
                 return (
@@ -163,7 +163,7 @@ export default function CategoriesPage() {
                     className={`px-4 py-1 rounded-full transition-colors ${
                       active
                         ? 'bg-green-600 text-white shadow-sm'
-                        : 'text-gray-500 hover:bg-white'
+                        : 'text-gray-500 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-900'
                     }`}
                   >
                     {t}
@@ -178,17 +178,17 @@ export default function CategoriesPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search categories"
-              className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-200"
+              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
             />
           </div>
         </div>
         {loading ? (
           <div className="p-6">
             <div className="animate-pulse space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-40" />
-              <div className="h-12 bg-gray-200 rounded" />
-              <div className="h-12 bg-gray-200 rounded" />
-              <div className="h-12 bg-gray-200 rounded" />
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-40" />
+              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
+              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
+              <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
             </div>
           </div>
         ) : error ? (
@@ -197,7 +197,7 @@ export default function CategoriesPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-8 text-center">
-            <p className="text-gray-600">No categories found</p>
+            <p className="text-gray-600 dark:text-gray-200">No categories found</p>
             <button
               onClick={() => setShowAddModal(true)}
               className="mt-4 px-4 py-2 bg-green-600 text-white rounded"
@@ -206,7 +206,7 @@ export default function CategoriesPage() {
             </button>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-100 dark:divide-gray-800">
             {filtered.map((category: any) => {
               const rawType = category.type;
               const typeLabel = typeof category.__typeLabel === 'string'
@@ -220,10 +220,10 @@ export default function CategoriesPage() {
                       : '';
 
               const typeClasses = typeLabel === 'Income'
-                ? 'bg-emerald-50 text-emerald-700'
+                ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
                 : typeLabel === 'Expense'
-                  ? 'bg-red-50 text-red-700'
-                  : 'bg-gray-100 text-gray-600';
+                  ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300';
 
               return (
               <div key={category.id} className="p-4 flex items-center justify-between">
@@ -231,20 +231,20 @@ export default function CategoriesPage() {
                   <div className="flex-1">
                     <div className="grid grid-cols-1 md:grid-cols-[2fr,1.5fr,auto] gap-4 items-center">
                       <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Name</label>
+                        <label className="block text-xs font-medium text-muted-foreground mb-1">Name</label>
                         <input
                           type="text"
                           value={editName}
                           onChange={(e) => setEditName(e.target.value)}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400"
+                          className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400 focus:outline-none"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Type</label>
+                        <label className="block text-xs font-medium text-muted-foreground mb-1">Type</label>
                         <select
                           value={editType}
                           onChange={(e) => setEditType(e.target.value)}
-                          className="w-full p-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400"
+                          className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400 focus:outline-none"
                         >
                           <option value="">Select type</option>
                           <option value="Income">Income</option>
@@ -264,7 +264,7 @@ export default function CategoriesPage() {
                           )}
                         </button>
 
-                        <button onClick={cancelEdit} className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold border border-gray-200 hover:bg-gray-200">
+                        <button onClick={cancelEdit} className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-full text-xs font-semibold border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700">
                           Cancel
                         </button>
                       </div>
@@ -274,7 +274,7 @@ export default function CategoriesPage() {
                   <>
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-semibold text-gray-800">{category.name}</h4>
+                        <h4 className="font-semibold text-foreground">{category.name}</h4>
                       {typeLabel && (
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${typeClasses}`}>
                           {typeLabel}
@@ -286,7 +286,7 @@ export default function CategoriesPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => startEdit(category)}
-                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs font-medium shadow-sm"
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 text-xs font-medium shadow-sm"
                       >
                         <Pencil size={14} />
                         Edit
@@ -295,7 +295,7 @@ export default function CategoriesPage() {
                       <button
                         onClick={() => handleDelete(category.id, category.name)}
                         disabled={actionLoading === `delete-${category.id}`}
-                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-red-200 text-red-500 hover:bg-red-50 text-xs font-medium shadow-sm"
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-red-200 dark:border-red-500/60 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 text-xs font-medium shadow-sm"
                       >
                         {actionLoading === `delete-${category.id}` ? (
                           <Loader className="animate-spin" />

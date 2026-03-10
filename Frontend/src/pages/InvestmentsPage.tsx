@@ -59,13 +59,13 @@ export default function InvestmentsPage() {
 
       <section>
         {loading ? (
-          <div className="text-sm text-gray-500">Carregando investimentos...</div>
+          <div className="text-sm text-muted-foreground">Carregando investimentos...</div>
         ) : error ? (
           <div className="text-sm text-red-600">{error}</div>
         ) : investments.length === 0 ? (
-          <div className="text-sm text-gray-500">No investments yet. Use the + button to add your first one.</div>
+          <div className="text-sm text-muted-foreground">No investments yet. Use the + button to add your first one.</div>
         ) : (
-          <div className="bg-white border border-gray-100 rounded-lg shadow-sm overflow-x-auto">
+          <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b">
@@ -77,12 +77,12 @@ export default function InvestmentsPage() {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search by name or category"
-                            className="w-full sm:w-64 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-200"
+                            className="w-full sm:w-64 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
                           />
                           <select
                             value={filterCategory}
                             onChange={(e) => setFilterCategory(e.target.value)}
-                            className="px-3 py-2 border rounded-lg text-sm min-w-[160px]"
+                            className="px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm min-w-[160px] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none"
                           >
                             <option value="all">All categories</option>
                             {Array.from(new Set(investments.map((i) => i.category || '-'))).map((cat) => (
@@ -95,16 +95,16 @@ export default function InvestmentsPage() {
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs w-full md:w-auto justify-end">
-                        <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-right">
-                          <div className="text-gray-500">Current Assets</div>
-                          <div className="font-semibold text-gray-800">{formatCurrency(totals.totalCurrent)}</div>
+                        <div className="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg px-3 py-2 text-right">
+                          <div className="text-gray-500 dark:text-gray-300">Current Assets</div>
+                          <div className="font-semibold text-gray-800 dark:text-gray-100">{formatCurrency(totals.totalCurrent)}</div>
                         </div>
-                        <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-right">
-                          <div className="text-gray-500">Total Invested</div>
-                          <div className="font-semibold text-gray-800">{formatCurrency(totals.totalInvested)}</div>
+                        <div className="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg px-3 py-2 text-right">
+                          <div className="text-gray-500 dark:text-gray-300">Total Invested</div>
+                          <div className="font-semibold text-gray-800 dark:text-gray-100">{formatCurrency(totals.totalInvested)}</div>
                         </div>
-                        <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-right">
-                          <div className="text-gray-500">Profit/Loss</div>
+                        <div className="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg px-3 py-2 text-right">
+                          <div className="text-gray-500 dark:text-gray-300">Profit/Loss</div>
                           <div
                             className={`font-semibold ${totals.profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
                           >
@@ -116,20 +116,20 @@ export default function InvestmentsPage() {
                   </th>
                 </tr>
 
-                <tr className="border-b bg-gray-50">
-                  <th className="text-left px-4 py-2 text-xs text-gray-500">Name</th>
-                  <th className="text-left px-4 py-2 text-xs text-gray-500">Category</th>
-                  <th className="text-right px-4 py-2 text-xs text-gray-500">Invested</th>
-                  <th className="text-right px-4 py-2 text-xs text-gray-500">Current</th>
-                  <th className="text-right px-4 py-2 text-xs text-gray-500">Result</th>
-                  <th className="text-right px-4 py-2 text-xs text-gray-500">Actions</th>
+                <tr className="border-b bg-gray-50 dark:bg-gray-800">
+                  <th className="text-left px-4 py-2 text-xs text-gray-500 dark:text-gray-200">Name</th>
+                  <th className="text-left px-4 py-2 text-xs text-gray-500 dark:text-gray-200">Category</th>
+                  <th className="text-right px-4 py-2 text-xs text-gray-500 dark:text-gray-200">Invested</th>
+                  <th className="text-right px-4 py-2 text-xs text-gray-500 dark:text-gray-200">Current</th>
+                  <th className="text-right px-4 py-2 text-xs text-gray-500 dark:text-gray-200">Result</th>
+                  <th className="text-right px-4 py-2 text-xs text-gray-500 dark:text-gray-200">Actions</th>
                 </tr>
               </thead>
 
               <tbody>
                 {filteredInvestments.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-6 text-center text-sm text-gray-500">
+                    <td colSpan={6} className="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-300">
                       No investments match the current filters.
                     </td>
                   </tr>
@@ -139,9 +139,9 @@ export default function InvestmentsPage() {
                     const profitPct = i.investedAmount > 0 ? (profit / i.investedAmount) * 100 : 0;
 
                     return (
-                      <tr key={i.id} className="border-b last:border-b-0 hover:bg-gray-50">
-                        <td className="px-4 py-2 font-medium text-gray-800">{i.name}</td>
-                        <td className="px-4 py-2 text-gray-600 text-xs">{i.category || '-'}</td>
+                      <tr key={i.id} className="border-b last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <td className="px-4 py-2 font-medium text-gray-800 dark:text-gray-100">{i.name}</td>
+                        <td className="px-4 py-2 text-gray-600 dark:text-gray-300 text-xs">{i.category || '-'}</td>
                         <td className="px-4 py-2 text-right">{formatCurrency(i.investedAmount)}</td>
                         <td className="px-4 py-2 text-right">{formatCurrency(i.currentValue)}</td>
                         <td className="px-4 py-2 text-right">
@@ -153,7 +153,7 @@ export default function InvestmentsPage() {
                           <button
                             type="button"
                             onClick={() => handleEdit(i.id)}
-                            className="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-gray-200 text-xs text-gray-700 hover:bg-gray-50 mr-1"
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 mr-1"
                           >
                             <Pencil className="w-3 h-3" />
                             Edit
@@ -170,7 +170,7 @@ export default function InvestmentsPage() {
                                 setFormError(result.error || 'Error removing investment');
                               }
                             }}
-                            className="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-red-200 text-xs text-red-600 hover:bg-red-50"
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-red-200 dark:border-red-500/60 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
                           >
                             <TrashIcon className="w-3 h-3" />
                             Remove

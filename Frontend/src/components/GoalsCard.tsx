@@ -40,19 +40,19 @@ export default function GoalsCard() {
   }
 
   return (
-    <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-4 h-full flex flex-col justify-between">
+    <div className="bg-white dark:bg-gray-800 text-card-foreground border border-gray-100 dark:border-gray-700 shadow-sm rounded-lg p-4 h-full flex flex-col justify-between">
       <div>
-        <h3 className="text-xl font-semibold flex items-center justify-between">
+        <h3 className="text-xl font-semibold flex items-center justify-between text-foreground">
           <span>Goals</span>
           {loadingGoals ? (
-            <span className="text-xs text-gray-400">Loading...</span>
+            <span className="text-xs text-muted-foreground">Loading...</span>
           ) : (
-            <span className="text-xs text-gray-500">{goals.length} goals</span>
+            <span className="text-xs text-muted-foreground">{goals.length} goals</span>
           )}
         </h3>
         <div className="mt-2 space-y-3">
           {limitedGoals.length === 0 && (
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-muted-foreground">
               Create your first financial goals to see progress here.
             </div>
           )}
@@ -60,17 +60,17 @@ export default function GoalsCard() {
           {limitedGoals.map((goal) => {
             const { title, progress, description } = buildGoalView(goal);
             return (
-              <div key={goal.id} className="border border-gray-100 rounded-md p-2">
-                <div className="text-xs font-semibold text-gray-700 mb-1">
+              <div key={goal.id} className="border border-border rounded-md p-2">
+                <div className="text-xs font-semibold text-foreground mb-1">
                   {title}
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
                   <div
                     className="bg-green-500 h-2.5"
                     style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
                   />
                 </div>
-                <div className="text-[11px] text-gray-600 mt-1">
+                <div className="text-[11px] text-muted-foreground mt-1">
                   {description}
                 </div>
               </div>

@@ -33,11 +33,11 @@ export default function GoalsPage() {
     <main className="p-3">
       <section>
         {loading ? (
-          <div className="text-sm text-gray-500">Carregando metas...</div>
+          <div className="text-sm text-muted-foreground">Carregando metas...</div>
         ) : error ? (
           <div className="text-sm text-red-600">{error}</div>
         ) : goals.length === 0 ? (
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-muted-foreground">
             Nenhuma meta cadastrada ainda. Use o formulário acima para criar sua primeira meta.
           </div>
         ) : (
@@ -68,39 +68,39 @@ export default function GoalsPage() {
                 : 0;
 
               return (
-                <div key={g.id} className="bg-white border border-gray-100 rounded-lg shadow-sm p-4 flex flex-col justify-between">
+                <div key={g.id} className="bg-white dark:bg-gray-800 text-card-foreground border border-gray-100 dark:border-gray-700 rounded-lg shadow-sm p-4 flex flex-col justify-between">
                   <div>
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <h4 className="font-semibold text-gray-800">{g.category || 'Meta sem nome'}</h4>
-                        <p className="text-xs text-gray-500">Prazo alvo: {deadline}</p>
+                        <h4 className="font-semibold text-foreground">{g.category || 'Meta sem nome'}</h4>
+                        <p className="text-xs text-muted-foreground">Prazo alvo: {deadline}</p>
                       </div>
                       <div className="text-right">
-                        <div className="text-xs text-gray-500">Custo total</div>
+                        <div className="text-xs text-muted-foreground">Custo total</div>
                         <div className="font-semibold">{formatCurrency(g.target)}</div>
                       </div>
                     </div>
                     <div className="mt-2">
-                      <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
                         <span>Necessário/mês: {formatCurrency(requiredPerMonth)}</span>
                         {averageMonthlyNet > 0 && (
                           <span>Poupança média: {formatCurrency(averageMonthlyNet)}/mês</span>
                         )}
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                         <div
                           className={`h-2 ${progressRatio >= 1 ? 'bg-emerald-500' : 'bg-amber-400'}`}
                           style={{ width: `${Math.max(4, Math.min(100, progressRatio * 100))}%` }}
                         />
                       </div>
-                      <p className="mt-2 text-xs text-gray-600 leading-snug">{helperText}</p>
+                      <p className="mt-2 text-xs text-muted-foreground leading-snug">{helperText}</p>
                     </div>
                   </div>
                   <div className="mt-3 flex justify-end gap-2">
                     <button
                       type="button"
                       onClick={() => setEditingId(g.id)}
-                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-gray-200 text-xs text-gray-700 hover:bg-gray-50"
+                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
                     >
                       <Pencil className="w-3 h-3" />
                       Editar
@@ -115,7 +115,7 @@ export default function GoalsPage() {
                           setFormError(result.error || 'Erro ao remover meta');
                         }
                       }}
-                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-red-200 text-xs text-red-600 hover:bg-red-50"
+                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-red-200 dark:border-red-500/60 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
                     >
                       <TrashIcon className="w-3 h-3" />
                       Remover

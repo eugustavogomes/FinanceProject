@@ -116,25 +116,25 @@ export default function TransactionsPage() {
     <main className="p-3">
       {error && <div className="text-red-500">Erro: {error}</div>}
       {formError && <div className="text-red-500 mb-2">{formError}</div>}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 mb-8">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 mb-8">
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
               <tr className="border-b">
                 <th colSpan={5} className="p-3">
                   <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-                    <div className="text-sm font-medium text-gray-700">Filtrar transações</div>
+                    <div className="text-sm font-medium text-foreground">Filtrar transações</div>
                     <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
                       <input
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="Buscar por descrição ou categoria"
-                        className="w-full md:w-64 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-emerald-200"
+                        className="w-full md:w-64 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
                       />
                       <select
                         value={filterType}
                         onChange={e => setFilterType(e.target.value as any)}
-                        className="px-3 py-2 border rounded-lg text-sm min-w-[130px]"
+                        className="px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm min-w-[130px] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none"
                       >
                         <option value="all">Todos os tipos</option>
                         <option value="Income">Income</option>
@@ -143,7 +143,7 @@ export default function TransactionsPage() {
                       <select
                         value={filterCategory}
                         onChange={e => setFilterCategory(e.target.value)}
-                        className="px-3 py-2 border rounded-lg text-sm min-w-[160px]"
+                        className="px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm min-w-[160px] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none"
                       >
                         <option value="all">Todas categorias</option>
                         {categories.map((c: any) => (
@@ -155,34 +155,34 @@ export default function TransactionsPage() {
                 </th>
               </tr>
               <tr className="border-b">
-                <th className="text-left py-3 text-sm text-gray-600 p-3 sticky top-0 bg-white z-10">Category</th>
-                <th className="text-left py-3 text-sm text-gray-600 p-3 sticky top-0 bg-white z-10">Description</th>
-                <th className="text-left py-3 text-sm text-gray-600 p-3 sticky top-0 bg-white z-10">Date</th>
-                <th className="text-right py-3 text-sm text-gray-600 p-3 sticky top-0 bg-white z-10">Amount</th>
-                <th className="text-right py-3 text-sm text-gray-600 p-3 sticky top-0 bg-white z-10">Actions</th>
+                <th className="text-left py-3 text-sm text-gray-700 dark:text-gray-100 p-3 sticky top-0 bg-white dark:bg-gray-800 z-10">Category</th>
+                <th className="text-left py-3 text-sm text-gray-700 dark:text-gray-100 p-3 sticky top-0 bg-white dark:bg-gray-800 z-10">Description</th>
+                <th className="text-left py-3 text-sm text-gray-700 dark:text-gray-100 p-3 sticky top-0 bg-white dark:bg-gray-800 z-10">Date</th>
+                <th className="text-right py-3 text-sm text-gray-700 dark:text-gray-100 p-3 sticky top-0 bg-white dark:bg-gray-800 z-10">Amount</th>
+                <th className="text-right py-3 text-sm text-gray-700 dark:text-gray-100 p-3 sticky top-0 bg-white dark:bg-gray-800 z-10">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 Array.from({ length: 6 }).map((_, i) => (
                   <tr key={i} className="animate-pulse">
-                    <td className="p-3"><div className="h-4 bg-gray-200 rounded w-32" /></td>
-                    <td className="p-3"><div className="h-4 bg-gray-200 rounded w-full" /></td>
-                    <td className="p-3"><div className="h-4 bg-gray-200 rounded w-24" /></td>
-                    <td className="p-3 text-right"><div className="h-4 bg-gray-200 rounded w-20 ml-auto" /></td>
-                    <td className="p-3 text-right"><div className="h-8 bg-gray-200 rounded w-20 ml-auto" /></td>
+                    <td className="p-3"><div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32" /></td>
+                    <td className="p-3"><div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full" /></td>
+                    <td className="p-3"><div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24" /></td>
+                    <td className="p-3 text-right"><div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20 ml-auto" /></td>
+                    <td className="p-3 text-right"><div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-20 ml-auto" /></td>
                   </tr>
                 ))
               ) : filtered.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="p-8 text-center">
-                    <p className="text-gray-600 mb-4">Nenhuma transação encontrada</p>
+                    <p className="text-gray-600 dark:text-gray-200 mb-4">Nenhuma transação encontrada</p>
                     <button onClick={() => { setEditingId(null); setModalInitialData(undefined); setShowModal(true); }} className="px-4 py-2 bg-green-600 text-white rounded">Adicionar primeira transação</button>
                   </td>
                 </tr>
               ) : (
                 filtered.map((tx: any) => (
-                  <tr key={tx.id} className="hover:bg-gray-50 transition">
+                  <tr key={tx.id} className="hover:bg-gray-50 dark:hover:bg-gray-900 transition">
                     <td className="p-3 align-top">
                       <div className="flex items-center gap-3">
                         <div
@@ -196,16 +196,16 @@ export default function TransactionsPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="p-3 text-sm text-gray-600 max-w-xs truncate">{tx.description || '-'}</td>
-                    <td className="p-3 text-sm text-gray-600">{new Date(tx.date).toLocaleDateString('pt-BR')}</td>
+                    <td className="p-3 text-sm text-gray-700 dark:text-gray-200 max-w-xs truncate">{tx.description || '-'}</td>
+                    <td className="p-3 text-sm text-gray-700 dark:text-gray-200">{new Date(tx.date).toLocaleDateString('pt-BR')}</td>
                     <td className={`p-3 text-right font-semibold ${isIncomeTransaction(tx) ? 'text-green-600' : 'text-red-600'}`}>
                       {typeof tx.value === 'number' ? tx.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '--'}
                     </td>
                     <td className="p-3 text-right">
-                      <button className="shadow-sm rounded-lg border border-gray-200 text-gray-500 p-2 hover:bg-gray-100 mr-2" onClick={() => handleEdit(tx)}>
+                      <button className="shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-300 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 mr-2" onClick={() => handleEdit(tx)}>
                         <Pencil className="w-4 h-4" />
                       </button>
-                      <button className="shadow-sm rounded-lg border border-red-200 p-2 text-red-500 hover:bg-red-50" onClick={() => openDeleteConfirm(tx.id, tx.description || tx.category)}>
+                      <button className="shadow-sm rounded-lg border border-red-200 dark:border-red-500/60 p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30" onClick={() => openDeleteConfirm(tx.id, tx.description || tx.category)}>
                         <TrashIcon className="w-4 h-4" />
                       </button>
                     </td>

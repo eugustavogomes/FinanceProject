@@ -55,13 +55,16 @@ export default function YearTransactionsChart({ income, expense, months, height 
         return currencyFormatter(num);
     };
 
+    const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+
     const options: ApexOptions = useMemo(() => ({
         chart: {
             type: 'area',
             background: 'transparent',
+            foreColor: isDark ? '#e5e7eb' : '#111827',
             toolbar: { show: false },
         },
-        grid: { show: false },
+        grid: { show: false, borderColor: isDark ? '#374151' : '#e5e7eb' },
         stroke: { curve: 'smooth', width: 2 },
         fill: {
             type: 'gradient',
@@ -77,43 +80,44 @@ export default function YearTransactionsChart({ income, expense, months, height 
             }
         },
         markers: { size: 4, hover: { size: 6 } },
-        xaxis: { categories: labels, labels: { style: { colors: '#4b5563' } } },
+        xaxis: { categories: labels, labels: { style: { colors: isDark ? '#9ca3af' : '#4b5563' } } },
         yaxis: {
             labels: {
-                formatter: (val: number) => abbreviate(Number(val))
+                formatter: (val: number) => abbreviate(Number(val)),
+                style: { colors: isDark ? '#9ca3af' : '#4b5563' }
             }
         },
         tooltip: {
-            theme: 'dark',
+            theme: isDark ? 'dark' : 'light',
             y: {
                 formatter: (val: number) => abbreviate(Number(val))
             }
         },
         colors: ['#16a34a', '#ef4444'],
-        legend: { position: 'top', horizontalAlign: 'right', labels: { colors: '#374151' } },
+        legend: { position: 'top', horizontalAlign: 'right', labels: { colors: isDark ? '#e5e7eb' : '#374151' } },
         dataLabels: { enabled: false },
         responsive: [{
             breakpoint: 640,
             options: { chart: { toolbar: { show: false } }, legend: { position: 'bottom' } }
         }]
-    }), [labels]);
+    }), [labels, isDark]);
 
     if (!hasData) {
         return (
-            <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-6 h-full flex flex-col items-center justify-center">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Income and Expenses - Last 12 Months</h3>
-                <p className="text-sm text-gray-500 mb-4">No data available for the selected period</p>
+            <div className="bg-white dark:bg-gray-800 text-card-foreground border border-gray-100 dark:border-gray-700 shadow-sm rounded-lg p-6 h-full flex flex-col items-center justify-center">
+                <h3 className="text-lg font-semibold text-foreground mb-2">Income and Expenses - Last 12 Months</h3>
+                <p className="text-sm text-muted-foreground mb-4">No data available for the selected period</p>
                 <div className="flex gap-2">
                     <button className="px-3 py-2 bg-green-600 text-white rounded-md">Add transaction</button>
-                    <button className="px-3 py-2 border rounded-md">View transactions</button>
+                    <button className="px-3 py-2 border border-border rounded-md text-foreground">View transactions</button>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-white border border-gray-100 shadow-sm rounded-lg p-4 h-full w-full">
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">Income and Expenses - Last 12 Months</h3>
+        <div className="bg-white dark:bg-gray-800 text-card-foreground border border-gray-100 dark:border-gray-700 shadow-sm rounded-lg p-4 h-full w-full">
+            <h3 className="text-xl font-semibold text-foreground mb-2">Income and Expenses - Last 12 Months</h3>
             <ReactApexChart options={options} series={series} type="area" height={height} />
         </div>
     );

@@ -8,7 +8,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const contentMarginLeft = sidebarExpanded ? '14rem' : '5rem'; // w-56 / w-20
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background text-foreground">
       <Sidebar expanded={sidebarExpanded} />
       <div
         className="flex flex-col transition-all duration-700 ease-in-out"

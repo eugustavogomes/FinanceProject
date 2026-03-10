@@ -34,7 +34,7 @@ export default function Sidebar({ expanded }: SidebarProps) {
 
   return (
     <aside
-      className={`fixed h-full z-40 flex flex-col justify-between shadow-lg bg-green-800 transition-all duration-700 ease-in-out ${expanded ? 'w-56' : 'w-20'}`}
+      className={`fixed h-full z-40 flex flex-col justify-between shadow-lg bg-gray-800 transition-all duration-700 ease-in-out ${expanded ? 'w-56' : 'w-20'}`}
     >
       <div>
         <div className="flex items-center justify-center py-3 min-h-[64px]">
@@ -62,7 +62,7 @@ export default function Sidebar({ expanded }: SidebarProps) {
               key={route.path}
               to={route.path}
               className={({ isActive }) =>
-                `flex items-center ${expanded ? 'gap-3 px-3 py-2' : 'justify-center py-2'} text-white rounded-xl transition-all duration-500 ease-in-out hover:bg-green-700/80 ${isActive ? 'bg-green-800 font-bold' : ''}`
+                `flex items-center ${expanded ? 'gap-3 px-3 py-2' : 'justify-center py-2'} text-white rounded-xl transition-all duration-500 ease-in-out hover:bg-gray-700/80 ${isActive ? 'bg-gray-900 font-bold' : ''}`
               }
             >
               {route.icon}
@@ -75,14 +75,14 @@ export default function Sidebar({ expanded }: SidebarProps) {
         </nav>
       </div>
       <div
-        className={`flex items-center ${expanded ? 'gap-3 px-2 py-2' : 'justify-center py-3'} text-white rounded-xl mb-2 mx-2 hover:bg-green-700/80 transition-all duration-500 ease-in-out font-semibold cursor-pointer`}
+        className={`flex items-center ${expanded ? 'gap-3 px-2 py-2' : 'justify-center py-3'} text-white rounded-xl mb-2 mx-2 hover:bg-gray-700/80 transition-all duration-500 ease-in-out font-semibold cursor-pointer`}
         onClick={() => setShowProfile(true)}
         title="Perfil"
       >
         {!expanded && <User size={15} />}
         {expanded && (
           <>
-            <div className="flex items-center justify-center h-10 w-8 rounded-full bg-emerald-500 text-white font-semibold text-sm shadow-sm bg-opacity-50">
+            <div className="flex items-center justify-center h-10 w-8 rounded-full bg-gray-600 text-white font-semibold text-sm shadow-sm bg-opacity-50">
               {userInitial}
             </div>
             <div
