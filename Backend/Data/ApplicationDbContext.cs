@@ -11,6 +11,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<Goal> Goals { get; set; }
+    public DbSet<Investment> Investments { get; set; }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
@@ -43,6 +44,7 @@ public class ApplicationDbContext : DbContext
     modelBuilder.Entity<Category>().ToTable("categories");
     modelBuilder.Entity<Transaction>().ToTable("transactions");
     modelBuilder.Entity<Goal>().ToTable("goals");
+    modelBuilder.Entity<Investment>().ToTable("investments");
 
     // Categories (1:N)
     modelBuilder.Entity<Category>()
@@ -73,5 +75,12 @@ public class ApplicationDbContext : DbContext
     modelBuilder.Entity<Transaction>()
         .Property(t => t.Type)
         .HasConversion<string>();
+
+    // Investments (1:N)
+    modelBuilder.Entity<Investment>()
+        .HasOne(i => i.User)
+        .WithMany(u => u.Investments)
+        .HasForeignKey(i => i.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
 }
 }

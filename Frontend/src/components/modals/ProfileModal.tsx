@@ -13,6 +13,11 @@ interface Props {
 
 export default function ProfileModal({ isOpen, onClose, email, name, onLogout }: Props) {
   const [tab, setTab] = useState<'settings' | 'account'>('settings');
+  const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const auth = useAuth();
 
   if (!isOpen) return null;
@@ -58,14 +63,42 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
                       <p className="font-medium">Theme</p>
                       <p className="text-sm text-gray-500">Select light/dark mode</p>
                     </div>
-                    <button className="px-3 py-1 bg-gray-200 rounded">Toggle</button>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={darkModeEnabled}
+                      onClick={() => setDarkModeEnabled((v) => !v)}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-300 ${
+                        darkModeEnabled ? 'bg-emerald-500' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                          darkModeEnabled ? 'translate-x-5' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
                   </div>
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
                       <p className="font-medium">Notifications</p>
                       <p className="text-sm text-gray-500">Enable alerts</p>
                     </div>
-                    <button className="px-3 py-1 bg-gray-200 rounded">Toggle</button>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={notificationsEnabled}
+                      onClick={() => setNotificationsEnabled((v) => !v)}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-300 ${
+                        notificationsEnabled ? 'bg-emerald-500' : 'bg-gray-300'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                          notificationsEnabled ? 'translate-x-5' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -79,8 +112,46 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
                   <p className="text-sm text-gray-600">Name</p>
                   <p className="font-medium text-gray-800">{userName}</p>
                 </div>
-                <div className="pt-4 border-t flex justify-end gap-3">
-                  <button className="px-4 py-2 rounded bg-red-500 text-white" onClick={handleLogout}>Logout</button>
+                <div className="pt-4 border-t space-y-4">
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-gray-800">Alterar senha</p>
+                    <p className="text-xs text-gray-500">Protótipo: em breve será conectado ao backend para alterar sua senha com segurança.</p>
+                    <div className="space-y-2">
+                      <input
+                        type="password"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200"
+                        placeholder="Senha atual"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                      />
+                      <input
+                        type="password"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200"
+                        placeholder="Nova senha"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                      />
+                      <input
+                        type="password"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200"
+                        placeholder="Confirmar nova senha"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        disabled
+                        className="px-4 py-2 rounded bg-gray-900 text-white text-sm opacity-60 cursor-not-allowed"
+                      >
+                        Salvar nova senha (em breve)
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-3 border-t pt-4">
+                    <button className="px-4 py-2 rounded bg-red-500 text-white" onClick={handleLogout}>Logout</button>
+                  </div>
                 </div>
               </div>
             )}

@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { SummaryCard } from "../components/SummaryCard";
-import IncomeDonutChart from "../components/IncomeDonutChart";
-import YearTransactionsChart from "../components/YearTransactionsChart";
+import IncomeDonutChart from "../components/charts/IncomeDonutChart";
+import YearTransactionsChart from "../components/charts/YearTransactionsChart";
 import { fetchDashboardSummary } from '../hooks/useDashboard';
 import LatestTransactions from "../components/LatestTransactions";
 import { useTransactions } from "../hooks/useTransactions";
 import { useCategories } from "../hooks/useCategories";
-import ExpenseDonutChart from "../components/ExpenseDonutChart";
+import ExpenseDonutChart from "../components/charts/ExpenseDonutChart";
 import MonthNavbar from "../components/MonthNavbar";
-import InvestmentsPieCard from "../components/InvestmentsPieCard";
+import InvestmentsPieCard from "../components/charts/InvestmentsPieCard";
 import GoalsCard from "../components/GoalsCard";
+import { useInvestments } from "../hooks/useInvestments";
 
 
 /**
@@ -23,6 +24,7 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState({ balance: 0, income: 0, expense: 0 });
   const { transactions } = useTransactions();
   const { categories } = useCategories();
+  const { investments } = useInvestments();
   const [selectedMonth, setSelectedMonth] = useState<number | 'all'>('all');
 
 
@@ -119,10 +121,10 @@ export default function DashboardPage() {
           <ExpenseDonutChart transactions={filteredTransactions} categories={categories} />
         </div>
         <div>
-          <InvestmentsPieCard investments={[{ name: 'Stocks', value: 5000 }, { name: 'REITs', value: 3000 }, { name: 'Savings', value: 2000 }]} />
+          <InvestmentsPieCard investments={investments.map((i: any) => ({ name: i.category || i.name, value: i.currentValue }))} />
         </div>
         <div>
-          <GoalsCard progress={45} title="Goals" />
+          <GoalsCard />
         </div>
         <div>
           <IncomeDonutChart transactions={filteredTransactions} categories={categories} />
