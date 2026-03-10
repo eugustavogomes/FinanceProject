@@ -1,22 +1,14 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import api from '../services/api';
 import { TRANSACTION_URL } from '../services/endpoints';
+import type { Transaction, TransactionType } from '../types/finance';
 
 interface CreateTransactionDto {
   value: number;
-  type: number;
+  type: TransactionType;
   categoryId: string | null;
   date: string;
   description: string;
-}
-
-interface Transaction {
-  id: number;
-  category: string;
-  type: number;
-  value: number;
-  date: string;
-  description?: string;
 }
 
 export function useTransactions() {

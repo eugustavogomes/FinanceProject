@@ -24,11 +24,11 @@ export default function TransactionsPage() {
   } = useTransactions();
   const [formError, setFormError] = useState<string | null>(null);
   const { categories, loading: loadingCategories } = useCategories();
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [modalInitialData, setModalInitialData] = useState<any | undefined>(undefined);
   const [search, setSearch] = useState('');
-  const [filterType, setFilterType] = useState<'all' | 0 | 1>('all');
+  const [filterType, setFilterType] = useState<'all' | 'Income' | 'Expense'>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -52,7 +52,7 @@ export default function TransactionsPage() {
    * - opens the modal by setting `showModal` to true.
    */
   function handleEdit(tx: any) {
-    setEditingId(Number(tx.id));
+    setEditingId(String(tx.id));
     setModalInitialData({
       value: tx.value,
       type: tx.type,
@@ -102,7 +102,7 @@ export default function TransactionsPage() {
     const next = transactions.filter((tx: any) => {
       if (filterType !== 'all') {
         const income = isIncomeTransaction(tx);
-        const matchesType = (filterType === 0 && income) || (filterType === 1 && !income);
+        const matchesType = (filterType === 'Income' && income) || (filterType === 'Expense' && !income);
         if (!matchesType) return false;
       }
       if (filterCategory !== 'all' && String(tx.categoryId || tx.categoryName) !== String(filterCategory)) return false;
@@ -133,12 +133,12 @@ export default function TransactionsPage() {
                       />
                       <select
                         value={filterType}
-                        onChange={e => setFilterType((e.target.value === 'all' ? 'all' : Number(e.target.value)) as any)}
+                        onChange={e => setFilterType(e.target.value as any)}
                         className="px-3 py-2 border rounded-lg text-sm min-w-[130px]"
                       >
                         <option value="all">Todos os tipos</option>
-                        <option value={0}>Income</option>
-                        <option value={1}>Expense</option>
+                        <option value="Income">Income</option>
+                        <option value="Expense">Expense</option>
                       </select>
                       <select
                         value={filterCategory}

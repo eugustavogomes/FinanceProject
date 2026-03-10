@@ -1,12 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import api from '../services/api';
 import { CATEGORY_URL } from '../services/endpoints';
-
-interface Category {
-  id: string;
-  name: string;
-  type: string;
-}
+import type { Category } from '../types/finance';
 
 export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);

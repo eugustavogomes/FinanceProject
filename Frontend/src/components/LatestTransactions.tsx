@@ -4,9 +4,9 @@ import { fetchLatestTransactions } from "../hooks/useTransactions";
 import { Eye, ArrowUp, ArrowDown, ChevronRight } from 'lucide-react';
 
 type Transaction = {
-    id: number;
+    id: string;
     category: string;
-    type: number;
+    type: 'Income' | 'Expense' | string;
     value: number;
     date: string;
     description?: string;
@@ -21,7 +21,7 @@ export default function LatestTransactions() {
         setLoading(true);
         fetchLatestTransactions().then(res => {
             const mapped = res.data.slice(0, 4).map((tx: any) => ({
-                id: tx.id,
+                id: String(tx.id),
                 category: tx.categoryName || tx.category?.name || 'No category',
                 type: tx.type,
                 value: tx.value,
@@ -70,8 +70,8 @@ export default function LatestTransactions() {
                         transactions.map((t) => (
                             <li key={t.id}>
                                 <button onClick={() => navigate(`/transactions/${t.id}`)} className="w-full text-left p-1 flex items-center gap-3 hover:bg-gray-50 rounded-lg transition">
-                                    <div className={`flex items-center justify-center h-5 w-5 rounded-full ${t.type === 0 ? 'bg-green-50' : 'bg-red-50'}`}>
-                                        {t.type === 0 ? <ArrowUp className="text-green-600" /> : <ArrowDown className="text-red-600" />}
+                                    <div className={`flex items-center justify-center h-5 w-5 rounded-full ${t.type.toString().toLowerCase() === 'income' ? 'bg-green-50' : 'bg-red-50'}`}>
+                                        {t.type.toString().toLowerCase() === 'income' ? <ArrowUp className="text-green-600" /> : <ArrowDown className="text-red-600" />}
                                     </div>
 
                                     <div className="flex-1">
@@ -84,7 +84,7 @@ export default function LatestTransactions() {
                                     </div>
 
                                     <div className="flex items-center gap-3">
-                                        <div className={`font-semibold ${t.type === 0 ? 'text-green-600' : 'text-red-600'} text-right`}>{t.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
+                                        <div className={`font-semibold ${t.type.toString().toLowerCase() === 'income' ? 'text-green-600' : 'text-red-600'} text-right`}>{t.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</div>
                                         <ChevronRight className="w-4 h-4 text-gray-300" />
                                     </div>
                                 </button>

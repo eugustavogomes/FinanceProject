@@ -1,23 +1,20 @@
 import ReactApexChart from "react-apexcharts";
 import type { ApexOptions } from "apexcharts";
+import type { Transaction, Category } from "../../types/finance";
 
 type Props = {
-  transactions: any[];
-  categories: any[];
+  transactions: Transaction[];
+  categories: Category[];
 };
 
 export default function ExpenseDonutChart({ transactions = [], categories = [] }: Props) {
-  console.log('DonutChart - transactions:', transactions);
-  console.log('DonutChart - categories:', categories);
 
   const expenseTransactions = transactions.filter(
-    (tx: any) => tx.type === 1 && (tx.categoryId || tx.categoryName)
+    (tx: Transaction) => (typeof tx.type === 'string' ? tx.type.toLowerCase() === 'expense' : tx.type === 1) && (tx.categoryId || tx.categoryName)
   );
-  
-  console.log('DonutChart - expenseTransactions:', expenseTransactions);
 
   const categoryExpenseMap: Record<string, { name: string; value: number }> = {};
-  expenseTransactions.forEach((tx: any) => {
+  expenseTransactions.forEach((tx: Transaction) => {
     const categoryKey = tx.categoryId || tx.categoryName;
     const categoryName = tx.categoryName || categories.find(cat => cat.id === tx.categoryId)?.name || 'Unknown';
     
@@ -33,7 +30,7 @@ export default function ExpenseDonutChart({ transactions = [], categories = [] }
   const labels = Object.values(categoryExpenseMap).map(cat => cat.name);
   const series = Object.values(categoryExpenseMap).map(cat => cat.value);
   
-  if (series.length === 0 || series.every(s => s === 0)) {
+  if (series.length === 0) {
     return (
       <div className="bg-white border border-gray-200 rounded-lg h-full flex items-center justify-center">
         <div className="text-center text-gray-500">
@@ -69,7 +66,7 @@ export default function ExpenseDonutChart({ transactions = [], categories = [] }
   };
 
   return (
-    <div className="bg-white border border-gray-100 shadow-sm rounded-lg h-full">
+    <div className="bg-white shadow-sm rounded-lg h-full">
       <h3 className="text-xl font-semibold text-gray-700 mb-4 p-3">Expenses by Category</h3>
       <ReactApexChart options={options} series={series} type="pie" height={200} />
     </div>

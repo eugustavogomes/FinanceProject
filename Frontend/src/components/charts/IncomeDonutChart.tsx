@@ -1,18 +1,19 @@
 import ReactApexChart from "react-apexcharts";
 import type { ApexOptions } from "apexcharts";
+import type { Transaction, Category } from "../../types/finance";
 
 interface Props {
-  transactions: any[];
-  categories: any[];
+  transactions: Transaction[];
+  categories: Category[];
 }
 
 export default function IncomeDonutChart({ transactions = [], categories = [] }: Props) {
   const incomeTransactions = transactions.filter(
-    (tx: any) => tx.type === 0 && (tx.categoryId || tx.categoryName)
+    (tx: Transaction) => (typeof tx.type === 'string' ? tx.type.toLowerCase() === 'income' : tx.type === 0) && (tx.categoryId || tx.categoryName)
   );
 
   const categoryIncomeMap: Record<string, { name: string; value: number }> = {};
-  incomeTransactions.forEach((tx: any) => {
+  incomeTransactions.forEach((tx: Transaction) => {
     const categoryKey = tx.categoryId || tx.categoryName;
     const categoryName = tx.categoryName || categories.find(cat => cat.id === tx.categoryId)?.name || 'Unknown';
     if (categoryKey) {

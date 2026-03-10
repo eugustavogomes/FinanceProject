@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
-
-type TransactionType = 'Income' | 'Expense';
+import type { TransactionType } from '../../types/finance';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: {
     value: number;
-    type: number;
+    type: TransactionType;
     categoryId: string | null;
     date: string;
     description: string;
   }) => Promise<{ success: boolean; error?: string }>;
   initialData?: {
     value?: number;
-    type?: number;
+    type?: TransactionType | number;
     categoryId?: string | null;
     date?: string;
     description?: string;
@@ -39,7 +38,13 @@ export default function AddTransactionModal({ isOpen, onClose, onSubmit, initial
   useEffect(() => {
     if (initialData) {
       setValue(initialData.value !== undefined ? String(initialData.value) : '');
-      setType(initialData.type === 0 ? 'Income' : 'Expense');
+      if (typeof initialData.type === 'string') {
+        setType(initialData.type === 'Income' ? 'Income' : 'Expense');
+      } else if (typeof initialData.type === 'number') {
+        setType(initialData.type === 0 ? 'Income' : 'Expense');
+      } else {
+        setType('Income');
+      }
       setCategoryId(initialData.categoryId || '');
       setDate(initialData.date ? new Date(initialData.date).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10));
       setDescription(initialData.description || '');
@@ -61,7 +66,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSubmit, initial
     const numeric = parseFloat(value.toString().replace(/\./g, '').replace(/,/g, '.')) || 0;
     const payload = {
       value: numeric,
-      type: type === 'Income' ? 0 : 1,
+      type,
       categoryId: categoryId || null,
       date,
       description
