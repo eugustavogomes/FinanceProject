@@ -48,6 +48,14 @@ export default function DashboardPage() {
       }
     });
 
+  function isIncomeTransaction(tx: any) {
+    const rawType = tx?.type;
+    if (typeof rawType === 'string') {
+      return rawType.toLowerCase() === 'income';
+    }
+    return rawType === 0;
+  }
+
   /**
    * getMonthlySeries
    * Build income and expense series for the last 12 months.
@@ -68,8 +76,12 @@ export default function DashboardPage() {
         const d = new Date(tx.date);
         return d.getFullYear() === year && d.getMonth() === month;
       });
-      const income = monthly.filter((t: any) => t.type === 0).reduce((s: number, t: any) => s + t.value, 0);
-      const expense = monthly.filter((t: any) => t.type === 1).reduce((s: number, t: any) => s + t.value, 0);
+      const income = monthly
+        .filter((t: any) => isIncomeTransaction(t))
+        .reduce((s: number, t: any) => s + (typeof t.value === 'number' ? t.value : 0), 0);
+      const expense = monthly
+        .filter((t: any) => !isIncomeTransaction(t))
+        .reduce((s: number, t: any) => s + (typeof t.value === 'number' ? t.value : 0), 0);
       incomeSeries.push(income);
       expenseSeries.push(expense);
     }
@@ -97,8 +109,12 @@ export default function DashboardPage() {
         const dt = new Date(tx.date);
         return dt.getFullYear() === year && dt.getMonth() === monthIndex && dt.getDate() === d;
       });
-      const income = dayTotal.filter((t: any) => t.type === 0).reduce((s: number, t: any) => s + t.value, 0);
-      const expense = dayTotal.filter((t: any) => t.type === 1).reduce((s: number, t: any) => s + t.value, 0);
+      const income = dayTotal
+        .filter((t: any) => isIncomeTransaction(t))
+        .reduce((s: number, t: any) => s + (typeof t.value === 'number' ? t.value : 0), 0);
+      const expense = dayTotal
+        .filter((t: any) => !isIncomeTransaction(t))
+        .reduce((s: number, t: any) => s + (typeof t.value === 'number' ? t.value : 0), 0);
       incomeSeries.push(income);
       expenseSeries.push(expense);
     }
@@ -106,7 +122,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="p-4">
+    <main className="p-1">
       <div className="mb-3 flex items-center justify-center">
         <MonthNavbar selected={selectedMonth} onChange={(m) => setSelectedMonth(m)} />
       </div>

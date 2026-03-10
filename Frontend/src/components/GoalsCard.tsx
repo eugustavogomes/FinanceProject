@@ -16,37 +16,27 @@ export default function GoalsCard() {
     return a.month - b.month;
   });
 
-  const nextGoal = sortedGoals[0];
+  const limitedGoals = sortedGoals.slice(0, 2);
+  
+  function buildGoalView(goal: any) {
+    const monthsRemaining = Math.max(1, getMonthsUntil(goal.year, goal.month));
+    const requiredPerMonth = Number(goal.target) / monthsRemaining;
 
-  let progress = 0;
-  let description = 'Defina suas primeiras metas financeiras para ver sugestões de poupança.';
-
-  if (nextGoal) {
-    const monthsRemaining = Math.max(1, getMonthsUntil(nextGoal.year, nextGoal.month));
-    const requiredPerMonth = Number(nextGoal.target) / monthsRemaining;
-
+    let progress = 0;
     if (averageMonthlyNet > 0 && requiredPerMonth > 0) {
       progress = Math.max(0, Math.min(100, (averageMonthlyNet / requiredPerMonth) * 100));
     }
 
-    const formattedTarget = nextGoal.target.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    const deadline = new Date(nextGoal.year, nextGoal.month - 1, 1).toLocaleDateString('pt-BR', {
+    const formattedTarget = goal.target.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const deadline = new Date(goal.year, goal.month - 1, 1).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
     });
 
-    if (averageMonthlyNet <= 0) {
-      description = `Para alcançar "${nextGoal.category || 'Meta'}" de ${formattedTarget} até ${deadline}, você precisaria guardar cerca de ${requiredPerMonth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} por mês.`;
-    } else if (averageMonthlyNet >= requiredPerMonth) {
-      description = `Você está no ritmo para alcançar "${nextGoal.category || 'Meta'}" de ${formattedTarget} até ${deadline}, poupando em média ${averageMonthlyNet.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} por mês.`;
-    } else {
-      const monthsAtCurrentPace = Math.ceil(Number(nextGoal.target) / averageMonthlyNet);
-      const projectedDate = new Date();
-      projectedDate.setMonth(projectedDate.getMonth() + monthsAtCurrentPace);
-      const projectedLabel = projectedDate.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
+    const title = `${goal.category || 'Goal'} - ${formattedTarget} until ${deadline}`;
+    const description = `You need to save about ${requiredPerMonth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} per month to reach this goal.`;
 
-      description = `Com a sua poupança média de ${averageMonthlyNet.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}/mês, você atingiria "${nextGoal.category || 'Meta'}" por volta de ${projectedLabel}. Para chegar até ${deadline}, o ideal seria guardar cerca de ${requiredPerMonth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} por mês.`;
-    }
+    return { title, progress, description };
   }
 
   return (
@@ -55,23 +45,42 @@ export default function GoalsCard() {
         <h3 className="text-xl font-semibold flex items-center justify-between">
           <span>Goals</span>
           {loadingGoals ? (
-            <span className="text-xs text-gray-400">Carregando...</span>
+            <span className="text-xs text-gray-400">Loading...</span>
           ) : (
-            <span className="text-xs text-gray-500">{goals.length} metas</span>
+            <span className="text-xs text-gray-500">{goals.length} goals</span>
           )}
         </h3>
-        <div className="mt-2">
-          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-            <div className="bg-green-500 h-3" style={{ width: `${Math.max(0, Math.min(100, progress))}%` }} />
-          </div>
-          <div className="text-xs text-gray-600 mt-2 leading-snug">
-            {description}
-          </div>
+        <div className="mt-2 space-y-3">
+          {limitedGoals.length === 0 && (
+            <div className="text-xs text-gray-500">
+              Create your first financial goals to see progress here.
+            </div>
+          )}
+
+          {limitedGoals.map((goal) => {
+            const { title, progress, description } = buildGoalView(goal);
+            return (
+              <div key={goal.id} className="border border-gray-100 rounded-md p-2">
+                <div className="text-xs font-semibold text-gray-700 mb-1">
+                  {title}
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                  <div
+                    className="bg-green-500 h-2.5"
+                    style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
+                  />
+                </div>
+                <div className="text-[11px] text-gray-600 mt-1">
+                  {description}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
       <div className="mt-4 flex justify-end">
         <button onClick={() => navigate('/goals')} className="px-2 py-1 rounded bg-green-600 text-white text-sm flex items-center">
-          Ver metas
+          View goals
           <ArrowRight className="w-4 h-4 ml-2" />
         </button>
       </div>

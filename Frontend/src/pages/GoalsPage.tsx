@@ -3,19 +3,16 @@ import { useGoals, type GoalInput } from '../hooks/useGoals';
 import { useTransactions } from '../hooks/useTransactions';
 import { TrashIcon, Pencil } from 'lucide-react';
 import { calculateAverageMonthlyNet, formatCurrency, getMonthsUntil } from '../lib/goalsUtils';
+import AddGoalModal from '../components/modals/AddGoalModal';
 
 export default function GoalsPage() {
   const { goals, loading, error, createGoal, updateGoal, deleteGoal } = useGoals();
   const { transactions } = useTransactions();
 
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [form, setForm] = useState<{ category: string; target: string; deadline: string }>({
-    category: '',
-    target: '',
-    deadline: '',
-  });
   const [formError, setFormError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalInitialData, setModalInitialData] = useState<{ category?: string | null; target: number; month: number; year: number } | null>(null);
 
   const averageMonthlyNet = useMemo(() => calculateAverageMonthlyNet(transactions), [transactions]);
 
@@ -23,122 +20,18 @@ export default function GoalsPage() {
     if (!editingId) return;
     const goal = goals.find((g) => g.id === editingId);
     if (!goal) return;
-    const monthStr = goal.month.toString().padStart(2, '0');
-    setForm({
-      category: goal.category || '',
-      target: String(goal.target),
-      deadline: `${goal.year}-${monthStr}`,
+    setModalInitialData({
+      category: goal.category,
+      target: goal.target,
+      month: goal.month,
+      year: goal.year,
     });
+    setModalOpen(true);
   }, [editingId, goals]);
-
-  function resetForm() {
-    setEditingId(null);
-    setForm({ category: '', target: '', deadline: '' });
-    setFormError(null);
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setFormError(null);
-
-    const target = Number(form.target.replace(/\./g, '').replace(',', '.'));
-    if (!target || target <= 0) {
-      setFormError('Informe um valor de meta válido.');
-      return;
-    }
-
-    if (!form.deadline) {
-      setFormError('Informe um prazo (mês/ano) para a meta.');
-      return;
-    }
-
-    const [yearStr, monthStr] = form.deadline.split('-');
-    const year = Number(yearStr);
-    const month = Number(monthStr);
-
-    if (!year || !month) {
-      setFormError('Prazo inválido.');
-      return;
-    }
-
-    const payload: GoalInput = {
-      category: form.category.trim() || undefined,
-      target,
-      month,
-      year,
-    };
-
-    setSubmitting(true);
-    const result = editingId
-      ? await updateGoal(editingId, payload)
-      : await createGoal(payload);
-    setSubmitting(false);
-
-    if (!result.success) {
-      setFormError(result.error || 'Erro ao salvar meta');
-      return;
-    }
-
-    resetForm();
-  }
 
   return (
     <main className="p-3">
-      <section className="mb-8 bg-white border border-gray-100 rounded-lg shadow-sm p-4">
-        <h3 className="text-lg font-semibold mb-3">Nova meta</h3>
-        {formError && <div className="mb-3 text-sm text-red-600">{formError}</div>}
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
-          <div className="flex flex-col">
-            <label className="text-xs font-medium text-gray-600 mb-1">Nome do sonho/meta</label>
-            <input
-              className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200"
-              placeholder="Ex: Viagem, carro, reserva..."
-              value={form.category}
-              onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-xs font-medium text-gray-600 mb-1">Custo total desejado</label>
-            <input
-              className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200"
-              placeholder="Ex: 10000"
-              value={form.target}
-              onChange={(e) => setForm((f) => ({ ...f, target: e.target.value }))}
-              inputMode="decimal"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="text-xs font-medium text-gray-600 mb-1">Prazo (mês/ano)</label>
-            <input
-              type="month"
-              className="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200"
-              value={form.deadline}
-              onChange={(e) => setForm((f) => ({ ...f, deadline: e.target.value }))}
-            />
-          </div>
-          <div className="flex gap-2 justify-end md:justify-start">
-            {editingId && (
-              <button
-                type="button"
-                onClick={resetForm}
-                className="px-3 py-2 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
-              >
-                Cancelar edição
-              </button>
-            )}
-            <button
-              type="submit"
-              disabled={submitting}
-              className="px-4 py-2 text-sm rounded-lg bg-green-600 text-white hover:bg-green-500 disabled:opacity-60"
-            >
-              {submitting ? 'Salvando...' : editingId ? 'Atualizar meta' : 'Adicionar meta'}
-            </button>
-          </div>
-        </form>
-      </section>
-
       <section>
-        <h3 className="text-lg font-semibold mb-3">Suas metas</h3>
         {loading ? (
           <div className="text-sm text-gray-500">Carregando metas...</div>
         ) : error ? (
@@ -234,6 +127,37 @@ export default function GoalsPage() {
           </div>
         )}
       </section>
+
+      <AddGoalModal
+        isOpen={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setEditingId(null);
+          setModalInitialData(null);
+        }}
+        initialData={modalInitialData || undefined}
+        onSubmit={async (data: GoalInput) => {
+          setFormError(null);
+          const result = editingId ? await updateGoal(editingId, data) : await createGoal(data);
+          if (!result.success) {
+            setFormError(result.error || 'Erro ao salvar meta');
+          }
+          return result;
+        }}
+      />
+
+      <button
+        onClick={() => {
+          setEditingId(null);
+          setModalInitialData(null);
+          setModalOpen(true);
+        }}
+        aria-label="Adicionar meta"
+        title="Adicionar meta"
+        className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-green-600 text-white shadow-xl flex items-center justify-center text-3xl hover:bg-green-500 transition"
+      >
+        +
+      </button>
     </main>
   );
 }
