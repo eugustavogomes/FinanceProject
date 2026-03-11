@@ -92,38 +92,9 @@ export default function DashboardPage() {
     return { incomeSeries, expenseSeries, months };
   }
 
-  /**
-   * getDailySeriesForMonth
-   * Build income/expense series for each day of the provided month index.
-   * - Uses `filteredTransactions` which already applies the selected month
-   *   filter.
-   * - Returns `{ incomeSeries, expenseSeries, days }`.
-   */
-  const lineData = selectedMonth === 'all' ? getMonthlySeries() : getDailySeriesForMonth(selectedMonth as number);
-  function getDailySeriesForMonth(monthIndex: number) {
-    const now = new Date();
-    const year = now.getFullYear();
-    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-    const incomeSeries: number[] = [];
-    const expenseSeries: number[] = [];
-    const days: string[] = [];
-    for (let d = 1; d <= daysInMonth; d++) {
-      days.push(String(d));
-      const dayTotal = filteredTransactions.filter((tx: any) => {
-        const dt = new Date(tx.date);
-        return dt.getFullYear() === year && dt.getMonth() === monthIndex && dt.getDate() === d;
-      });
-      const income = dayTotal
-        .filter((t: any) => isIncomeTransaction(t))
-        .reduce((s: number, t: any) => s + (typeof t.value === 'number' ? t.value : 0), 0);
-      const expense = dayTotal
-        .filter((t: any) => !isIncomeTransaction(t))
-        .reduce((s: number, t: any) => s + (typeof t.value === 'number' ? t.value : 0), 0);
-      incomeSeries.push(income);
-      expenseSeries.push(expense);
-    }
-    return { incomeSeries, expenseSeries, days };
-  }
+  // The year chart should always display the last 12 months,
+  // independent of the selected month filter used elsewhere.
+  const lineData = getMonthlySeries();
 
   return (
     <main className="p-1">

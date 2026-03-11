@@ -4,7 +4,7 @@
 
 <p align="center">
 	<img src="Frontend/src/assets/appimagelogin.png" alt="Simple Finance - Login" width="420" />
-	<img src="Frontend/src/assets/dashboardappimage.png" alt="Simple Finance - Dashboard" width="420" />
+	<img src="Frontend/src/assets/dashimage.png" alt="Simple Finance - Dashboard" width="420" />
 </p>
 
 Simple Finance helps you track income, expenses, categories, goals and investments in a clean dashboard, with JWT authentication and a modern UI.
