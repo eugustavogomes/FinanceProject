@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SimpleFinance.Api.Data;
+using SimpleFinance.Api.Middlewares;
+using SimpleFinance.Api.Services;
 using jwtBearer;
 using DotNetEnv;
 using System.Text.Json.Serialization;
@@ -29,11 +31,16 @@ builder.Services.AddControllers()
     });
 
 
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
 Env.Load();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();
 app.UseCors("AllowFrontend");
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

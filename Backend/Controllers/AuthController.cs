@@ -49,7 +49,7 @@ namespace SimpleFinance.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
+        public IActionResult Login([FromBody] UserLoginDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Email) && string.IsNullOrWhiteSpace(dto.Username))
                 return BadRequest("Username or email is required.");
