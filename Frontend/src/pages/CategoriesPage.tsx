@@ -20,8 +20,7 @@ export default function CategoriesPage() {
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editName, setEditName] = useState('');
-  const [editType, setEditType] = useState('');
+  const [modalInitialData, setModalInitialData] = useState<{ name: string; type?: string } | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -78,19 +77,18 @@ export default function CategoriesPage() {
    * - sets a per-action loading flag while calling `updateCategory`.
    * - clears editing state on success and shows an alert on error.
    */
-  const handleEdit = async (id: string) => {
-    if (!editName.trim()) return;
+  const handleEdit = async (id: string, name: string, type?: string) => {
+    if (!name.trim()) return;
 
     try {
       setActionLoading(`edit-${id}`);
-      await updateCategory(id, editName.trim(), editType.trim() || undefined);
-      setEditingId(null);
-      setEditName('');
-      setEditType('');
+      await updateCategory(id, name.trim(), type?.trim() || undefined);
     } catch (error: any) {
       alert('Error editing category: ' + (error.message || String(error)));
     } finally {
       setActionLoading(null);
+      setEditingId(null);
+      setModalInitialData(null);
     }
   };
 
@@ -134,18 +132,8 @@ export default function CategoriesPage() {
    */
   const startEdit = (category: any) => {
     setEditingId(category.id);
-    setEditName(category.name);
-    setEditType(category.type || '');
-  };
-
-  /**
-   * cancelEdit
-   * Cancel inline editing and clear temporary edit state.
-   */
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditName('');
-    setEditType('');
+    setModalInitialData({ name: category.name, type: category.__typeLabel || '' });
+    setShowAddModal(true);
   };
 
   return (
@@ -222,87 +210,39 @@ export default function CategoriesPage() {
                   : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300';
 
               return (
-              <div key={category.id} className="p-4 flex items-center justify-between">
-                {editingId === category.id ? (
-                  <div className="flex-1">
-                    <div className="grid grid-cols-1 md:grid-cols-[2fr,1.5fr,auto] gap-4 items-center">
-                      <div>
-                        <label className="block text-xs font-medium text-muted-foreground mb-1">Name</label>
-                        <input
-                          type="text"
-                          value={editName}
-                          onChange={(e) => setEditName(e.target.value)}
-                          className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400 focus:outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-muted-foreground mb-1">Type</label>
-                        <select
-                          value={editType}
-                          onChange={(e) => setEditType(e.target.value)}
-                          className="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400 focus:outline-none"
-                        >
-                          <option value="">Select type</option>
-                          <option value="Income">Income</option>
-                          <option value="Expense">Expense</option>
-                        </select>
-                      </div>
-                      <div className="flex gap-2 justify-end">
-                        <button
-                          onClick={() => handleEdit(category.id)}
-                          disabled={!editName.trim() || actionLoading === `edit-${category.id}`}
-                          className="px-3 py-1.5 bg-emerald-500 text-white rounded-full text-xs font-semibold shadow-sm hover:bg-emerald-600 disabled:opacity-60"
-                        >
-                          {actionLoading === `edit-${category.id}` ? (
-                            <Loader className="animate-spin" />
-                          ) : (
-                            'Save'
-                          )}
-                        </button>
-
-                        <button onClick={cancelEdit} className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-full text-xs font-semibold border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700">
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-semibold text-foreground">{category.name}</h4>
+                <div key={category.id} className="p-4 flex items-center justify-between">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-semibold text-foreground">{category.name}</h4>
                       {typeLabel && (
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${typeClasses}`}>
                           {typeLabel}
                         </span>
                       )}
-                      </div>
                     </div>
+                  </div>
 
-                    <div className="flex items-center gap-2">
-                      <IconButton
-                        onClick={() => startEdit(category)}
-                        
-                      >
-                        <Pencil className="w-4 h-4"  />
-                      </IconButton>
+                  <div className="flex items-center gap-2">
+                    <IconButton
+                      onClick={() => startEdit(category)}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </IconButton>
 
-                      <IconButton
-                        onClick={() => handleDelete(category.id, category.name)}
-                        variant="danger"
-                      >
-                        {actionLoading === `delete-${category.id}` ? (
-                          <Loader className="animate-spin" />
-                        ) : (
-                          <>
-                            <Trash2 className="w-4 h-4" />
-                          </>
-                        )}
-                      </IconButton>
-                    </div>
-                  </>
-                )}
-              </div>
+                    <IconButton
+                      onClick={() => handleDelete(category.id, category.name)}
+                      variant="danger"
+                    >
+                      {actionLoading === `delete-${category.id}` ? (
+                        <Loader className="animate-spin" />
+                      ) : (
+                        <>
+                          <Trash2 className="w-4 h-4" />
+                        </>
+                      )}
+                    </IconButton>
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -319,10 +259,15 @@ export default function CategoriesPage() {
 
       <AddCategoryModal
         isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
+        onClose={() => { setShowAddModal(false); setEditingId(null); setModalInitialData(null); }}
+        initialData={modalInitialData}
         onSubmit={async (data: any) => {
           try {
-            await handleAdd(data.name, data.type);
+            if (editingId) {
+              await handleEdit(editingId, data.name, data.type);
+            } else {
+              await handleAdd(data.name, data.type);
+            }
             return { success: true };
           } catch (err: any) {
             return { success: false, error: err?.message || String(err) };

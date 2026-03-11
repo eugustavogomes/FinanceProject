@@ -4,9 +4,10 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: { name: string; type?: string }) => Promise<{ success: boolean; error?: string }>;
+  initialData?: { name?: string; type?: string } | null;
 }
 
-export default function AddCategoryModal({ isOpen, onClose, onSubmit }: Props) {
+export default function AddCategoryModal({ isOpen, onClose, onSubmit, initialData }: Props) {
   const [name, setName] = useState('');
   const [type, setType] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,8 +19,19 @@ export default function AddCategoryModal({ isOpen, onClose, onSubmit }: Props) {
       setType('');
       setError(null);
       setLoading(false);
+      return;
     }
-  }, [isOpen]);
+
+    if (initialData) {
+      setName(initialData.name || '');
+      setType(initialData.type || '');
+      setError(null);
+    } else {
+      setName('');
+      setType('');
+      setError(null);
+    }
+  }, [isOpen, initialData]);
 
   if (!isOpen) return null;
 
@@ -44,7 +56,7 @@ export default function AddCategoryModal({ isOpen, onClose, onSubmit }: Props) {
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60" onClick={onClose}></div>
       <div className="bg-white dark:bg-gray-900 rounded-lg p-6 z-10 w-full max-w-md border border-gray-100 dark:border-gray-700 shadow-lg">
-        <h3 className="text-lg font-semibold mb-4 text-foreground">Nova Categoria</h3>
+        <h3 className="text-lg font-semibold mb-4 text-foreground">{initialData ? 'Edit Category' : 'Nova Categoria'}</h3>
         {error && <div className="text-red-500 mb-2 text-sm">{error}</div>}
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
@@ -79,7 +91,7 @@ export default function AddCategoryModal({ isOpen, onClose, onSubmit }: Props) {
               className="px-4 h-10 rounded bg-green-600 text-white text-sm hover:bg-green-500 disabled:opacity-60"
               disabled={loading}
             >
-              {loading ? 'Salvando...' : 'Adicionar'}
+              {loading ? 'Salvando...' : initialData ? 'Salvar' : 'Adicionar'}
             </button>
           </div>
         </form>
