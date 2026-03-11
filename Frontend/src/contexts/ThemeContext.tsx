@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import api from '../services/api';
 
 type Theme = 'light' | 'dark';
 
@@ -40,10 +41,19 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   const setTheme = (value: Theme) => {
     setThemeState(value);
+    api.put('/users/me/preferences', { preferredTheme: value }).catch(() => {
+      // ignore errors silently; theme still updates locally
+    });
   };
 
   const toggleTheme = () => {
-    setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    setThemeState((prev) => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      api.put('/users/me/preferences', { preferredTheme: next }).catch(() => {
+        // ignore errors silently; theme still updates locally
+      });
+      return next;
+    });
   };
 
   return (

@@ -1,10 +1,13 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import api from '../services/api';
+import { useTheme } from './ThemeContext';
 
 type UserInfo = {
   id?: string;
   email?: string;
   name?: string;
+  preferredTheme?: 'light' | 'dark' | null;
+  isSidebarExpanded?: boolean;
 } | null;
 
 type AuthContextType = {
@@ -20,11 +23,20 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('auth_token'))
   const [user, setUser] = useState<UserInfo>(null);
+  const { setTheme } = useTheme();
 
   useEffect(() => {
     const t = localStorage.getItem('auth_token');
     if (t) {
-      api.get('/users/me').then(res => setUser(res.data)).catch(() => setUser(null));
+      api.get('/users/me')
+        .then(res => {
+          setUser(res.data);
+          const pref = res.data?.preferredTheme;
+          if (pref === 'light' || pref === 'dark') {
+            setTheme(pref);
+          }
+        })
+        .catch(() => setUser(null));
     }
   }, []);
 
@@ -34,6 +46,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const res = await api.get('/users/me');
       setUser(res.data);
+      const pref = res.data?.preferredTheme;
+      if (pref === 'light' || pref === 'dark') {
+        setTheme(pref);
+      }
     } catch (e) {
       setUser(null);
     }

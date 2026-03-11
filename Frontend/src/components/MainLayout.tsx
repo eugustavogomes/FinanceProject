@@ -1,11 +1,30 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
 import AppHeader from './AppHeader';
+import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
 
   const contentMarginLeft = sidebarExpanded ? '14rem' : '5rem'; // w-56 / w-20
+
+  useEffect(() => {
+    if (user && typeof user.isSidebarExpanded === 'boolean') {
+      setSidebarExpanded(user.isSidebarExpanded);
+    }
+  }, [user]);
+
+  const handleToggleSidebar = () => {
+    setSidebarExpanded((prev) => {
+      const next = !prev;
+      api.put('/users/me/preferences', { isSidebarExpanded: next }).catch(() => {
+        // ignore errors; local UI still updates
+      });
+      return next;
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -16,7 +35,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       >
         <AppHeader
           expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded((prev) => !prev)}
+          onToggle={handleToggleSidebar}
         />
         <main className="flex-1 p-4">
           {children}
