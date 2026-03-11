@@ -60,7 +60,7 @@ export default function ExpenseDonutChart({ transactions = [], categories = [] }
     dataLabels: {
       enabled: true,
       style: {
-        colors: [isDark ? '#020617' : '#ffffff']
+        colors: ['#fff']
       }
     },
     tooltip: {

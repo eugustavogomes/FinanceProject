@@ -2,6 +2,9 @@ import { useMemo, useState } from 'react';
 import { useInvestments, type InvestmentInput } from '../hooks/useInvestments';
 import { Pencil, TrashIcon } from 'lucide-react';
 import AddInvestmentModal from '../components/modals/AddInvestmentModal';
+import { FloatingActionButton } from '../components/ui/FloatingActionButton';
+import { IconButton } from '../components/ui/IconButton';
+import SearchInput from '../components/ui/SearchInput';
 
 export default function InvestmentsPage() {
   const { investments, loading, error, createInvestment, updateInvestment, deleteInvestment } = useInvestments();
@@ -73,11 +76,9 @@ export default function InvestmentsPage() {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                       <div className="flex flex-col gap-2 w-full md:w-auto">
                         <div className="flex flex-col sm:flex-row gap-2 w-full">
-                          <input
+                          <SearchInput
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search by name or category"
-                            className="w-full sm:w-64 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
+                            onChange={setSearch}
                           />
                           <select
                             value={filterCategory}
@@ -149,18 +150,15 @@ export default function InvestmentsPage() {
                             {formatCurrency(profit)} ({profitPct.toFixed(1)}%)
                           </span>
                         </td>
-                        <td className="px-4 py-2 text-right">
-                          <button
-                            type="button"
+                        <td className="px-4 py-2 text-right gap-1 flex justify-end">
+                          <IconButton
                             onClick={() => handleEdit(i.id)}
-                            className="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 mr-1"
                           >
                             <Pencil className="w-3 h-3" />
-                            Edit
-                          </button>
+                          </IconButton>
 
-                          <button
-                            type="button"
+                          <IconButton
+                            variant="danger"
                             onClick={async () => {
                               const ok = window.confirm('Are you sure you want to remove this investment?');
                               if (!ok) return;
@@ -170,11 +168,9 @@ export default function InvestmentsPage() {
                                 setFormError(result.error || 'Error removing investment');
                               }
                             }}
-                            className="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-red-200 dark:border-red-500/60 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
                           >
                             <TrashIcon className="w-3 h-3" />
-                            Remove
-                          </button>
+                          </IconButton>
                         </td>
                       </tr>
                     );
@@ -206,7 +202,7 @@ export default function InvestmentsPage() {
         }}
       />
 
-      <button
+      <FloatingActionButton
         onClick={() => {
           setEditingId(null);
           setModalInitialData(null);
@@ -217,7 +213,7 @@ export default function InvestmentsPage() {
         className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-green-600 text-white shadow-xl flex items-center justify-center text-3xl hover:bg-green-500 transition"
       >
         +
-      </button>
+      </FloatingActionButton>
     </main>
   );
 }

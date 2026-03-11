@@ -3,6 +3,9 @@ import { Trash2, Loader, Pencil } from 'lucide-react';
 import { useCategories } from '../hooks/useCategories';
 import AddCategoryModal from '../components/modals/AddCategoryModal';
 import ConfirmationModal from '../components/modals/ConfirmationModal';
+import { IconButton } from '../components/ui/IconButton';
+import SearchInput from '../components/ui/SearchInput';
+import { FloatingActionButton } from '../components/ui/FloatingActionButton';
 
 /**
  * CategoriesPage
@@ -173,14 +176,7 @@ export default function CategoriesPage() {
             </div>
           </div>
 
-          <div className="w-full md:w-64">
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search categories"
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
-            />
-          </div>
+         <SearchInput value={search} onChange={setSearch} placeholder="Search categories..." />
         </div>
         {loading ? (
           <div className="p-6">
@@ -284,28 +280,25 @@ export default function CategoriesPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <button
+                      <IconButton
                         onClick={() => startEdit(category)}
-                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 text-xs font-medium shadow-sm"
+                        
                       >
-                        <Pencil size={14} />
-                        Edit
-                      </button>
+                        <Pencil className="w-4 h-4"  />
+                      </IconButton>
 
-                      <button
+                      <IconButton
                         onClick={() => handleDelete(category.id, category.name)}
-                        disabled={actionLoading === `delete-${category.id}`}
-                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-red-200 dark:border-red-500/60 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 text-xs font-medium shadow-sm"
+                        variant="danger"
                       >
                         {actionLoading === `delete-${category.id}` ? (
                           <Loader className="animate-spin" />
                         ) : (
                           <>
-                            <Trash2 size={14} />
-                            Delete
+                            <Trash2 className="w-4 h-4" />
                           </>
                         )}
-                      </button>
+                      </IconButton>
                     </div>
                   </>
                 )}
@@ -316,14 +309,13 @@ export default function CategoriesPage() {
         )}
       </div>
 
-      <button
+      <FloatingActionButton
         onClick={() => setShowAddModal(true)}
         aria-label="Add category"
         title="Add category"
-        className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-green-600 text-white shadow-xl flex items-center justify-center text-3xl hover:bg-green-500 transition"
       >
         +
-      </button>
+      </FloatingActionButton>
 
       <AddCategoryModal
         isOpen={showAddModal}

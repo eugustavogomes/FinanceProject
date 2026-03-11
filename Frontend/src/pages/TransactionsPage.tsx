@@ -4,6 +4,9 @@ import { useCategories } from '../hooks/useCategories';
 import { TrashIcon, Pencil } from 'lucide-react';
 import AddTransactionModal from '../components/modals/AddTransactionModal';
 import ConfirmationModal from '../components/modals/ConfirmationModal';
+import { IconButton } from '../components/ui/IconButton';
+import SearchInput from '../components/ui/SearchInput';
+import { FloatingActionButton } from '../components/ui/FloatingActionButton';
 
 /**
  * TransactionsPage
@@ -123,29 +126,24 @@ export default function TransactionsPage() {
               <tr className="border-b">
                 <th colSpan={5} className="p-3">
                   <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-                    <div className="text-sm font-medium text-foreground">Filtrar transações</div>
+                    <div className="text-sm font-normal text-foreground">Filter transactions</div>
                     <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-                      <input
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Buscar por descrição ou categoria"
-                        className="w-full md:w-64 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
-                      />
+                      <SearchInput value={search} onChange={setSearch} placeholder="Search transactions..." />
                       <select
                         value={filterType}
                         onChange={e => setFilterType(e.target.value as any)}
-                        className="px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm min-w-[130px] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none"
+                        className="px-3 py-2 font-normal border border-gray-200 dark:border-gray-700 rounded-lg text-sm min-w-[130px] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none"
                       >
-                        <option value="all">Todos os tipos</option>
+                        <option value="all">All types</option>
                         <option value="Income">Income</option>
                         <option value="Expense">Expense</option>
                       </select>
                       <select
                         value={filterCategory}
                         onChange={e => setFilterCategory(e.target.value)}
-                        className="px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm min-w-[160px] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none"
+                        className="px-3 py-2 font-normal border border-gray-200 dark:border-gray-700 rounded-lg text-sm min-w-[160px] bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none"
                       >
-                        <option value="all">Todas categorias</option>
+                        <option value="all">All categories</option>
                         {categories.map((c: any) => (
                           <option key={c.id} value={c.id}>{c.name}</option>
                         ))}
@@ -176,8 +174,8 @@ export default function TransactionsPage() {
               ) : filtered.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="p-8 text-center">
-                    <p className="text-gray-600 dark:text-gray-200 mb-4">Nenhuma transação encontrada</p>
-                    <button onClick={() => { setEditingId(null); setModalInitialData(undefined); setShowModal(true); }} className="px-4 py-2 bg-green-600 text-white rounded">Adicionar primeira transação</button>
+                    <p className="text-gray-600 dark:text-gray-200 mb-4">No transactions found</p>
+                    <button onClick={() => { setEditingId(null); setModalInitialData(undefined); setShowModal(true); }} className="px-4 py-2 bg-green-600 text-white rounded">Add first transaction</button>
                   </td>
                 </tr>
               ) : (
@@ -188,8 +186,8 @@ export default function TransactionsPage() {
                         <div
                           className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${
                             isIncomeTransaction(tx)
-                              ? 'bg-emerald-50 text-emerald-700'
-                              : 'bg-red-50 text-red-700'
+                              ? 'bg-emerald-50 dark:bg-emerald-700 text-emerald-700 dark:text-emerald-100'
+                              : 'bg-red-50 dark:bg-red-700 text-red-700 dark:text-red-100'
                           }`}
                         >
                           {tx.categoryName || tx.category || 'No category'}
@@ -202,12 +200,21 @@ export default function TransactionsPage() {
                       {typeof tx.value === 'number' ? tx.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '--'}
                     </td>
                     <td className="p-3 text-right">
-                      <button className="shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-300 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 mr-2" onClick={() => handleEdit(tx)}>
-                        <Pencil className="w-4 h-4" />
-                      </button>
-                      <button className="shadow-sm rounded-lg border border-red-200 dark:border-red-500/60 p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30" onClick={() => openDeleteConfirm(tx.id, tx.description || tx.category)}>
-                        <TrashIcon className="w-4 h-4" />
-                      </button>
+                      <div className="inline-flex items-center gap-2">
+                        <IconButton
+                          onClick={() => handleEdit(tx)}
+                          aria-label="Editar transação"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </IconButton>
+                        <IconButton
+                          variant="danger"
+                          onClick={() => openDeleteConfirm(tx.id, tx.description || tx.category)}
+                          aria-label="Excluir transação"
+                        >
+                          <TrashIcon className="w-4 h-4" />
+                        </IconButton>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -246,14 +253,13 @@ export default function TransactionsPage() {
         loadingCategories={loadingCategories}
       />
 
-      <button
+      <FloatingActionButton
         onClick={() => { setEditingId(null); setModalInitialData(undefined); setShowModal(true); }}
         aria-label="Add Transaction"
         title="Add Transaction"
-        className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-green-600 text-white shadow-xl flex items-center justify-center text-3xl hover:bg-green-500 transition"
       >
         +
-      </button>
+      </FloatingActionButton>
     </main>
   )
 }

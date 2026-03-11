@@ -58,7 +58,7 @@ export default function IncomeDonutChart({ transactions = [], categories = [] }:
     dataLabels: {
       enabled: true,
       style: {
-        colors: [isDark ? '#020617' : '#ffffff']
+        colors: ['#fff']
       }
     },
     tooltip: {
