@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { User, Settings } from 'lucide-react';
+import { User, Settings, LogOut } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -23,8 +23,8 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
 
   if (!isOpen) return null;
 
-  const userEmail = email ?? auth.user?.email ?? 'Não disponível';
-  const userName = name ?? auth.user?.name ?? 'Não disponível';
+  const userEmail = email ?? auth.user?.email ?? 'Not available';
+  const userName = name ?? auth.user?.name ?? 'Not available';
   const handleLogout = () => {
     if (onLogout) onLogout();
     else auth.logout();
@@ -123,27 +123,27 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
                 </div>
                 <div className="pt-4 border-t border-gray-100 dark:border-gray-700 space-y-4">
                   <div className="space-y-2">
-                    <p className="text-sm font-semibold text-foreground">Alterar senha</p>
-                    <p className="text-xs text-muted-foreground">Protótipo: em breve será conectado ao backend para alterar sua senha com segurança.</p>
+                    <p className="text-sm font-semibold text-foreground">Change password</p>
+                    <p className="text-xs text-muted-foreground">Prototype: soon this will be connected to the backend to securely change your password.</p>
                     <div className="space-y-2">
                       <input
                         type="password"
                         className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200 bg-background text-foreground"
-                        placeholder="Senha atual"
+                        placeholder="Current password"
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                       />
                       <input
                         type="password"
                         className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200 bg-background text-foreground"
-                        placeholder="Nova senha"
+                        placeholder="New password"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                       />
                       <input
                         type="password"
                         className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-200 bg-background text-foreground"
-                        placeholder="Confirmar nova senha"
+                        placeholder="Confirm new password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
@@ -154,12 +154,18 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
                         disabled
                         className="px-4 py-2 rounded bg-gray-900 text-white text-sm opacity-60 cursor-not-allowed"
                       >
-                        Salvar nova senha (em breve)
+                        Save new password (soon)
                       </button>
                     </div>
                   </div>
                   <div className="flex justify-end gap-3 border-t border-gray-100 dark:border-gray-700 pt-4">
-                    <button className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600" onClick={handleLogout}>Logout</button>
+                    <button
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+                      onClick={handleLogout}
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
                   </div>
                 </div>
               </div>

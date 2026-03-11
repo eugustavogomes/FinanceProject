@@ -5,6 +5,7 @@ import AddInvestmentModal from '../components/modals/AddInvestmentModal';
 import { FloatingActionButton } from '../components/ui/FloatingActionButton';
 import { IconButton } from '../components/ui/IconButton';
 import SearchInput from '../components/ui/SearchInput';
+import ConfirmationModal from '../components/modals/ConfirmationModal';
 
 export default function InvestmentsPage() {
   const { investments, loading, error, createInvestment, updateInvestment, deleteInvestment } = useInvestments();
@@ -15,6 +16,10 @@ export default function InvestmentsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState<{ id: string; name?: string } | null>(null);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const totals = useMemo(() => {
     const totalCurrent = investments.reduce((sum, i) => sum + (i.currentValue || 0), 0);
@@ -50,6 +55,22 @@ export default function InvestmentsPage() {
       expectedReturnYearly: inv.expectedReturnYearly ?? undefined,
     });
     setModalOpen(true);
+  }
+
+  async function handleConfirmDelete() {
+    if (!confirmTarget) return;
+    setConfirmLoading(true);
+    setActionLoading(`delete-${confirmTarget.id}`);
+    try {
+      await deleteInvestment(confirmTarget.id);
+    } catch (error: any) {
+      alert('Error deleting investment: ' + (error.message || String(error)));
+    } finally {
+      setActionLoading(null);
+      setConfirmLoading(false);
+      setConfirmOpen(false);
+      setConfirmTarget(null);
+    }
   }
 
   return (
@@ -159,15 +180,11 @@ export default function InvestmentsPage() {
 
                           <IconButton
                             variant="danger"
-                            onClick={async () => {
-                              const ok = window.confirm('Are you sure you want to remove this investment?');
-                              if (!ok) return;
-
-                              const result = await deleteInvestment(i.id);
-                              if (!result.success) {
-                                setFormError(result.error || 'Error removing investment');
-                              }
+                            onClick={() => {
+                              setConfirmTarget({ id: i.id, name: i.name });
+                              setConfirmOpen(true);
                             }}
+                            disabled={actionLoading === `delete-${i.id}`}
                           >
                             <TrashIcon className="w-3 h-3" />
                           </IconButton>
@@ -181,6 +198,16 @@ export default function InvestmentsPage() {
           </div>
         )}
       </section>
+      <ConfirmationModal
+        isOpen={confirmOpen}
+        title="Delete Investment"
+        message={confirmTarget ? `Are you sure you want to delete "${confirmTarget.name}"? This action cannot be undone.` : 'Are you sure?'}
+        confirmLabel="Yes, I want to delete"
+        cancelLabel="Cancel"
+        loading={confirmLoading}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => { setConfirmOpen(false); setConfirmTarget(null); }}
+      />
 
       <AddInvestmentModal
         isOpen={modalOpen}
