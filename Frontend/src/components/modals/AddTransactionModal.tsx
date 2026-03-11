@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { TransactionType } from '../../types/finance';
+import { parseCurrencyInput, formatCurrencyInput } from '../../utils/currencyInput';
 
 interface Props {
   isOpen: boolean;
@@ -37,7 +38,11 @@ export default function AddTransactionModal({ isOpen, onClose, onSubmit, initial
 
   useEffect(() => {
     if (initialData) {
-      setValue(initialData.value !== undefined ? String(initialData.value) : '');
+      setValue(
+        initialData.value !== undefined
+          ? initialData.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+          : ''
+      );
       if (typeof initialData.type === 'string') {
         setType(initialData.type === 'Income' ? 'Income' : 'Expense');
       } else if (typeof initialData.type === 'number') {
@@ -63,7 +68,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSubmit, initial
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    const numeric = parseFloat(value.toString().replace(/\./g, '').replace(/,/g, '.')) || 0;
+    const numeric = parseCurrencyInput(value);
     const payload = {
       value: numeric,
       type,
@@ -93,9 +98,10 @@ export default function AddTransactionModal({ isOpen, onClose, onSubmit, initial
           <input
             type="text"
             value={value}
-            onChange={(e) => setValue(e.target.value.replace(/[^0-9,.-]/g, ''))}
+            onChange={(e) => setValue(formatCurrencyInput(e.target.value))}
             placeholder="Valor (ex: 100,50)"
             className="px-2 h-10 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-emerald-200 focus:outline-none"
+            inputMode="decimal"
             required
           />
           <select

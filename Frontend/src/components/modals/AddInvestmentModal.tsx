@@ -1,24 +1,12 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import type { InvestmentInput } from '../../hooks/useInvestments';
+import { parseCurrencyInput, formatCurrencyInput } from '../../utils/currencyInput';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: InvestmentInput) => Promise<{ success: boolean; error?: string }>; 
   initialData?: InvestmentInput | null;
-}
-
-function parseCurrencyInput(value: string): number {
-  const digits = value.replace(/\D/g, '');
-  if (!digits) return 0;
-  return Number(digits) / 100;
-}
-
-function formatCurrencyInput(value: string): string {
-  const digits = value.replace(/\D/g, '');
-  if (!digits) return '';
-  const numeric = Number(digits) / 100;
-  return numeric.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
 export default function AddInvestmentModal({ isOpen, onClose, onSubmit, initialData }: Props) {
