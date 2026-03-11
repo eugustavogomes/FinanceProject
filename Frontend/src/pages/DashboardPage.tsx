@@ -48,6 +48,10 @@ export default function DashboardPage() {
       }
     });
 
+  const savingsRate = summary.income > 0
+    ? ((summary.income - summary.expense) / summary.income) * 100
+    : 0;
+
   function isIncomeTransaction(tx: any) {
     const rawType = tx?.type;
     if (typeof rawType === 'string') {
@@ -130,7 +134,7 @@ export default function DashboardPage() {
         <SummaryCard label="Current Balance" value={summary.balance} type="balance" />
         <SummaryCard label="Income" value={summary.income} type="income" />
         <SummaryCard label="Expenses" value={summary.expense} type="expense" />
-        <SummaryCard label="Transactions" value={filteredTransactions.length}/>
+        <SummaryCard label="Savings Rate" value={savingsRate} valueFormat="percentage" />
       </div>
       <div className="grid grid-cols-4 gap-4 mb-3">
         <div>

@@ -15,6 +15,7 @@ type SummaryCardProps = {
   sparklineData?: number[];
   variant?: 'compact' | 'default';
   loading?: boolean;
+  valueFormat?: 'currency' | 'percentage';
 };
 
 function currencyFormatter(v: number) {
@@ -44,7 +45,7 @@ function Sparkline({ data = [], color = '#10b981' }: { data?: number[]; color?: 
   );
 }
 
-export function SummaryCard({ label, value, type = '', trend, sparklineData, variant = 'default', loading = false }: SummaryCardProps) {
+export function SummaryCard({ label, value, type = '', trend, sparklineData, variant = 'default', loading = false, valueFormat = 'currency' }: SummaryCardProps) {
   const [displayValue, setDisplayValue] = useState<number>(value);
   const rafRef = useRef<number | null>(null);
   const prevValueRef = useRef<number>(value);
@@ -99,8 +100,13 @@ export function SummaryCard({ label, value, type = '', trend, sparklineData, var
         <div>
           <div className={`text-sm font-medium uppercase tracking-wide mb-1 ${gradientClass}`}>{label}</div>
           <div className="flex items-center gap-3">
-            <div className="text-2xl md:text-3xl font-extrabold text-foreground" title={currencyFormatter(value)}>
-              {abbreviateNumber(displayValue)}
+            <div
+              className="text-2xl md:text-3xl font-extrabold text-foreground"
+              title={valueFormat === 'percentage' ? `${value.toFixed(1)}%` : currencyFormatter(value)}
+            >
+              {valueFormat === 'percentage'
+                ? `${displayValue.toFixed(1)}%`
+                : abbreviateNumber(displayValue)}
             </div>
             {trend && typeof trend.percent === 'number' ? (
               <div className={`flex items-center text-sm font-medium ${trend.percent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
