@@ -34,10 +34,13 @@ export default function Sidebar({ expanded }: SidebarProps) {
 
   return (
     <aside
-      className={`fixed h-full z-40 flex flex-col justify-between shadow-xl border-r border-gray-800/80 bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 transition-[width] duration-700 ease-in-out ${expanded ? 'w-56' : 'w-20'}`}
+      className={`fixed h-full z-40 flex flex-col justify-between shadow-xl border-r bg-gradient-to-b transition-[width] duration-700 ease-in-out
+      border-emerald-100 from-emerald-900 via-emerald-950 to-emerald-900
+      dark:border-gray-800/80 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950
+      ${expanded ? 'w-56' : 'w-20'}`}
     >
       <div>
-        <div className="flex items-center justify-center py-4 min-h-[64px] border-b border-gray-800/70">
+        <div className="flex items-center justify-center py-4 min-h-[64px] border-b border-emerald-800/70 dark:border-gray-800/70">
           {expanded ? (
             <span className="select-none text-white inline-flex items-center justify-center">
               <img
@@ -71,8 +74,8 @@ export default function Sidebar({ expanded }: SidebarProps) {
                 className={({ isActive }) =>
                   `relative group flex items-center ${expanded ? 'gap-3 px-3 py-2' : 'justify-center py-2'} rounded-xl text-sm transition-all duration-300 ease-out
                    ${isActive
-                      ? 'bg-emerald-500/15 text-emerald-100 shadow-[0_0_0_1px_rgba(16,185,129,0.35)]'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-800/70'}
+                      ? 'bg-emerald-500/20 text-emerald-50 shadow-[0_0_0_1px_rgba(16,185,129,0.45)]'
+                      : 'text-emerald-100 hover:text-white hover:bg-emerald-800/60'}
                   `
                 }
               >
@@ -92,7 +95,7 @@ export default function Sidebar({ expanded }: SidebarProps) {
         </nav>
       </div>
       <div
-        className={`flex items-center ${expanded ? 'gap-3 px-3 py-2' : 'justify-center py-3'} text-white rounded-xl mb-3 mx-2 bg-gray-900/40 hover:bg-gray-800/80 transition-all duration-300 ease-out font-semibold cursor-pointer border border-transparent hover:border-gray-700/80`}
+        className={`flex items-center ${expanded ? 'gap-3 px-3 py-2' : 'justify-center py-3'} text-white rounded-xl mb-3 mx-2 bg-emerald-950/40 hover:bg-emerald-900/80 transition-all duration-300 ease-out font-semibold cursor-pointer border border-transparent hover:border-emerald-500/70 dark:bg-gray-900/40 dark:hover:bg-gray-800/80 dark:hover:border-gray-700/80`}
         onClick={() => setShowProfile(true)}
         title="Perfil"
       >
