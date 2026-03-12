@@ -7,3 +7,4 @@ export const AUTH_REGISTER_URL = '/auth/register';
 export const DASHBOARD_SUMMARY_URL = '/dashboard/summary';
 export const AUTH_LOGIN_URL = '/auth/login';
 export const AUTH_FORGOT_PASSWORD_URL = '/auth/forgot-password';
+export const USER_CHANGE_PASSWORD_URL = '/users/change-password';

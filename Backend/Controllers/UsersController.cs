@@ -39,6 +39,36 @@ namespace SimpleFinance.Api.Controllers
         }
 
         [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type.EndsWith("nameidentifier"));
+            if (userIdClaim == null) return Unauthorized();
+
+            if (!System.Guid.TryParse(userIdClaim.Value, out var userId)) return Unauthorized();
+
+            var user = _db.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null) return NotFound();
+
+            if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
+                return BadRequest("Current password is required.");
+
+            if (string.IsNullOrWhiteSpace(dto.NewPassword))
+                return BadRequest("New password is required.");
+
+            if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
+                return BadRequest("Current password is incorrect.");
+
+            if (dto.NewPassword.Length < 6)
+                return BadRequest("New password must be at least 6 characters long.");
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            await _db.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [Authorize]
         [HttpPut("me/preferences")]
         public async Task<IActionResult> UpdatePreferences([FromBody] UserPreferencesDto dto)
         {

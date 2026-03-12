@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { User, Settings, LogOut } from 'lucide-react';
+import { changePassword } from '../../hooks/useChangePassword';
 
 interface Props {
   isOpen: boolean;
@@ -18,6 +19,9 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
   const auth = useAuth();
   const { theme, toggleTheme } = useTheme();
 
@@ -29,6 +33,45 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
     if (onLogout) onLogout();
     else auth.logout();
     onClose();
+  };
+
+  const handleChangePassword = async () => {
+    setPasswordError(null);
+    setPasswordSuccess(null);
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setPasswordError('Please fill in all password fields.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New password and confirmation do not match.');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordError('New password must be at least 6 characters.');
+      return;
+    }
+
+    if (newPassword === currentPassword) {
+      setPasswordError('New password must be different from current password.');
+      return;
+    }
+
+    try {
+      setIsSavingPassword(true);
+      await changePassword({ currentPassword, newPassword });
+      setPasswordSuccess('Password updated successfully.');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) {
+      const message = error?.response?.data ?? 'Could not change password. Please check your current password.';
+      setPasswordError(typeof message === 'string' ? message : 'Could not change password.');
+    } finally {
+      setIsSavingPassword(false);
+    }
   };
 
   return (
@@ -124,7 +167,7 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
                 <div className="pt-4 border-t border-gray-100 dark:border-gray-700 space-y-4">
                   <div className="space-y-2">
                     <p className="text-sm font-semibold text-foreground">Change password</p>
-                    <p className="text-xs text-muted-foreground">Prototype: soon this will be connected to the backend to securely change your password.</p>
+                    <p className="text-xs text-muted-foreground">Update your password securely. Make sure to use a strong one.</p>
                     <div className="space-y-2">
                       <input
                         type="password"
@@ -148,13 +191,22 @@ export default function ProfileModal({ isOpen, onClose, email, name, onLogout }:
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
                     </div>
+                    {passwordError && (
+                      <p className="text-xs text-red-500 mt-1">{passwordError}</p>
+                    )}
+                    {passwordSuccess && (
+                      <p className="text-xs text-emerald-600 mt-1">{passwordSuccess}</p>
+                    )}
                     <div className="flex justify-end">
                       <button
                         type="button"
-                        disabled
-                        className="px-4 py-2 rounded bg-gray-900 text-white text-sm opacity-60 cursor-not-allowed"
+                        onClick={handleChangePassword}
+                        disabled={isSavingPassword}
+                        className={`px-4 py-2 rounded text-white text-sm ${
+                          isSavingPassword ? 'bg-gray-500 cursor-wait' : 'bg-gray-900 hover:bg-gray-800'
+                        }`}
                       >
-                        Save new password (soon)
+                        {isSavingPassword ? 'Saving...' : 'Save new password'}
                       </button>
                     </div>
                   </div>
