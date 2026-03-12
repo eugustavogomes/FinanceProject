@@ -3,9 +3,9 @@ import { useNavigate, Link } from "react-router-dom";
 import LightRays from '../components/LightRays';
 import { MdEmail } from "react-icons/md";
 import { FaLock, FaUser } from "react-icons/fa";
-import { FaCheck } from "react-icons/fa";
 import { Eye, EyeClosed } from "lucide-react";
 import { registerUser } from '../hooks/useRegister';
+import { ToggleCheckbox } from "../components/ui/ToggleCheckbox";
 
 export default function RegisterPage() {
     const [username, setUsername] = useState("");
@@ -167,16 +167,17 @@ export default function RegisterPage() {
 
                     <div className="flex flex-row items-center justify-start mt-1 mb-2 gap-2 text-xs px-2">
                         <label className="flex items-center gap-2 cursor-pointer select-none">
-                            <span className="relative">
-                                <input
-                                    type="checkbox"
-                                    className="peer appearance-none w-4 h-4 border border-gray-500 rounded bg-transparent checked:bg-blue-600 checked:border-blue-600 transition-all"
-                                    id="terms"
-                                    required
-                                />
-                                <FaCheck className="pointer-events-none absolute inset-0 m-auto w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition" />
-                            </span>
-                            <span className="text-white">I agree to the Terms & Conditions</span>
+                            <input
+                                type="checkbox"
+                                className="sr-only"
+                                id="terms"
+                                required
+                            />
+                            <ToggleCheckbox
+                                checked={true}
+                                onChange={() => {}}
+                                label="I agree to the Terms & Conditions"
+                            />
                         </label>
                     </div>
 

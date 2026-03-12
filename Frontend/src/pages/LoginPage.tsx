@@ -4,9 +4,9 @@ import { useAuth } from "../contexts/AuthContext";
 import LightRays from '../components/LightRays';
 import { MdEmail } from "react-icons/md";
 import { FaLock } from "react-icons/fa";
-import { FaCheck } from "react-icons/fa";
 import { Eye, EyeClosed } from "lucide-react";
 import { loginUser } from '../hooks/useLogin';
+import { ToggleCheckbox } from "../components/ui/ToggleCheckbox";
 
 export default function LoginPage() {
     const [identifier, setIdentifier] = useState("");
@@ -120,19 +120,11 @@ export default function LoginPage() {
                     </div>
 
                     <div className="flex flex-row items-center justify-between mt-1 mb-2 gap-2 text-xs px-2">
-                        <label className="flex items-center gap-2 cursor-pointer select-none">
-                            <span className="relative">
-                                <input
-                                    type="checkbox"
-                                    className="peer appearance-none w-4 h-4 border border-gray-500 rounded bg-transparent checked:bg-blue-600 checked:border-blue-600 transition-all"
-                                    id="remember"
-                                    checked={rememberMe}
-                                    onChange={(e) => setRememberMe(e.target.checked)}
-                                />
-                                <FaCheck className="pointer-events-none absolute inset-0 m-auto w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition" />
-                            </span>
-                            <span className="text-white">Remember me</span>
-                        </label>
+                        <ToggleCheckbox
+                            checked={rememberMe}
+                            onChange={setRememberMe}
+                            label="Remember me"
+                        />
                         <Link to="/forgot-password" className="text-blue-200 hover:underline">
                             Forgot password?
                         </Link>
