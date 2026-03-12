@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { fetchLatestTransactions } from "../hooks/useTransactions";
 import { Eye, ArrowUp, ArrowDown, ChevronRight } from 'lucide-react';
 
-type Transaction = {
+type LatestTransaction = {
     id: string;
     category: string;
     type: 'Income' | 'Expense' | string;
@@ -12,12 +12,20 @@ type Transaction = {
     description?: string;
 };
 
-export default function LatestTransactions() {
+interface LatestTransactionsProps {
+    transactions?: LatestTransaction[];
+}
+
+export default function LatestTransactions({ transactions: externalTransactions }: LatestTransactionsProps) {
     const navigate = useNavigate();
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [internalTransactions, setInternalTransactions] = useState<LatestTransaction[]>([]);
     const [loading, setLoading] = useState(false);
 
+    const transactions = externalTransactions ?? internalTransactions;
+
     useEffect(() => {
+        if (externalTransactions) return; 
+
         setLoading(true);
         fetchLatestTransactions().then(res => {
             const mapped = res.data.slice(0, 4).map((tx: any) => ({
@@ -28,10 +36,10 @@ export default function LatestTransactions() {
                 date: new Date(tx.date).toLocaleDateString('pt-BR'),
                 description: tx.description || ''
             }));
-            setTransactions(mapped);
+            setInternalTransactions(mapped);
             setLoading(false);
         }).catch(() => setLoading(false));
-    }, []);
+    }, [externalTransactions]);
 
     return (
         <div className="p-4 bg-white dark:bg-gray-800 text-card-foreground rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm h-full flex flex-col">

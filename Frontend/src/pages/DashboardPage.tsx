@@ -96,6 +96,19 @@ export default function DashboardPage() {
   // independent of the selected month filter used elsewhere.
   const lineData = getMonthlySeries();
 
+  const latestForDashboard = transactions
+    .slice()
+    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 4)
+    .map((tx: any) => ({
+      id: String(tx.id),
+      category: tx.categoryName || tx.category || 'No category',
+      type: tx.type,
+      value: tx.value,
+      date: new Date(tx.date).toLocaleDateString('pt-BR'),
+      description: tx.description || ''
+    }));
+
   return (
     <main className="p-1">
       <div className="mb-3 flex items-center justify-center">
@@ -123,7 +136,7 @@ export default function DashboardPage() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
         <div className="h-full">
-          <LatestTransactions />
+          <LatestTransactions transactions={latestForDashboard} />
         </div>
         <div className="h-full">
           <YearTransactionsChart

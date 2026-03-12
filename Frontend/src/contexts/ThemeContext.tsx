@@ -42,7 +42,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const setTheme = (value: Theme) => {
     setThemeState(value);
     api.put('/users/me/preferences', { preferredTheme: value }).catch(() => {
-      // ignore errors silently; theme still updates locally
     });
   };
 
@@ -50,7 +49,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     setThemeState((prev) => {
       const next = prev === 'dark' ? 'light' : 'dark';
       api.put('/users/me/preferences', { preferredTheme: next }).catch(() => {
-        // ignore errors silently; theme still updates locally
       });
       return next;
     });
