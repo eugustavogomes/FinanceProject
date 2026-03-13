@@ -13,7 +13,6 @@ export default function GoalsPage() {
   const { transactions } = useTransactions();
 
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [formError, setFormError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalInitialData, setModalInitialData] = useState<{
     category?: string | null;
@@ -48,13 +47,10 @@ export default function GoalsPage() {
   async function handleConfirmDelete() {
     if (!confirmTarget) return;
     setConfirmLoading(true);
-    const result = await deleteGoal(confirmTarget.id);
+    await deleteGoal(confirmTarget.id);
     setConfirmLoading(false);
     setConfirmOpen(false);
     setConfirmTarget(null);
-    if (!result.success) {
-      setFormError(result.error || 'Error deleting goal');
-    }
   }
 
   return (
@@ -155,12 +151,7 @@ export default function GoalsPage() {
         }}
         initialData={modalInitialData || undefined}
         onSubmit={async (data: GoalInput) => {
-          setFormError(null);
-          const result = editingId ? await updateGoal(editingId, data) : await createGoal(data);
-          if (!result.success) {
-            setFormError(result.error || 'Error saving goal');
-          }
-          return result;
+          return editingId ? await updateGoal(editingId, data) : await createGoal(data);
         }}
       />
 
