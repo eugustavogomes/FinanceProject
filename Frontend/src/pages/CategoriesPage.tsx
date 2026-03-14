@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Trash2, Loader, Pencil } from 'lucide-react';
 import { useCategories } from '../hooks/useCategories';
+import { useConfirmDelete } from '../hooks/useConfirmDelete';
 import AddCategoryModal from '../components/modals/AddCategoryModal';
 import ConfirmationModal from '../components/modals/ConfirmationModal';
 import { IconButton } from '../components/ui/IconButton';
 import SearchInput from '../components/ui/SearchInput';
 import { FloatingActionButton } from '../components/ui/FloatingActionButton';
+import { getTransactionTypeLabel } from '../lib/transactionUtils';
 
 /**
  * CategoriesPage
@@ -23,27 +25,27 @@ export default function CategoriesPage() {
   const [modalInitialData, setModalInitialData] = useState<{ name: string; type?: string } | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [confirmTarget, setConfirmTarget] = useState<{ id: string; name?: string } | null>(null);
+
+  const confirmDelete = useConfirmDelete<string>({
+    onConfirm: async (id) => {
+      try {
+        setActionLoading(`delete-${id}`);
+        await deleteCategory(id);
+      } catch (error: any) {
+        alert('Error deleting category: ' + (error.message || String(error)));
+      } finally {
+        setActionLoading(null);
+      }
+    },
+    formatMessage: (t) => `Are you sure you want to delete "${t.name ?? 'this category'}"? This action cannot be undone.`,
+  });
 
   const [filtered, setFiltered] = useState<any[]>([]);
   const [typeFilter, setTypeFilter] = useState<'Income' | 'Expense'>('Income');
 
   useEffect(() => {
     const next = categories
-      .map((c: any) => {
-        const rawType = c.type;
-        const typeLabel = typeof rawType === 'string'
-          ? rawType
-          : rawType === 0
-            ? 'Income'
-            : rawType === 1
-              ? 'Expense'
-              : '';
-
-        return { ...c, __typeLabel: typeLabel };
-      })
+      .map((c: any) => ({ ...c, __typeLabel: getTransactionTypeLabel(c.type) }))
       .filter((c: any) => c.__typeLabel === typeFilter)
       .filter((c: any) =>
         String(c.name || '').toLowerCase().includes(search.toLowerCase())
@@ -93,36 +95,10 @@ export default function CategoriesPage() {
   };
 
   /**
-   * handleDelete
-   * Open the confirmation modal for deleting a category.
-   * - stores the id and name in `confirmTarget` and opens the modal.
+   * handleDelete — open confirmation modal for deleting a category.
    */
   function handleDelete(id: string, name: string) {
-    setConfirmTarget({ id, name });
-    setConfirmOpen(true);
-  }
-
-  /**
-   * handleConfirmDelete
-   * Called when the user confirms category deletion.
-   * - shows a loading state and calls `deleteCategory`.
-   * - hides the modal and clears state after completion.
-   * - on error, displays an alert with the error message.
-   */
-  async function handleConfirmDelete() {
-    if (!confirmTarget) return;
-    setConfirmLoading(true);
-    setActionLoading(`delete-${confirmTarget.id}`);
-    try {
-      await deleteCategory(confirmTarget.id);
-    } catch (error: any) {
-      alert('Error deleting category: ' + (error.message || String(error)));
-    } finally {
-      setActionLoading(null);
-      setConfirmLoading(false);
-      setConfirmOpen(false);
-      setConfirmTarget(null);
-    }
+    confirmDelete.open(id, name);
   }
 
   /**
@@ -192,16 +168,7 @@ export default function CategoriesPage() {
         ) : (
           <div className="divide-y divide-gray-100 dark:divide-gray-800">
             {filtered.map((category: any) => {
-              const rawType = category.type;
-              const typeLabel = typeof category.__typeLabel === 'string'
-                ? category.__typeLabel
-                : typeof rawType === 'string'
-                  ? rawType
-                  : rawType === 0
-                    ? 'Income'
-                    : rawType === 1
-                      ? 'Expense'
-                      : '';
+              const typeLabel = category.__typeLabel || getTransactionTypeLabel(category.type);
 
               const typeClasses = typeLabel === 'Income'
                 ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
@@ -233,7 +200,7 @@ export default function CategoriesPage() {
                       onClick={() => handleDelete(category.id, category.name)}
                       variant="danger"
                     >
-                      {actionLoading === `delete-${category.id}` ? (
+                      {(actionLoading === `delete-${category.id}` || (confirmDelete.loading && confirmDelete.target?.id === category.id)) ? (
                         <Loader className="animate-spin" />
                       ) : (
                         <>
@@ -275,14 +242,14 @@ export default function CategoriesPage() {
         }}
       />
       <ConfirmationModal
-        isOpen={confirmOpen}
+        isOpen={confirmDelete.isOpen}
         title="Delete category"
-        message={confirmTarget ? `Are you sure you want to delete "${confirmTarget.name}"? This action cannot be undone.` : 'Are you sure?'}
+        message={confirmDelete.message}
         confirmLabel="Yes, I want to delete"
         cancelLabel="Cancel"
-        loading={confirmLoading}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => { setConfirmOpen(false); setConfirmTarget(null); }}
+        loading={confirmDelete.loading}
+        onConfirm={confirmDelete.confirm}
+        onCancel={confirmDelete.cancel}
       />
     </main>
   );

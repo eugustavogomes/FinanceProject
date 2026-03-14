@@ -1,146 +1,105 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import LightRays from '../components/LightRays';
+import AuthLayout from "../components/auth/AuthLayout";
+import { AuthMessage } from "../components/auth/AuthMessage";
 import { MdEmail } from "react-icons/md";
 import { FaLock } from "react-icons/fa";
 import { Eye, EyeClosed } from "lucide-react";
 import { loginUser } from '../hooks/useLogin';
 import { ToggleCheckbox } from "../components/ui/ToggleCheckbox";
 
+const inputClass = "w-full bg-transparent text-white placeholder-white pl-10 py-2 border-0 border-b-2 border-b-gray-400 focus:border-b-blue-400 focus:ring-0 transition outline-none";
+
 export default function LoginPage() {
-    const [identifier, setIdentifier] = useState("");
-    const [password, setPassword] = useState("");
-    const [rememberMe, setRememberMe] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
-    const { login } = useAuth();
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-    useEffect(() => {
-        const storedIdentifier = localStorage.getItem("sf-remembered-identifier");
-        if (storedIdentifier) {
-            setIdentifier(storedIdentifier);
-            setRememberMe(true);
-        }
-    }, []);
-
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-
-        if (!identifier || !password) {
-            setError("Please fill in both fields");
-            return;
-        }
-
-        try {
-            setError("");
-            const res = await loginUser({ identifier, password });
-            const token = res.data.token;
-            login(token);
-
-            if (rememberMe) {
-                localStorage.setItem("sf-remembered-identifier", identifier);
-            } else {
-                localStorage.removeItem("sf-remembered-identifier");
-            }
-
-            navigate("/dashboard");
-        } catch (err: any) {
-            setError(err?.response?.data || "Login failed");
-        }
+  useEffect(() => {
+    const stored = localStorage.getItem("sf-remembered-identifier");
+    if (stored) {
+      setIdentifier(stored);
+      setRememberMe(true);
     }
+  }, []);
 
-    return (
-        <main className="login-page-bg min-h-screen flex items-center justify-center relative bg-gray-950">
-            <div className="absolute inset-0 z-0">
-                <LightRays
-                    raysOrigin="top-center"
-                    raysColor="#22c55e"
-                    raysSpeed={1}
-                    lightSpread={1.2}
-                    rayLength={2.5}
-                    pulsating={true}
-                    fadeDistance={1.0}
-                    followMouse={true}
-                    mouseInfluence={0.15}
-                />
-            </div>
-            <div className="w-full max-w-[430px] mx-auto rounded-xl shadow-3xl border border-white/20 py-8 relative z-10 
-    bg-white/10 backdrop-blur-8xl px-4">
-                <form
-                    className="card-body flex flex-col gap-7 p-4"
-                    onSubmit={handleSubmit}
-                    noValidate
-                >
-                    <div className="flex flex-col items-center justify-center mb-1">
-                        <h2 className="text-2xl font-bold text-white">Simple Finance Login</h2>
-                        <p className="text-xs text-gray-300">Financial dashboard for managing your personal finances.</p>
-                    </div>
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!identifier || !password) {
+      setError("Please fill in both fields");
+      return;
+    }
+    try {
+      setError("");
+      const res = await loginUser({ identifier, password });
+      login(res.data.token);
+      if (rememberMe) localStorage.setItem("sf-remembered-identifier", identifier);
+      else localStorage.removeItem("sf-remembered-identifier");
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError(err?.response?.data || "Login failed");
+    }
+  }
 
-                    {error && (
-                        <div className="border border-red-400/60 bg-red-500/10 text-red-200 text-xs px-3 py-2 text-center rounded-md">
-                            {error}
-                        </div>
-                    )}
+  return (
+    <AuthLayout
+      title="Simple Finance Login"
+      subtitle="Financial dashboard for managing your personal finances."
+      footer={
+        <>Don't have an account? <Link to="/register" className="text-blue-200 hover:underline">Sign up</Link></>
+      }
+    >
+      <form className="card-body flex flex-col gap-7 p-4" onSubmit={handleSubmit} noValidate>
+        <AuthMessage variant="error">{error}</AuthMessage>
 
-                    <div className="flex flex-col gap-2 px-2">
-                        <div className="relative">
-                            <MdEmail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" />
-                            <input
-                                type="text"
-                                placeholder="Email or Username"
-                                className="w-full bg-transparent text-white placeholder-white pl-10 py-2 border-0 border-b-2 border-b-gray-400 focus:border-b-blue-400 focus:ring-0 transition outline-none"
-                                value={identifier}
-                                onChange={(e) => setIdentifier(e.target.value)}
-                            />
-                        </div>
-                        <div className="relative">
-                            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" />
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Password"
-                                className="w-full bg-transparent text-white placeholder-white pl-10 py-2 border-0 border-b-2 border-b-gray-400 focus:border-b-blue-400 focus:ring-0 transition outline-none"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword((prev) => !prev)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition"
-                                aria-label={showPassword ? "Hide password" : "Show password"}
-                            >
-                                {showPassword ? (
-                                    <EyeClosed className="w-4 h-4" />
-                                ) : (
-                                    <Eye className="w-4 h-4" />
-                                )}
-                            </button>
-                        </div>
-                    </div>
+        <div className="flex flex-col gap-2 px-2">
+          <div className="relative">
+            <MdEmail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Email or Username"
+              className={inputClass}
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+            />
+          </div>
+          <div className="relative">
+            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none" />
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              className={inputClass}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((p) => !p)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeClosed className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
 
-                    <div className="flex flex-row items-center justify-between mt-1 mb-2 gap-2 text-xs px-2">
-                        <ToggleCheckbox
-                            checked={rememberMe}
-                            onChange={setRememberMe}
-                            label="Remember me"
-                        />
-                        <Link to="/forgot-password" className="text-blue-200 hover:underline">
-                            Forgot password?
-                        </Link>
-                    </div>
+        <div className="flex flex-row items-center justify-between mt-1 mb-2 gap-2 text-xs px-2">
+          <ToggleCheckbox checked={rememberMe} onChange={setRememberMe} label="Remember me" />
+          <Link to="/forgot-password" className="text-blue-200 hover:underline">Forgot password?</Link>
+        </div>
 
-                    <div className="flex justify-center items-center w-full">
-                        <button
-                            type="submit"
-                            className="p-2 font-semibold flex justify-center items-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow-md w-full"
-                        >
-                            Login
-                        </button>
-                    </div>
-                </form>
-                <p className="text-white text-center mt-1 text-xs">Don't have an account? <Link to="/register" className="text-blue-200 hover:underline">Sign up</Link></p>
-            </div>
-        </main>
-    );
+        <button
+          type="submit"
+          className="p-2 font-semibold flex justify-center items-center bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow-md w-full"
+        >
+          Login
+        </button>
+      </form>
+    </AuthLayout>
+  );
 }

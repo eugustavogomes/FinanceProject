@@ -5,6 +5,7 @@ import { TrashIcon, Pencil } from 'lucide-react';
 import { calculateAverageMonthlyNet, formatCurrency, getMonthsUntil } from '../lib/goalsUtils';
 import AddGoalModal from '../components/modals/AddGoalModal';
 import ConfirmationModal from '../components/modals/ConfirmationModal';
+import { useConfirmDelete } from '../hooks/useConfirmDelete';
 import { IconButton } from '../components/ui/IconButton';
 import { FloatingActionButton } from '../components/ui/FloatingActionButton';
 
@@ -20,9 +21,13 @@ export default function GoalsPage() {
     month: number;
     year: number;
   } | null>(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmTarget, setConfirmTarget] = useState<{ id: number; label?: string } | null>(null);
-  const [confirmLoading, setConfirmLoading] = useState(false);
+
+  const confirmDelete = useConfirmDelete<number>({
+    onConfirm: async (id) => {
+      await deleteGoal(id);
+    },
+    formatMessage: (t) => `Are you sure you want to delete ${t.label ?? 'this goal'}? This action cannot be undone.`,
+  });
 
   const averageMonthlyNet = useMemo(() => calculateAverageMonthlyNet(transactions), [transactions]);
 
@@ -40,17 +45,7 @@ export default function GoalsPage() {
   }, [editingId, goals]);
 
   function openDeleteConfirm(id: number, label?: string) {
-    setConfirmTarget({ id, label });
-    setConfirmOpen(true);
-  }
-
-  async function handleConfirmDelete() {
-    if (!confirmTarget) return;
-    setConfirmLoading(true);
-    await deleteGoal(confirmTarget.id);
-    setConfirmLoading(false);
-    setConfirmOpen(false);
-    setConfirmTarget(null);
+    confirmDelete.open(id, label);
   }
 
   return (
@@ -156,21 +151,14 @@ export default function GoalsPage() {
       />
 
       <ConfirmationModal
-        isOpen={confirmOpen}
+        isOpen={confirmDelete.isOpen}
         title="Delete goal"
-        message={
-          confirmTarget
-            ? `Are you sure you want to delete ${confirmTarget.label || 'this goal'}? This action cannot be undone.`
-            : 'Are you sure?'
-        }
+        message={confirmDelete.message}
         confirmLabel="Yes, delete goal"
         cancelLabel="Cancel"
-        loading={confirmLoading}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => {
-          setConfirmOpen(false);
-          setConfirmTarget(null);
-        }}
+        loading={confirmDelete.loading}
+        onConfirm={confirmDelete.confirm}
+        onCancel={confirmDelete.cancel}
       />
 
       <FloatingActionButton

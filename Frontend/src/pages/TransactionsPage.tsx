@@ -4,9 +4,11 @@ import { useCategories } from '../hooks/useCategories';
 import { TrashIcon, Pencil } from 'lucide-react';
 import AddTransactionModal from '../components/modals/AddTransactionModal';
 import ConfirmationModal from '../components/modals/ConfirmationModal';
+import { useConfirmDelete } from '../hooks/useConfirmDelete';
 import { IconButton } from '../components/ui/IconButton';
 import SearchInput from '../components/ui/SearchInput';
 import { FloatingActionButton } from '../components/ui/FloatingActionButton';
+import { isIncomeTransaction } from '../lib/transactionUtils';
 
 /**
  * TransactionsPage
@@ -33,19 +35,16 @@ export default function TransactionsPage() {
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'Income' | 'Expense'>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [confirmTarget, setConfirmTarget] = useState<{ id: number | string; label?: string } | null>(null);
   const [filtered, setFiltered] = useState<any[]>([]);
-  
-  function isIncomeTransaction(tx: any) {
-    const rawType = tx?.type;
-    if (typeof rawType === 'string') {
-      return rawType.toLowerCase() === 'income';
-    }
-    return rawType === 0;
-  }
-  
+
+  const confirmDelete = useConfirmDelete<number | string>({
+    onConfirm: async (id) => {
+      const result = await deleteTransaction(id);
+      if (!result.success) setFormError(result.error);
+    },
+    formatMessage: (t) => `Are you sure you want to delete ${t.label ?? 'this transaction'}? This action cannot be undone.`,
+  });
+
   /**
    * handleEdit
    * Prepare the Add/Edit Transaction modal for editing an existing transaction.
@@ -67,33 +66,10 @@ export default function TransactionsPage() {
   }
 
   /**
-   * openDeleteConfirm
-   * Open the deletion confirmation modal for a specific transaction.
-   * - stores the target id and optional label in `confirmTarget`.
-   * - shows the confirmation modal by setting `confirmOpen` to true.
+   * openDeleteConfirm — open confirmation modal for deleting a transaction.
    */
   function openDeleteConfirm(id: number | string, label?: string) {
-    setConfirmTarget({ id, label });
-    setConfirmOpen(true);
-  }
-
-  /**
-   * handleConfirmDelete
-   * Called when the user confirms deletion in the confirmation modal.
-   * - if there is no target, it no-ops.
-   * - sets a loading flag while calling the `deleteTransaction` API from the hook.
-   * - closes the modal and clears the target afterwards.
-   * - if the delete operation fails, stores the error in `formError` so it can
-   *   be displayed to the user.
-   */
-  async function handleConfirmDelete() {
-    if (!confirmTarget) return;
-    setConfirmLoading(true);
-    const result = await deleteTransaction(confirmTarget.id);
-    setConfirmLoading(false);
-    setConfirmOpen(false);
-    setConfirmTarget(null);
-    if (!result.success) setFormError(result.error);
+    confirmDelete.open(id, label);
   }
 
   /**
@@ -225,14 +201,14 @@ export default function TransactionsPage() {
       </div>
 
       <ConfirmationModal
-        isOpen={confirmOpen}
+        isOpen={confirmDelete.isOpen}
         title="Delete transaction"
-        message={confirmTarget ? `Are you sure you want to delete ${confirmTarget.label || 'this transaction'}? This action cannot be undone.` : 'Are you sure?'}
+        message={confirmDelete.message}
         confirmLabel="Yes, I want to delete"
         cancelLabel="Cancel"
-        loading={confirmLoading}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => { setConfirmOpen(false); setConfirmTarget(null); }}
+        loading={confirmDelete.loading}
+        onConfirm={confirmDelete.confirm}
+        onCancel={confirmDelete.cancel}
       />
       <AddTransactionModal
         isOpen={showModal}

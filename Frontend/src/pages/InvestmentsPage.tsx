@@ -6,6 +6,8 @@ import { FloatingActionButton } from '../components/ui/FloatingActionButton';
 import { IconButton } from '../components/ui/IconButton';
 import SearchInput from '../components/ui/SearchInput';
 import ConfirmationModal from '../components/modals/ConfirmationModal';
+import { useConfirmDelete } from '../hooks/useConfirmDelete';
+import { formatCurrency } from '../lib/goalsUtils';
 
 export default function InvestmentsPage() {
   const { investments, loading, error, createInvestment, updateInvestment, deleteInvestment } = useInvestments();
@@ -16,10 +18,21 @@ export default function InvestmentsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('all');
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmTarget, setConfirmTarget] = useState<{ id: string; name?: string } | null>(null);
-  const [confirmLoading, setConfirmLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const confirmDelete = useConfirmDelete<string>({
+    onConfirm: async (id) => {
+      try {
+        setActionLoading(`delete-${id}`);
+        await deleteInvestment(id);
+      } catch (error: any) {
+        alert('Error deleting investment: ' + (error.message || String(error)));
+      } finally {
+        setActionLoading(null);
+      }
+    },
+    formatMessage: (t) => `Are you sure you want to delete "${t.name ?? 'this investment'}"? This action cannot be undone.`,
+  });
 
   const totals = useMemo(() => {
     const totalCurrent = investments.reduce((sum, i) => sum + (i.currentValue || 0), 0);
@@ -39,10 +52,6 @@ export default function InvestmentsPage() {
     });
   }, [investments, search, filterCategory]);
 
-  function formatCurrency(value: number) {
-    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  }
-
   function handleEdit(id: string) {
     const inv = investments.find((i) => i.id === id);
     if (!inv) return;
@@ -55,22 +64,6 @@ export default function InvestmentsPage() {
       expectedReturnYearly: inv.expectedReturnYearly ?? undefined,
     });
     setModalOpen(true);
-  }
-
-  async function handleConfirmDelete() {
-    if (!confirmTarget) return;
-    setConfirmLoading(true);
-    setActionLoading(`delete-${confirmTarget.id}`);
-    try {
-      await deleteInvestment(confirmTarget.id);
-    } catch (error: any) {
-      alert('Error deleting investment: ' + (error.message || String(error)));
-    } finally {
-      setActionLoading(null);
-      setConfirmLoading(false);
-      setConfirmOpen(false);
-      setConfirmTarget(null);
-    }
   }
 
   return (
@@ -180,11 +173,8 @@ export default function InvestmentsPage() {
 
                           <IconButton
                             variant="danger"
-                            onClick={() => {
-                              setConfirmTarget({ id: i.id, name: i.name });
-                              setConfirmOpen(true);
-                            }}
-                            disabled={actionLoading === `delete-${i.id}`}
+                            onClick={() => confirmDelete.open(i.id, i.name)}
+                            disabled={actionLoading === `delete-${i.id}` || (confirmDelete.loading && confirmDelete.target?.id === i.id)}
                           >
                             <TrashIcon className="w-3 h-3" />
                           </IconButton>
@@ -199,14 +189,14 @@ export default function InvestmentsPage() {
         )}
       </section>
       <ConfirmationModal
-        isOpen={confirmOpen}
+        isOpen={confirmDelete.isOpen}
         title="Delete Investment"
-        message={confirmTarget ? `Are you sure you want to delete "${confirmTarget.name}"? This action cannot be undone.` : 'Are you sure?'}
+        message={confirmDelete.message}
         confirmLabel="Yes, I want to delete"
         cancelLabel="Cancel"
-        loading={confirmLoading}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => { setConfirmOpen(false); setConfirmTarget(null); }}
+        loading={confirmDelete.loading}
+        onConfirm={confirmDelete.confirm}
+        onCancel={confirmDelete.cancel}
       />
 
       <AddInvestmentModal

@@ -11,6 +11,7 @@ import MonthNavbar from "../components/MonthNavbar";
 import InvestmentsPieCard from "../components/charts/InvestmentsPieCard";
 import GoalsCard from "../components/GoalsCard";
 import { useInvestments } from "../hooks/useInvestments";
+import { isIncomeTransaction } from "../lib/transactionUtils";
 
 
 /**
@@ -51,14 +52,6 @@ export default function DashboardPage() {
   const savingsRate = summary.income > 0
     ? ((summary.income - summary.expense) / summary.income) * 100
     : 0;
-
-  function isIncomeTransaction(tx: any) {
-    const rawType = tx?.type;
-    if (typeof rawType === 'string') {
-      return rawType.toLowerCase() === 'income';
-    }
-    return rawType === 0;
-  }
 
   /**
    * getMonthlySeries
