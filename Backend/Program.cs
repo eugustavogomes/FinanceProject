@@ -33,6 +33,7 @@ builder.Services.AddControllers()
 
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 Env.Load();
 builder.Services.AddJwtAuthentication(builder.Configuration);
