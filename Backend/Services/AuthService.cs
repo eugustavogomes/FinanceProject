@@ -1,26 +1,26 @@
 using jwtBearer.Services;
-using SimpleFinance.Api.Data;
 using SimpleFinance.Api.Dtos;
 using SimpleFinance.Api.Exceptions;
 using SimpleFinance.Api.Models;
+using SimpleFinance.Api.Repositories.Interfaces;
 
 namespace SimpleFinance.Api.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUserRepository _userRepository;
 
-    public AuthService(ApplicationDbContext context)
+    public AuthService(IUserRepository userRepository)
     {
-        _context = context;
+        _userRepository = userRepository;
     }
 
     public async Task<string> RegisterAsync(UserRegisterDto dto)
     {
-        if (_context.Users.Any(u => u.Email == dto.Email))
+        if (await _userRepository.EmailExistsAsync(dto.Email!))
             throw new DomainException("User already exists.");
 
-        if (!string.IsNullOrWhiteSpace(dto.Username) && _context.Users.Any(u => u.Username == dto.Username))
+        if (!string.IsNullOrWhiteSpace(dto.Username) && await _userRepository.UsernameExistsAsync(dto.Username))
             throw new DomainException("Username already taken.");
 
         var user = new User
@@ -31,13 +31,13 @@ public class AuthService : IAuthService
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
         };
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        await _userRepository.AddAsync(user);
+        await _userRepository.SaveChangesAsync();
 
         return "User registered successfully.";
     }
 
-    public Task<string> LoginAsync(UserLoginDto dto)
+    public async Task<string> LoginAsync(UserLoginDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Email) && string.IsNullOrWhiteSpace(dto.Username))
             throw new DomainException("Username or email is required.");
@@ -45,17 +45,14 @@ public class AuthService : IAuthService
         if (string.IsNullOrWhiteSpace(dto.Password))
             throw new DomainException("Password is required.");
 
-        var user = _context.Users.FirstOrDefault(u =>
-            (!string.IsNullOrWhiteSpace(dto.Email) && u.Email == dto.Email) ||
-            (!string.IsNullOrWhiteSpace(dto.Username) && u.Username == dto.Username));
+        var user = await _userRepository.GetByEmailOrUsernameAsync(dto.Email, dto.Username);
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
             throw new UnauthorizedAccessException("Invalid credentials.");
 
-        var email = user.Email ?? string.Empty;
-        var token = TokenService.GenerateToken(user.Id, email, user.Name);
+        var token = TokenService.GenerateToken(user.Id, user.Email ?? string.Empty, user.Name);
 
-        return Task.FromResult(token);
+        return token;
     }
 
     public Task ForgotPasswordAsync(ForgotPasswordDto dto)
@@ -75,11 +72,11 @@ public class AuthService : IAuthService
         if (string.IsNullOrWhiteSpace(dto.NewPassword))
             throw new DomainException("New password is required.");
 
-        var user = _context.Users.FirstOrDefault(u => u.Email == dto.Email);
+        var user = await _userRepository.GetByEmailOrUsernameAsync(dto.Email, null);
         if (user == null)
             return;
 
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
-        await _context.SaveChangesAsync();
+        await _userRepository.SaveChangesAsync();
     }
 }

@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using SimpleFinance.Api.Data;
 using SimpleFinance.Api.Middlewares;
+using SimpleFinance.Api.Repositories;
+using SimpleFinance.Api.Repositories.Interfaces;
 using SimpleFinance.Api.Services;
 using jwtBearer;
 using DotNetEnv;
@@ -30,10 +32,21 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
+// Repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IGoalRepository, GoalRepository>();
+builder.Services.AddScoped<IInvestmentRepository, InvestmentRepository>();
 
-builder.Services.AddScoped<ITransactionService, TransactionService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
+// Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IGoalService, GoalService>();
+builder.Services.AddScoped<IInvestmentService, InvestmentService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 Env.Load();
 builder.Services.AddJwtAuthentication(builder.Configuration);

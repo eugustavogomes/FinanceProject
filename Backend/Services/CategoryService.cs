@@ -1,35 +1,30 @@
-using Microsoft.EntityFrameworkCore;
-using SimpleFinance.Api.Data;
 using SimpleFinance.Api.Dtos;
 using SimpleFinance.Api.Exceptions;
 using SimpleFinance.Api.Models;
+using SimpleFinance.Api.Repositories.Interfaces;
 
 namespace SimpleFinance.Api.Services;
 
 public class CategoryService : ICategoryService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly IUserRepository _userRepository;
 
-    public CategoryService(ApplicationDbContext context)
+    public CategoryService(ICategoryRepository categoryRepository, IUserRepository userRepository)
     {
-        _context = context;
+        _categoryRepository = categoryRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<IReadOnlyList<CategoryDto>> GetCategoriesAsync(Guid userId)
     {
         await EnsureUserExistsAsync(userId);
 
-        var userCategoryCount = await _context.Categories.CountAsync(c => c.UserId == userId && c.IsActive);
-        if (userCategoryCount == 0)
-        {
+        var count = await _categoryRepository.CountActiveByUserIdAsync(userId);
+        if (count == 0)
             await SeedBasicCategoriesForUser(userId);
-        }
 
-        var categories = await _context.Categories
-            .Where(c => c.UserId == userId && c.IsActive)
-            .OrderBy(c => c.Name)
-            .ToListAsync();
-
+        var categories = await _categoryRepository.GetActiveByUserIdAsync(userId);
         return categories.Select(MapToDto).ToList();
     }
 
@@ -38,13 +33,9 @@ public class CategoryService : ICategoryService
         await EnsureUserExistsAsync(userId);
         Validate(dto);
 
-        var existingCategory = await _context.Categories
-            .FirstOrDefaultAsync(c => c.IsActive && c.Name != null && c.Name.ToLower() == dto.Name!.ToLower() && c.UserId == userId);
-
-        if (existingCategory != null)
-        {
+        var existing = await _categoryRepository.GetActiveByNameAndUserIdAsync(dto.Name!, userId);
+        if (existing != null)
             throw new DomainException("A category with this name already exists.");
-        }
 
         var category = new Category
         {
@@ -54,8 +45,8 @@ public class CategoryService : ICategoryService
             UserId = userId
         };
 
-        _context.Categories.Add(category);
-        await _context.SaveChangesAsync();
+        await _categoryRepository.AddAsync(category);
+        await _categoryRepository.SaveChangesAsync();
 
         return MapToDto(category);
     }
@@ -65,29 +56,18 @@ public class CategoryService : ICategoryService
         await EnsureUserExistsAsync(userId);
         Validate(dto);
 
-        var category = await _context.Categories
-            .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId && c.IsActive);
+        var category = await _categoryRepository.GetActiveByIdAndUserIdAsync(categoryId, userId)
+            ?? throw new KeyNotFoundException("Category not found.");
 
-        if (category == null)
-        {
-            throw new KeyNotFoundException("Category not found.");
-        }
-
-        var existingCategory = await _context.Categories
-            .FirstOrDefaultAsync(c => c.IsActive && c.Name != null && c.Name.ToLower() == dto.Name!.ToLower() && c.Id != categoryId && c.UserId == userId);
-
-        if (existingCategory != null)
-        {
+        var existing = await _categoryRepository.GetActiveByNameAndUserIdAsync(dto.Name!, userId, excludeId: categoryId);
+        if (existing != null)
             throw new DomainException("A category with this name already exists.");
-        }
 
         category.Name = dto.Name;
         if (dto.Type.HasValue)
-        {
             category.Type = dto.Type.Value;
-        }
 
-        await _context.SaveChangesAsync();
+        await _categoryRepository.SaveChangesAsync();
 
         return MapToDto(category);
     }
@@ -96,41 +76,30 @@ public class CategoryService : ICategoryService
     {
         await EnsureUserExistsAsync(userId);
 
-        var category = await _context.Categories
-            .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId && c.IsActive);
-
-        if (category == null)
-        {
-            throw new KeyNotFoundException("Category not found.");
-        }
+        var category = await _categoryRepository.GetActiveByIdAndUserIdAsync(categoryId, userId)
+            ?? throw new KeyNotFoundException("Category not found.");
 
         // Soft delete: keeps category for transaction history
         category.IsActive = false;
-        await _context.SaveChangesAsync();
+        await _categoryRepository.SaveChangesAsync();
     }
 
     private async Task EnsureUserExistsAsync(Guid userId)
     {
-        var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
-        if (!userExists)
-        {
+        if (!await _userRepository.ExistsAsync(userId))
             throw new UnauthorizedAccessException("User not found. Please log in again.");
-        }
     }
 
     private static void Validate(CreateCategoryDto dto)
     {
         if (string.IsNullOrEmpty(dto.Name))
-        {
             throw new DomainException("Category name is required.");
-        }
     }
 
     private async Task SeedBasicCategoriesForUser(Guid userId)
     {
         var basicCategories = new List<Category>
         {
-            // EXPENSES
             new Category { Id = Guid.NewGuid(), Name = "Food", UserId = userId, Type = TransactionType.Expense },
             new Category { Id = Guid.NewGuid(), Name = "Rent", UserId = userId, Type = TransactionType.Expense },
             new Category { Id = Guid.NewGuid(), Name = "Transport", UserId = userId, Type = TransactionType.Expense },
@@ -141,27 +110,22 @@ public class CategoryService : ICategoryService
             new Category { Id = Guid.NewGuid(), Name = "Health", UserId = userId, Type = TransactionType.Expense },
             new Category { Id = Guid.NewGuid(), Name = "Education", UserId = userId, Type = TransactionType.Expense },
             new Category { Id = Guid.NewGuid(), Name = "Leisure", UserId = userId, Type = TransactionType.Expense },
-
-            // INCOMES
             new Category { Id = Guid.NewGuid(), Name = "Salary", UserId = userId, Type = TransactionType.Income },
             new Category { Id = Guid.NewGuid(), Name = "Freelance", UserId = userId, Type = TransactionType.Income },
             new Category { Id = Guid.NewGuid(), Name = "Stocks", UserId = userId, Type = TransactionType.Income },
             new Category { Id = Guid.NewGuid(), Name = "Real Estate Funds", UserId = userId, Type = TransactionType.Income },
         };
 
-        _context.Categories.AddRange(basicCategories);
-        await _context.SaveChangesAsync();
+        await _categoryRepository.AddRangeAsync(basicCategories);
+        await _categoryRepository.SaveChangesAsync();
     }
 
-    private static CategoryDto MapToDto(Category category)
+    private static CategoryDto MapToDto(Category category) => new CategoryDto
     {
-        return new CategoryDto
-        {
-            Id = category.Id,
-            Name = category.Name,
-            IsActive = category.IsActive,
-            Type = category.Type,
-            UserId = category.UserId
-        };
-    }
+        Id = category.Id,
+        Name = category.Name,
+        IsActive = category.IsActive,
+        Type = category.Type,
+        UserId = category.UserId
+    };
 }

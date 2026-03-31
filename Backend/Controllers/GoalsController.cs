@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SimpleFinance.Api.Data;
 using SimpleFinance.Api.Dtos;
-using SimpleFinance.Api.Models;
+using SimpleFinance.Api.Services;
+using System.Security.Claims;
 
 namespace SimpleFinance.Api.Controllers;
 
@@ -10,110 +10,54 @@ namespace SimpleFinance.Api.Controllers;
 [Route("api/[controller]")]
 public class GoalsController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
-    public GoalsController(ApplicationDbContext context)
-    {
-        _context = context;
-    }
+    private readonly IGoalService _goalService;
 
-    private bool TryGetUserId(out Guid userId)
+    public GoalsController(IGoalService goalService)
     {
-        userId = Guid.Empty;
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type.EndsWith("nameidentifier"));
-        return userIdClaim != null && Guid.TryParse(userIdClaim.Value, out userId);
+        _goalService = goalService;
     }
 
     [HttpGet]
-    [Microsoft.AspNetCore.Authorization.Authorize]
+    [Authorize]
     public async Task<IActionResult> GetGoals()
     {
-        if (!TryGetUserId(out var userId))
-            return Unauthorized("Usuário não autenticado ou id inválido.");
-
-        var goals = await _context.Goals
-            .Where(g => g.UserId == userId)
-            .OrderBy(g => g.Year)
-            .ThenBy(g => g.Month)
-            .ToListAsync();
-
+        var userId = GetUserId();
+        var goals = await _goalService.GetGoalsAsync(userId);
         return Ok(goals);
     }
 
     [HttpPost]
-    [Microsoft.AspNetCore.Authorization.Authorize]
+    [Authorize]
     public async Task<IActionResult> CreateGoal([FromBody] GoalDto dto)
     {
-        if (!TryGetUserId(out var userId))
-            return Unauthorized("Usuário não autenticado ou id inválido.");
-
-        if (dto.Target <= 0)
-            return BadRequest("O valor da meta deve ser maior que zero.");
-
-        if (dto.Month < 1 || dto.Month > 12)
-            return BadRequest("Mês inválido.");
-
-        if (dto.Year < DateTime.UtcNow.Year - 1)
-            return BadRequest("Ano muito antigo para uma meta.");
-
-        var goal = new Goal
-        {
-            Target = dto.Target,
-            Category = string.IsNullOrWhiteSpace(dto.Category) ? null : dto.Category.Trim(),
-            Month = dto.Month,
-            Year = dto.Year,
-            UserId = userId
-        };
-
-        _context.Goals.Add(goal);
-        await _context.SaveChangesAsync();
-
+        var userId = GetUserId();
+        var goal = await _goalService.CreateGoalAsync(userId, dto);
         return CreatedAtAction(nameof(GetGoals), new { id = goal.Id }, goal);
     }
 
     [HttpPut("{id:int}")]
-    [Microsoft.AspNetCore.Authorization.Authorize]
+    [Authorize]
     public async Task<IActionResult> UpdateGoal(int id, [FromBody] GoalDto dto)
     {
-        if (!TryGetUserId(out var userId))
-            return Unauthorized("Usuário não autenticado ou id inválido.");
-
-        var goal = await _context.Goals.FirstOrDefaultAsync(g => g.Id == id && g.UserId == userId);
-        if (goal == null)
-            return NotFound();
-
-        if (dto.Target <= 0)
-            return BadRequest("O valor da meta deve ser maior que zero.");
-
-        if (dto.Month < 1 || dto.Month > 12)
-            return BadRequest("Mês inválido.");
-
-        if (dto.Year < DateTime.UtcNow.Year - 1)
-            return BadRequest("Ano muito antigo para uma meta.");
-
-        goal.Target = dto.Target;
-        goal.Category = string.IsNullOrWhiteSpace(dto.Category) ? null : dto.Category.Trim();
-        goal.Month = dto.Month;
-        goal.Year = dto.Year;
-
-        await _context.SaveChangesAsync();
-
+        var userId = GetUserId();
+        var goal = await _goalService.UpdateGoalAsync(userId, id, dto);
         return Ok(goal);
     }
 
     [HttpDelete("{id:int}")]
-    [Microsoft.AspNetCore.Authorization.Authorize]
+    [Authorize]
     public async Task<IActionResult> DeleteGoal(int id)
     {
-        if (!TryGetUserId(out var userId))
-            return Unauthorized("Usuário não autenticado ou id inválido.");
-
-        var goal = await _context.Goals.FirstOrDefaultAsync(g => g.Id == id && g.UserId == userId);
-        if (goal == null)
-            return NotFound();
-
-        _context.Goals.Remove(goal);
-        await _context.SaveChangesAsync();
-
+        var userId = GetUserId();
+        await _goalService.DeleteGoalAsync(userId, id);
         return NoContent();
+    }
+
+    private Guid GetUserId()
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
+        if (claim == null || !Guid.TryParse(claim.Value, out var userId))
+            throw new UnauthorizedAccessException("Usuário não autenticado ou id inválido.");
+        return userId;
     }
 }

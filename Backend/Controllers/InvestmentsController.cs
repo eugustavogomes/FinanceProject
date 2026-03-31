@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SimpleFinance.Api.Data;
 using SimpleFinance.Api.Dtos;
-using SimpleFinance.Api.Models;
+using SimpleFinance.Api.Services;
+using System.Security.Claims;
 
 namespace SimpleFinance.Api.Controllers;
 
@@ -10,108 +10,54 @@ namespace SimpleFinance.Api.Controllers;
 [Route("api/[controller]")]
 public class InvestmentsController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IInvestmentService _investmentService;
 
-    public InvestmentsController(ApplicationDbContext context)
+    public InvestmentsController(IInvestmentService investmentService)
     {
-        _context = context;
-    }
-
-    private bool TryGetUserId(out Guid userId)
-    {
-        userId = Guid.Empty;
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type.EndsWith("nameidentifier"));
-        return userIdClaim != null && Guid.TryParse(userIdClaim.Value, out userId);
+        _investmentService = investmentService;
     }
 
     [HttpGet]
-    [Microsoft.AspNetCore.Authorization.Authorize]
+    [Authorize]
     public async Task<IActionResult> GetInvestments()
     {
-        if (!TryGetUserId(out var userId))
-            return Unauthorized("Usuário não autenticado ou id inválido.");
-
-        var investments = await _context.Investments
-            .Where(i => i.UserId == userId)
-            .OrderBy(i => i.Name)
-            .ToListAsync();
-
+        var userId = GetUserId();
+        var investments = await _investmentService.GetInvestmentsAsync(userId);
         return Ok(investments);
     }
 
     [HttpPost]
-    [Microsoft.AspNetCore.Authorization.Authorize]
+    [Authorize]
     public async Task<IActionResult> CreateInvestment([FromBody] InvestmentDto dto)
     {
-        if (!TryGetUserId(out var userId))
-            return Unauthorized("Usuário não autenticado ou id inválido.");
-
-        if (string.IsNullOrWhiteSpace(dto.Name))
-            return BadRequest("Nome do investimento é obrigatório.");
-
-        if (dto.CurrentValue < 0 || dto.InvestedAmount < 0)
-            return BadRequest("Valores não podem ser negativos.");
-
-        var investment = new Investment
-        {
-            Name = dto.Name.Trim(),
-            Category = string.IsNullOrWhiteSpace(dto.Category) ? null : dto.Category.Trim(),
-            CurrentValue = dto.CurrentValue,
-            InvestedAmount = dto.InvestedAmount,
-            ExpectedReturnYearly = dto.ExpectedReturnYearly,
-            UserId = userId,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        _context.Investments.Add(investment);
-        await _context.SaveChangesAsync();
-
+        var userId = GetUserId();
+        var investment = await _investmentService.CreateInvestmentAsync(userId, dto);
         return CreatedAtAction(nameof(GetInvestments), new { id = investment.Id }, investment);
     }
 
     [HttpPut("{id:guid}")]
-    [Microsoft.AspNetCore.Authorization.Authorize]
+    [Authorize]
     public async Task<IActionResult> UpdateInvestment(Guid id, [FromBody] InvestmentDto dto)
     {
-        if (!TryGetUserId(out var userId))
-            return Unauthorized("Usuário não autenticado ou id inválido.");
-
-        var investment = await _context.Investments.FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
-        if (investment == null)
-            return NotFound();
-
-        if (string.IsNullOrWhiteSpace(dto.Name))
-            return BadRequest("Nome do investimento é obrigatório.");
-
-        if (dto.CurrentValue < 0 || dto.InvestedAmount < 0)
-            return BadRequest("Valores não podem ser negativos.");
-
-        investment.Name = dto.Name.Trim();
-        investment.Category = string.IsNullOrWhiteSpace(dto.Category) ? null : dto.Category.Trim();
-        investment.CurrentValue = dto.CurrentValue;
-        investment.InvestedAmount = dto.InvestedAmount;
-        investment.ExpectedReturnYearly = dto.ExpectedReturnYearly;
-        investment.UpdatedAt = DateTime.UtcNow;
-
-        await _context.SaveChangesAsync();
-
+        var userId = GetUserId();
+        var investment = await _investmentService.UpdateInvestmentAsync(userId, id, dto);
         return Ok(investment);
     }
 
     [HttpDelete("{id:guid}")]
-    [Microsoft.AspNetCore.Authorization.Authorize]
+    [Authorize]
     public async Task<IActionResult> DeleteInvestment(Guid id)
     {
-        if (!TryGetUserId(out var userId))
-            return Unauthorized("Usuário não autenticado ou id inválido.");
-
-        var investment = await _context.Investments.FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
-        if (investment == null)
-            return NotFound();
-
-        _context.Investments.Remove(investment);
-        await _context.SaveChangesAsync();
-
+        var userId = GetUserId();
+        await _investmentService.DeleteInvestmentAsync(userId, id);
         return NoContent();
+    }
+
+    private Guid GetUserId()
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
+        if (claim == null || !Guid.TryParse(claim.Value, out var userId))
+            throw new UnauthorizedAccessException("Usuário não autenticado ou id inválido.");
+        return userId;
     }
 }

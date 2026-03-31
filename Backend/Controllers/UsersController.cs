@@ -1,97 +1,61 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using SimpleFinance.Api.Data;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using SimpleFinance.Api.Services;
+using System.Security.Claims;
 
-namespace SimpleFinance.Api.Controllers
+namespace SimpleFinance.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class UsersController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    private readonly IUserService _userService;
+
+    public UsersController(IUserService userService)
     {
-        private readonly ApplicationDbContext _db;
+        _userService = userService;
+    }
 
-        public UsersController(ApplicationDbContext db)
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> Me()
+    {
+        var userId = GetUserId();
+        var user = await _userService.GetByIdAsync(userId);
+
+        return Ok(new
         {
-            _db = db;
-        }
+            id = user.Id,
+            email = user.Email,
+            name = user.Name,
+            preferredTheme = user.PreferredTheme,
+            isSidebarExpanded = user.IsSidebarExpanded
+        });
+    }
 
-        [Authorize]
-        [HttpGet("me")]
-        public IActionResult Me()
-        {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type.EndsWith("nameidentifier"));
-            if (userIdClaim == null) return Unauthorized();
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+    {
+        var userId = GetUserId();
+        await _userService.ChangePasswordAsync(userId, dto);
+        return NoContent();
+    }
 
-            if (!System.Guid.TryParse(userIdClaim.Value, out var userId)) return Unauthorized();
+    [Authorize]
+    [HttpPut("me/preferences")]
+    public async Task<IActionResult> UpdatePreferences([FromBody] UserPreferencesDto dto)
+    {
+        var userId = GetUserId();
+        await _userService.UpdatePreferencesAsync(userId, dto);
+        return NoContent();
+    }
 
-            var user = _db.Users.FirstOrDefault(u => u.Id == userId);
-            if (user == null) return NotFound();
-
-            return Ok(new
-            {
-                id = user.Id,
-                email = user.Email,
-                name = user.Name,
-                preferredTheme = user.PreferredTheme,
-                isSidebarExpanded = user.IsSidebarExpanded
-            });
-        }
-
-        [Authorize]
-        [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
-        {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type.EndsWith("nameidentifier"));
-            if (userIdClaim == null) return Unauthorized();
-
-            if (!System.Guid.TryParse(userIdClaim.Value, out var userId)) return Unauthorized();
-
-            var user = _db.Users.FirstOrDefault(u => u.Id == userId);
-            if (user == null) return NotFound();
-
-            if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
-                return BadRequest("Current password is required.");
-
-            if (string.IsNullOrWhiteSpace(dto.NewPassword))
-                return BadRequest("New password is required.");
-
-            if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
-                return BadRequest("Current password is incorrect.");
-
-            if (dto.NewPassword.Length < 6)
-                return BadRequest("New password must be at least 6 characters long.");
-
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
-            await _db.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        [Authorize]
-        [HttpPut("me/preferences")]
-        public async Task<IActionResult> UpdatePreferences([FromBody] UserPreferencesDto dto)
-        {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type.EndsWith("nameidentifier"));
-            if (userIdClaim == null) return Unauthorized();
-
-            if (!System.Guid.TryParse(userIdClaim.Value, out var userId)) return Unauthorized();
-
-            var user = _db.Users.FirstOrDefault(u => u.Id == userId);
-            if (user == null) return NotFound();
-
-            if (dto.PreferredTheme != null)
-            {
-                user.PreferredTheme = dto.PreferredTheme;
-            }
-
-            if (dto.IsSidebarExpanded.HasValue)
-            {
-                user.IsSidebarExpanded = dto.IsSidebarExpanded.Value;
-            }
-
-            await _db.SaveChangesAsync();
-            return NoContent();
-        }
+    private Guid GetUserId()
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
+        if (claim == null || !Guid.TryParse(claim.Value, out var userId))
+            throw new UnauthorizedAccessException("Usuário não autenticado.");
+        return userId;
     }
 }

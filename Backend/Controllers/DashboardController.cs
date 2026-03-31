@@ -1,7 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SimpleFinance.Api.Data;
-using SimpleFinance.Api.Models;
+using SimpleFinance.Api.Services;
+using System.Security.Claims;
 
 namespace SimpleFinance.Api.Controllers;
 
@@ -9,36 +9,22 @@ namespace SimpleFinance.Api.Controllers;
 [Route("api/[controller]")]
 public class DashboardController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
-    public DashboardController(ApplicationDbContext context)
+    private readonly IDashboardService _dashboardService;
+
+    public DashboardController(IDashboardService dashboardService)
     {
-        _context = context;
+        _dashboardService = dashboardService;
     }
 
-        [HttpGet("summary")]
-        [Microsoft.AspNetCore.Authorization.Authorize]
-        public async Task<IActionResult> GetSummary([FromQuery] int? month)
-        {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier);
-            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
-            {
-                return Unauthorized("Usuário não autenticado ou id inválido.");
-            }
-            var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
-            if (!userExists)
-            {
-                return Unauthorized("Usuário não foi encontrado. Faça login novamente.");
-            }
-            var baseQuery = _context.Transactions.Where(t => t.UserId == userId);
-            if (month.HasValue && month.Value >= 0 && month.Value <= 11)
-            {
-                var monthNumber = month.Value + 1; // Date.Month is 1-12
-                baseQuery = baseQuery.Where(t => t.Date.Month == monthNumber);
-            }
+    [HttpGet("summary")]
+    [Authorize]
+    public async Task<IActionResult> GetSummary([FromQuery] int? month)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            return Unauthorized("Usuário não autenticado ou id inválido.");
 
-            var income = await baseQuery.Where(t => t.Type == TransactionType.Income).SumAsync(t => t.Value);
-            var expense = await baseQuery.Where(t => t.Type == TransactionType.Expense).SumAsync(t => t.Value);
-            var balance = income - expense;
-            return Ok(new { income, expense, balance });
-        }
+        var (income, expense, balance) = await _dashboardService.GetSummaryAsync(userId, month);
+        return Ok(new { income, expense, balance });
+    }
 }
