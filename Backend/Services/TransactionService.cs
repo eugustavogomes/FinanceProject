@@ -43,7 +43,7 @@ public class TransactionService : ITransactionService
         await _transactionRepository.AddAsync(transaction);
         await _transactionRepository.SaveChangesAsync();
 
-        return MapToDto(transaction, categoryName: null);
+        return MapToDto(transaction);
     }
 
     public async Task<TransactionDto> UpdateTransactionAsync(Guid userId, Guid transactionId, CreateTransactionDto dto)
@@ -62,7 +62,7 @@ public class TransactionService : ITransactionService
 
         await _transactionRepository.SaveChangesAsync();
 
-        return MapToDto(transaction, categoryName: null);
+        return MapToDto(transaction);
     }
 
     public async Task DeleteTransactionAsync(Guid userId, Guid transactionId)
@@ -99,7 +99,7 @@ public class TransactionService : ITransactionService
         return date;
     }
 
-    private static TransactionDto MapToDto(Transaction transaction, string? categoryName = null) => new TransactionDto
+    private static TransactionDto MapToDto(Transaction transaction, string? categoryName) => new TransactionDto
     {
         Id = transaction.Id,
         Value = transaction.Value,
@@ -107,6 +107,6 @@ public class TransactionService : ITransactionService
         Description = transaction.Description,
         Type = transaction.Type,
         CategoryId = transaction.CategoryId,
-        CategoryName = categoryName ?? transaction.Category?.Name
+        CategoryName = categoryName
     };
 }

@@ -25,7 +25,7 @@ public class CategoryService : ICategoryService
             await SeedBasicCategoriesForUser(userId);
 
         var categories = await _categoryRepository.GetActiveByUserIdAsync(userId);
-        return categories.Select(MapToDto).ToList();
+        return categories.Select(c => MapToDto(c)).ToList();
     }
 
     public async Task<CategoryDto> CreateCategoryAsync(Guid userId, CreateCategoryDto dto)
