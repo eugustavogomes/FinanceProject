@@ -2,13 +2,13 @@ using SimpleFinance.Api.Models;
 
 namespace SimpleFinance.Api.Dtos;
 
-public class TransactionDto
+public record TransactionDto
 {
-    public Guid Id { get; set; }
-    public decimal Value { get; set; }
-    public DateTime Date { get; set; }
-    public string? Description { get; set; }
-    public TransactionType Type { get; set; }
-    public Guid? CategoryId { get; set; }
-    public string? CategoryName { get; set; }
+    public Guid Id { get; init; }
+    public decimal Value { get; init; }
+    public DateTime Date { get; init; }
+    public string? Description { get; init; }
+    public TransactionType Type { get; init; }
+    public Guid? CategoryId { get; init; }
+    public string? CategoryName { get; init; }
 }

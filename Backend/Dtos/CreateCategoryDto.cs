@@ -3,8 +3,8 @@ using SimpleFinance.Api.Models;
 
 namespace SimpleFinance.Api.Dtos;
 
-public class CreateCategoryDto
+public record CreateCategoryDto
 {
-    public string Name { get; set; } = string.Empty;
-    public TransactionType? Type { get; set; }
+    public string Name { get; init; } = string.Empty;
+    public TransactionType? Type { get; init; }
 }

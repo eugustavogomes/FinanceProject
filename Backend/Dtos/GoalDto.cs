@@ -1,9 +1,9 @@
 namespace SimpleFinance.Api.Dtos;
 
-public class GoalDto
+public record GoalDto
 {
-    public decimal Target { get; set; }
-    public string? Category { get; set; }
-    public int Month { get; set; }
-    public int Year { get; set; }
+    public decimal Target { get; init; }
+    public string? Category { get; init; }
+    public int Month { get; init; }
+    public int Year { get; init; }
 }

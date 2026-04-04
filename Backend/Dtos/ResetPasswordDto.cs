@@ -1,5 +1,5 @@
-public class ResetPasswordDto
+public record ResetPasswordDto
 {
-    public string? Email { get; set; }
-    public string? NewPassword { get; set; }
+    public string? Email { get; init; }
+    public string? NewPassword { get; init; }
 }

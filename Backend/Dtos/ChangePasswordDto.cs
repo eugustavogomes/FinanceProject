@@ -1,5 +1,5 @@
-public class ChangePasswordDto
+public record ChangePasswordDto
 {
-    public string? CurrentPassword { get; set; }
-    public string? NewPassword { get; set; }
+    public string? CurrentPassword { get; init; }
+    public string? NewPassword { get; init; }
 }

@@ -1,10 +1,10 @@
 namespace SimpleFinance.Api.Dtos;
 
-public class InvestmentDto
+public record InvestmentDto
 {
-    public string Name { get; set; } = string.Empty;
-    public string? Category { get; set; }
-    public decimal CurrentValue { get; set; }
-    public decimal InvestedAmount { get; set; }
-    public decimal? ExpectedReturnYearly { get; set; }
+    public string Name { get; init; } = string.Empty;
+    public string? Category { get; init; }
+    public decimal CurrentValue { get; init; }
+    public decimal InvestedAmount { get; init; }
+    public decimal? ExpectedReturnYearly { get; init; }
 }
