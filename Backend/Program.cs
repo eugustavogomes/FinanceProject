@@ -11,13 +11,12 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
+    options.AddPolicy("SecurePolicy", policy =>
         policy.WithOrigins(
                 "http://localhost:3000"
             )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials()
+            .WithMethods("GET", "POST", "PUT", "DELETE")
+            .WithHeaders("Authorization", "Content-Type")
     );
 });
 
@@ -52,7 +51,7 @@ Env.Load();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();
-app.UseCors("AllowFrontend");
+app.UseCors("SecurePolicy");
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

@@ -26,6 +26,7 @@ public class TransactionRepository : ITransactionRepository
 
     public async Task<Transaction?> GetByIdAndUserIdAsync(Guid id, Guid userId)
         => await _context.Transactions
+            .Include(t => t.Category)
             .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
 
     public async Task<decimal> SumByTypeAsync(Guid userId, TransactionType type, int? monthIndex)

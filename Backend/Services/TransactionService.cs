@@ -21,7 +21,7 @@ public class TransactionService : ITransactionService
         await EnsureUserExistsAsync(userId);
 
         var transactions = await _transactionRepository.GetByUserIdAsync(userId);
-        return transactions.Select(t => MapToDto(t)).ToList();
+        return transactions.Select(t => MapToDto(t, t.Category?.Name)).ToList();
     }
 
     public async Task<TransactionDto> AddTransactionAsync(Guid userId, CreateTransactionDto dto)
@@ -43,7 +43,8 @@ public class TransactionService : ITransactionService
         await _transactionRepository.AddAsync(transaction);
         await _transactionRepository.SaveChangesAsync();
 
-        return MapToDto(transaction);
+        var saved = await _transactionRepository.GetByIdAndUserIdAsync(transaction.Id, userId);
+        return MapToDto(saved!, saved!.Category?.Name);
     }
 
     public async Task<TransactionDto> UpdateTransactionAsync(Guid userId, Guid transactionId, CreateTransactionDto dto)
@@ -62,7 +63,7 @@ public class TransactionService : ITransactionService
 
         await _transactionRepository.SaveChangesAsync();
 
-        return MapToDto(transaction);
+        return MapToDto(transaction, transaction.Category?.Name);
     }
 
     public async Task DeleteTransactionAsync(Guid userId, Guid transactionId)
